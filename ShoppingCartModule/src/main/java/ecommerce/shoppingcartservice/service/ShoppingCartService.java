@@ -1,11 +1,7 @@
 package ecommerce.shoppingcartservice.service;
 
-import ecommerce.shoppingcartservice.model.CartLine;
 import ecommerce.shoppingcartservice.model.RequestModel;
 import ecommerce.shoppingcartservice.model.ShoppingCart;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 public interface ShoppingCartService {
 
@@ -17,4 +13,6 @@ public interface ShoppingCartService {
     void deleteCart();
 
     boolean checkCartExistForUser(Integer id);
+
+    void checkOut(ShoppingCart shoppingCart);
 }

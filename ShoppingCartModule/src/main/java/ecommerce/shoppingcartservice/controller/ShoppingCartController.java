@@ -32,6 +32,14 @@ public class ShoppingCartController {
         shoppingCartService.addToCart(requestModel);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+    @PostMapping("/{id}/checkout")
+    public ResponseEntity<?> checkOut(@PathVariable int id, @RequestBody ShoppingCart shoppingCart){
+        if(shoppingCartService.checkCartExistForUser(id)){
+            shoppingCartService.checkOut(shoppingCart);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 /*
     @DeleteMapping()
     public ResponseEntity<?> deleteCart(){

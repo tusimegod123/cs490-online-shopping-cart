@@ -8,12 +8,10 @@ import ecommerce.shoppingcartservice.repository.ProductRepository;
 import ecommerce.shoppingcartservice.repository.ShoppingCartRepository;
 import ecommerce.shoppingcartservice.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
@@ -25,7 +23,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private CartLineRepository cartLineRepository;
     @Autowired
     private ProductRepository productRepository;
-
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public ShoppingCart getCartItems(int id) {
@@ -78,12 +77,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void deleteCart() {
-
+        // if necessary going to be implemented
     }
 
 
     public boolean checkCartExistForUser(Integer id){
         return shoppingCartRepository.findShoppingCartByAccountIdEquals(id) != null;
+    }
+
+    @Override
+    public void checkOut(ShoppingCart shoppingCart) {
+        // change order status here or order service can update
+        restTemplate.postForLocation("/url to be updated here ",shoppingCart);
     }
 
 
