@@ -14,5 +14,5 @@ public interface ShoppingCartService {
 
     boolean checkCartExistForUser(Integer id);
 
-    void checkOut(ShoppingCart shoppingCart);
+    void checkOut(int id);
 }

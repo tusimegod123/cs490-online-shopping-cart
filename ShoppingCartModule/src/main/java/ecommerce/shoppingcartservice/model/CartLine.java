@@ -11,14 +11,15 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "orderline")
+@Table(name = "cartline")
 public class CartLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Product product;
     private Integer quantity;
+    private Double price;
 
     @Override
     public boolean equals(Object obj){

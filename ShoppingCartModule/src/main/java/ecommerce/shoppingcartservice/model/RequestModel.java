@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class RequestModel {
 
     private Integer accountId;
-    private Integer productId;
+    private Product product;
     private Integer quantity;
 
 }
