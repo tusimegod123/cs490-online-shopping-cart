@@ -1,0 +1,42 @@
+package com.cs490.shoppingCart.NotificationModule.web;
+
+import com.cs490.shoppingCart.NotificationModule.service.EmailDTO;
+import com.cs490.shoppingCart.NotificationModule.service.EmailSenderService;
+import com.cs490.shoppingCart.NotificationModule.util.EmailUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * The Class NotificationController.
+ */
+@RestController
+@RequestMapping("/notification")
+public class NotificationModuleController {
+
+    @Autowired
+    private EmailSenderService senderService;
+
+    /**
+     * Send email endpoint.
+     *
+     * @param email the email object
+     * @return the String
+     */
+    @PostMapping(path = "/email")
+    @ResponseBody
+    public ResponseEntity<String> sendEmail(@RequestBody EmailDTO email) throws Exception{
+
+        String emailBody = EmailUtil.formatEmailBody(email.getEmailContent());
+        senderService.sendSimpleEmail(email.getEmailTo(), email.getEmailSubject(), emailBody);
+        return new ResponseEntity<>("An email has been sent successfully!", HttpStatus.OK);
+    }
+
+
+    @GetMapping("/")
+    public String hello() {
+        return "<H1>Email notification controller activated</H1>";
+    }
+
+}
