@@ -24,13 +24,4 @@ public class NotificationModuleApplication implements CommandLineRunner {
 		LOG.info("          Notification Module Spring Boot Application command-line initiated");
 		LOG.info("###############################################################################################");
 	}
-
-	@RestController
-	class RESTController {
-
-		@GetMapping("/")
-		public String hello() {
-			return "<H1>Notification Module Spring Boot Application Activated</H1>";
-		}
-	}
 }
