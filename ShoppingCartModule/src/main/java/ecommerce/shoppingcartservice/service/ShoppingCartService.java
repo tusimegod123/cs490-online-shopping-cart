@@ -7,7 +7,7 @@ public interface ShoppingCartService {
 
     ShoppingCart getCartItems(int id);
 
-     void addToCart(RequestModel requestModel);
+     ShoppingCart addToCart(RequestModel requestModel);
 
 
     void deleteCart();

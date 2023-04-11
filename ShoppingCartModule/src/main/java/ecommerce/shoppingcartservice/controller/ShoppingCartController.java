@@ -29,8 +29,8 @@ public class ShoppingCartController {
 
     @PostMapping()
     public ResponseEntity<?> addToCart(@RequestBody RequestModel requestModel){
-        shoppingCartService.addToCart(requestModel);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        ShoppingCart shoppingCart = shoppingCartService.addToCart(requestModel);
+        return new ResponseEntity<>(shoppingCart,HttpStatus.CREATED);
     }
     @PostMapping("/{cartId}/checkout")
     public ResponseEntity<?> checkOut(@PathVariable int cartId

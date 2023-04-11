@@ -26,10 +26,10 @@ public class CartLineController {
     }
 
     @PutMapping()
-    public ResponseEntity<?> updateCartLine(@RequestBody CartLine cartLine){
+    public ResponseEntity<CartLine> updateCartLine(@RequestBody CartLine cartLine){
         if(cartLineService.checkCartLineExistence(cartLine.getId())){
-            cartLineService.updateCartLine(cartLine);
-            return new ResponseEntity<>(HttpStatus.OK);
+            CartLine cartLine1 = cartLineService.updateCartLine(cartLine);
+            return new ResponseEntity<>(cartLine1,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

@@ -35,7 +35,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     //update
     @Override
-    public void addToCart(RequestModel requestModel) {
+    public ShoppingCart addToCart(RequestModel requestModel) {
 
         if(checkCartExistForUserAndStatusFalse(requestModel.getAccountId())){
             ShoppingCart shoppingCart = getCartItems(requestModel.getAccountId());
@@ -44,13 +44,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     //requestModel.getProductId()) && shoppingCart.getCartStatus() == false ).findAny();
                      requestModel.getProduct().getId())).findAny();
             if(cartLineEx.isPresent()){
-
                 CartLine cartLineExisting = cartLineEx.get();
                 cartLineExisting.setQuantity(cartLineExisting.getQuantity()+ requestModel.getQuantity());
                 Set<CartLine> cartLineSet = new HashSet<>(shoppingCart.getCartLines());
                 cartLineSet.add(cartLineExisting);
                 shoppingCart.setCartLines(cartLineSet);
-                shoppingCartRepository.save(shoppingCart);
+                return shoppingCartRepository.save(shoppingCart);
 
             }else{
 
@@ -61,7 +60,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 Set<CartLine> existingLines = new HashSet<>(shoppingCart.getCartLines());
                 existingLines.add(cartLine);
                 shoppingCart.setCartLines(existingLines);
-                shoppingCartRepository.save(shoppingCart);
+                return shoppingCartRepository.save(shoppingCart);
 
             }
         }else {
@@ -80,7 +79,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             shoppingCart.setCartDate(LocalDateTime.now());
             shoppingCart.setUserId(requestModel.getAccountId());
             shoppingCart.setTotalPrice(cartLines.stream().map(cartLine1 -> cartLine1.getPrice()).reduce(0.0,Double::sum));
-            shoppingCartRepository.save(shoppingCart);
+            return shoppingCartRepository.save(shoppingCart);
             //shoppingCart.setCreatedDate(LocalDate.now());
         }
     }
