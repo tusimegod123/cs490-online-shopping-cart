@@ -2,8 +2,9 @@ package com.cs490.shoppingcart.administrationmodule.controller;
 
 
 import com.cs490.shoppingcart.administrationmodule.dto.AuthRequest;
+import com.cs490.shoppingcart.administrationmodule.dto.UserDto;
+import com.cs490.shoppingcart.administrationmodule.exception.EmailExistsException;
 import com.cs490.shoppingcart.administrationmodule.model.User;
-import com.cs490.shoppingcart.administrationmodule.payload.response.UserInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -28,6 +29,11 @@ public class UserController {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+    }
+    @PostMapping("/register")
+    public User saveUser(@RequestBody UserDto user) throws EmailExistsException {
+      //  user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userService.createUser(user);
     }
 
     @PostMapping("/token")
@@ -58,13 +64,6 @@ public class UserController {
         userService.validateToken(token);
         return "Token is valid";
     }
-    @PostMapping("/register")
-    public User saveUser(@RequestBody User user){
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userService.createUser(user);
-    }
-
     @PutMapping(value = "/{id}")
     public User updateUser(@RequestBody User user, @PathVariable Long id){
         return userService.updateUserDetails(user,id);
