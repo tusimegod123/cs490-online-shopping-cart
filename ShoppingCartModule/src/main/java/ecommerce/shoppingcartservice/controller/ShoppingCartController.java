@@ -18,10 +18,11 @@ public class ShoppingCartController {
   @Autowired
   private ShoppingCartService shoppingCartService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ShoppingCart> getCartItems(@PathVariable int id){
-        if(shoppingCartService.checkCartExistForUser(id)){
-            ShoppingCart cart = shoppingCartService.getCartItems(id);
+    @GetMapping("/{userId}")
+    public ResponseEntity<ShoppingCart> getCartItems(@PathVariable int userId){
+        boolean validUser;  //rest template call about existance of user;
+        if(shoppingCartService.checkCartExistForUser(userId)){
+            ShoppingCart cart = shoppingCartService.getCartItems(userId);
             return new ResponseEntity<>(cart, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
