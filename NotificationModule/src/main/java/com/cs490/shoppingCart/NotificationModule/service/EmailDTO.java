@@ -2,13 +2,17 @@ package com.cs490.shoppingCart.NotificationModule.service;
 
 public class EmailDTO {
     private String emailTo;
-    private String emailSubject;
-    private String emailContent;
+    private String vPassword;
+    private String userId;
+    private String orderId;
+    private int fromSystemType;
 
-    public EmailDTO(String emailTo, String emailSubject, String emailContent) {
+    public EmailDTO(String emailTo, String vPassword, String userId, String orderId, int fromSystemType) {
         this.emailTo = emailTo;
-        this.emailSubject = emailSubject;
-        this.emailContent = emailContent;
+        this.vPassword = vPassword;
+        this.userId = userId;
+        this.orderId = orderId;
+        this.fromSystemType = fromSystemType;
     }
 
     public String getEmailTo() {
@@ -19,19 +23,46 @@ public class EmailDTO {
         this.emailTo = emailTo;
     }
 
-    public String getEmailSubject() {
-        return emailSubject;
+    public String getvPassword() {
+        return vPassword;
     }
 
-    public void setEmailSubject(String emailSubject) {
-        this.emailSubject = emailSubject;
+    public void setvPassword(String vPassword) {
+        this.vPassword = vPassword;
     }
 
-    public String getEmailContent() {
-        return emailContent;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setEmailContent(String emailContent) {
-        this.emailContent = emailContent;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public int getFromSystemType() {
+        return fromSystemType;
+    }
+
+    public void setFromSystemType(int fromSystemType) {
+        this.fromSystemType = fromSystemType;
+    }
+
+    @Override
+    public String toString() {
+        return "EmailDTO{" +
+                "emailTo='" + emailTo + '\'' +
+                ", vPassword='" + vPassword + '\'' +
+                ", userId='" + userId + '\'' +
+                ", orderId='" + orderId + '\'' +
+                ", fromSystemType='" + fromSystemType + '\'' +
+                '}';
     }
 }
