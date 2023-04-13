@@ -11,12 +11,14 @@
     </parent>
     <groupId>com.cs490.shoppingCart</groupId>
     <artifactId>AdministrationModule</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>Administration Module</name>
     <description>Administration Module</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>15</java.version>
         <spring-cloud.version>2022.0.1</spring-cloud.version>
+<!--                <maven.compiler.source>17</maven.compiler.source>-->
+<!--                <maven.compiler.target>17</maven.compiler.target>-->
     </properties>
     <dependencies>
         <dependency>
@@ -58,7 +60,7 @@
         <dependency>
             <groupId>me.paulschwarz</groupId>
             <artifactId>spring-dotenv</artifactId>
-            <version>2.5.4</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>
@@ -81,6 +83,10 @@
             <version>4.0.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -97,18 +103,44 @@
 
     <build>
         <plugins>
+           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+<!--                <source>17</source>-->
+                <target> 17</target>
+            </configuration>
+        </plugin>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.13</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
+                    <repository>tusimegodwin256/administration-module</repository>
+                    <tag>administration-module</tag>
+<!--                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>-->
                 </configuration>
+                <dependencies>
+                    <!-- To make this work on JDK 9+ -->
+                    <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>javax.activation-api</artifactId>
+                        <version>1.2.0</version>
+                    </dependency>
+                </dependencies>
+
             </plugin>
+
         </plugins>
     </build>
     <repositories>

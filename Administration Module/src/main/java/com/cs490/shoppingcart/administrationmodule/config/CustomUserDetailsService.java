@@ -22,10 +22,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 //        return credential.map(User::new).orElseThrow(() -> new UsernameNotFoundException("user not found with name :" + name));
 //    }
 
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = (User)this.repository.findByName(username).orElseThrow(() -> {
-            return new UsernameNotFoundException("Username " + username + " not found");
-        });
+    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+        User user = this.repository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("Email " + userEmail + " not found"));
         return user;
     }
 }
