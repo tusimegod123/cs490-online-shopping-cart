@@ -1,10 +1,10 @@
-package com.cs490.shoppingCart.ShoppingCartModule;
+package ecommerce.shoppingcartservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ShoppingCartModuleApplicationTests {
+class ShoppingCartServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

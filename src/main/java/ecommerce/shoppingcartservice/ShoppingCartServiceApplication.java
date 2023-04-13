@@ -1,13 +1,13 @@
-package com.cs490.shoppingCart.ShoppingCartModule;
+package ecommerce.shoppingcartservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ShoppingCartModuleApplication {
+public class ShoppingCartServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ShoppingCartModuleApplication.class, args);
+		SpringApplication.run(ShoppingCartServiceApplication.class, args);
 	}
 
 }
