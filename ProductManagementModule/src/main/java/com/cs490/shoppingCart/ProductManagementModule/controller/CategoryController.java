@@ -32,11 +32,15 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) throws ItemNotFoundException {
 
         Category category;
 
-        category = categoryService.getCategoryById(id);
+        try {
+            category = categoryService.getCategoryById(id);
+        } catch (ItemNotFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
 
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
