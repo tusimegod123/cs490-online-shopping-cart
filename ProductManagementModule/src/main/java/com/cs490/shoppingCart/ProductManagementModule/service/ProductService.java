@@ -1,20 +1,25 @@
 package com.cs490.shoppingCart.ProductManagementModule.service;
 
-import com.cs490.shoppingCart.ProductManagementModule.dto.CreateProductRequest;
+import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
+import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
+import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
 import com.cs490.shoppingCart.ProductManagementModule.mapper.ProductMapper;
+import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
 import com.cs490.shoppingCart.ProductManagementModule.repository.ProductRepository;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@EnableDiscoveryClient
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+
+    @Autowired
+    private CategoryService categoryService;
 
     public ProductService(ProductRepository productRepository,
                           ProductMapper productMapper) {
@@ -22,10 +27,21 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
-    public Product createProduct(CreateProductRequest createProductRequest){
-        Product product = productMapper.fromCreateProductRequestToDomain(createProductRequest);
+    public ProductResponse createProduct(ProductRequest productRequest) throws ItemNotFoundException {
+        Product product = productMapper.fromCreateProductRequestToDomain(productRequest);
         product.setVerified(false);
-        return productRepository.save(product);
+
+        // Get id from input
+        Long categoryId = productRequest.getCategoryId();
+
+        // Get id category from DB
+        Category category = categoryService.getCategoryById(categoryId);
+
+        // Save product into DB
+        Product productToAdd = productRepository.save(product);
+        ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productToAdd);
+        productResponse.setCategory(category);
+        return productResponse;
     }
 
     public Product modifyProduct(Product product, Long productId){

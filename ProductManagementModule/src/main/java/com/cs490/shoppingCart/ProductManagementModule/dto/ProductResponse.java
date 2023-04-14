@@ -1,10 +1,11 @@
 package com.cs490.shoppingCart.ProductManagementModule.dto;
 
+import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import lombok.Data;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 @Data
-public class CreateProductResponse {
+public class ProductResponse {
 
     private Long productId;
     private String productName;
@@ -14,6 +15,6 @@ public class CreateProductResponse {
     private String imageUrl;
     private Boolean verified;
 
-//    private SecurityProperties.User
-//    private Category category;
+    private SecurityProperties.User user;
+    private Category category;
 }

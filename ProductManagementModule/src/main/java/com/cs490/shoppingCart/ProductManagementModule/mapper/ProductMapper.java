@@ -1,6 +1,7 @@
 package com.cs490.shoppingCart.ProductManagementModule.mapper;
 
-import com.cs490.shoppingCart.ProductManagementModule.dto.CreateProductRequest;
+import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
+import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,5 +11,7 @@ import org.mapstruct.MappingConstants;
 public interface ProductMapper {
 
     @Mapping(target = "productId", ignore = true)
-    Product fromCreateProductRequestToDomain(CreateProductRequest createProductRequest);
+    Product fromCreateProductRequestToDomain(ProductRequest productRequest);
+
+    ProductResponse fromCreateProductResponseToDomain(Product product);
 }

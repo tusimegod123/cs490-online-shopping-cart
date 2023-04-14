@@ -17,6 +17,7 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     public Category createCategory(Category category){
+
         return categoryRepository.save(category);
     }
     public Category updateCategory(Category category, Long categoryId) throws ItemNotFoundException, IdNotMatchException {
@@ -38,18 +39,18 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Category getCategoryById(Long id) {
+    public Category getCategoryById(Long id) throws ItemNotFoundException {
 
         Optional<Category> category = categoryRepository.findById(id);
 
         if (category.isPresent()) {
             return category.get();
+        } else {
+            throw new ItemNotFoundException("No category found with id: " +id);
         }
-
-        return null;
     }
 
-    public boolean deleteCategoryById(Long id) throws ItemNotFoundException {
+    public boolean deleteCategoryById(Long id) {
 
         Optional<Category> category = categoryRepository.findById(id);
 
@@ -57,11 +58,11 @@ public class CategoryService {
             return false;
         }
 
-//        try {
-//            categoryRepository.deleteById(id);
-//        } catch (EmptyResultDataAccessException e) {
-//            return false;
-//        }
+        try {
+            categoryRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
 
         return true;
     }

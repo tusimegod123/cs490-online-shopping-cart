@@ -3,7 +3,7 @@ package com.cs490.shoppingCart.ProductManagementModule.dto;
 import lombok.Data;
 
 @Data
-public class CreateProductRequest {
+public class ProductRequest {
     private String productName;
     private Double price;
     private int amount;
