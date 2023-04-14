@@ -25,7 +25,7 @@ public class PaymentController {
     }
 
 
-    @PostMapping("/pay")
+    @PostMapping("/payOrder")
     public TransactionStatus makePayment(@RequestBody PaymentRequestDTO request) throws Exception {
         return paymentService.processPayment(request);
     }
