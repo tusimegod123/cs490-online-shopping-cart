@@ -40,7 +40,7 @@ spec:
             - "--ignore-db-dir=lost+found" # Workaround for https://github.com/docker-library/mysql/issues/186
           name: mysql
           env:
-            - name: MY_HOST
+            - name: HOST_NAME
               value: mysql
             - name: DB_USERNAME
               value: root

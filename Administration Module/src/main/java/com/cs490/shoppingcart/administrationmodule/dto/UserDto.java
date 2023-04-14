@@ -14,5 +14,6 @@ public class UserDto {
     private String password;
     private String telephoneNumber;
     private String username;
+    private Boolean verified;
     private Set<Role> roles;
 }

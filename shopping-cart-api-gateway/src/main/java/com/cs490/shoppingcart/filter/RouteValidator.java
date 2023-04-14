@@ -12,7 +12,7 @@ public class RouteValidator {
     //Routes that can be accessed by anyone, whether logged in or not
     public static final List<String> openApiEndpoints = List.of(
             "/api/v1/users/register",
-            "/api/v1/users/token",
+            "/api/v1/users/login",
             "/api/v1/products/verified",
             "/eureka"
     );

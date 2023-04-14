@@ -27,7 +27,9 @@ public class AuthConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.cors().and().csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/v1/users","/api/v1/users/register", "/api/v1/users/token", "/api/v1/users/validate").permitAll()
+                .requestMatchers("/api/v1/users/**","/api/v1/users/who","/api/v1/users/register", "/v3/api-docs/**","/swagger-ui/**",
+                        "/api/v1/users/login", "/api/v1/users/validate", "/api/v2/api-docs").permitAll()
+                .requestMatchers("/api/v1/users/vendor/verify/**").permitAll()
                 .and()
                 .build();
     }
