@@ -9,6 +9,14 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
 
+zuul:
+  routes:
+    ADMINISTRATION-MODULE:
+      path: /users/**
+      serviceId: ADMINISTRATION-MODULE
+    PRODUCT-SERVICE:
+      path: /products/**
+      serviceId: PRODUCT-SERVICE
 
 server:
   port: 9799

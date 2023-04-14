@@ -14,6 +14,6 @@ public class CreateProductResponse {
     private String imageUrl;
     private Boolean verified;
 
-    private SecurityProperties.User user;
+//    private SecurityProperties.User
 //    private Category category;
 }

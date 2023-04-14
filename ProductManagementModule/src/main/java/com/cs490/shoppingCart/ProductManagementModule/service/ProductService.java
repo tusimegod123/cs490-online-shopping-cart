@@ -4,12 +4,15 @@ import com.cs490.shoppingCart.ProductManagementModule.dto.CreateProductRequest;
 import com.cs490.shoppingCart.ProductManagementModule.mapper.ProductMapper;
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
 import com.cs490.shoppingCart.ProductManagementModule.repository.ProductRepository;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@EnableDiscoveryClient
 public class ProductService {
+
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
