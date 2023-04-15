@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: administration-service-app
+  labels:
+    app: administration-service-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app : administration-service-app
+  template:
+    metadata:
+      labels:
+        app: administration-service-app
+    spec:
+      containers:
+      - name: administration-service-app
+        image: tusimegodwin256/administration-module:administration-module
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 9898
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name:  administration-service-app
+spec:
+  selector:
+    app:  administration-service-app
+  ports:
+  - port:  80
+    targetPort:  9898

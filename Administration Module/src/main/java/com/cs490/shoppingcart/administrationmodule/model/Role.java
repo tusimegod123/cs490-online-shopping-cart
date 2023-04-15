@@ -1,23 +1,26 @@
 package com.cs490.shoppingcart.administrationmodule.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public enum Role {
-    GUEST_USER("ROLE_GUEST_USER"),
-    REGULAR_USER("ROLE_REGULAR_USER"),
-    ADMIN("ROLE_ADMIN");
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class Role{
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer roleId;
+    private String roleName;
 
-    private final String roleName;
-
-    Role(String roleName) {
+    public Role(String roleName) {
         this.roleName = roleName;
     }
 
-    public String getRoleName() {
-        return roleName;
+    @Override
+    public String toString() {
+        return this.roleName;
     }
 }
