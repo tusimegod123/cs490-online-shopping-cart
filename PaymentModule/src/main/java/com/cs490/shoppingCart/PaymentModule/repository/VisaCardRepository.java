@@ -5,6 +5,7 @@ import com.cs490.shoppingCart.PaymentModule.model.VisaCard;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Repository
@@ -13,6 +14,6 @@ public interface VisaCardRepository extends JpaRepository<VisaCard, Integer> {
             String cardNumber,
             String name,
             String CCV,
-            Date cardExpiry
+            LocalDate cardExpiry
     );
 }

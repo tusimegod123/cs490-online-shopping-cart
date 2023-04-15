@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -23,6 +25,12 @@ public class VisaCard {
     private String CCV ;
     private Double cardValue;
     private Double currentValue;
-    private Date cardExpiry;
+
+//    @Temporal(TemporalType.DATE)
+//    private Date cardExpiry;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate cardExpiry;
+
     private Boolean cardMode = true;
 }
