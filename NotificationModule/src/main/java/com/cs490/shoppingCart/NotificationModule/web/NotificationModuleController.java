@@ -32,9 +32,4 @@ public class NotificationModuleController {
     }
 
 
-    @GetMapping("/")
-    public String hello() {
-        return "<H1>Email notification controller activated</H1>";
-    }
-
 }
