@@ -1,8 +1,9 @@
 package ecommerce.shoppingcartservice.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ecommerce.shoppingcartservice.model.CartLine;
 import ecommerce.shoppingcartservice.model.Product;
-import ecommerce.shoppingcartservice.model.RequestModel;
+import ecommerce.shoppingcartservice.dto.RequestModel;
 import ecommerce.shoppingcartservice.model.ShoppingCart;
 import ecommerce.shoppingcartservice.repository.CartLineRepository;
 import ecommerce.shoppingcartservice.repository.ShoppingCartRepository;
@@ -56,6 +57,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 CartLine cartLine = new CartLine();
                 cartLine.setQuantity(requestModel.getQuantity());
                 cartLine.setProductId(requestModel.getProduct().getId());
+
+                try {
+                    ObjectMapper ob = new ObjectMapper();
+                    Product product = requestModel.getProduct();
+                    cartLine.setProductInfo(ob.writeValueAsString(product));
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
                 cartLine.setPrice(requestModel.getProduct().getPrice() * requestModel.getQuantity());
                         //productRepository.findById(requestModel.getProduct());
                 Set<CartLine> existingLines = new HashSet<>(shoppingCart.getCartLines());
@@ -72,7 +81,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             cartLine.setProductId(requestModel.getProduct().getId());
             cartLine.setQuantity(requestModel.getQuantity());
             cartLine.setPrice(requestModel.getProduct().getPrice() * requestModel.getQuantity());
-            Product product = new Product();
+            try {
+                ObjectMapper ob = new ObjectMapper();
+                Product product = requestModel.getProduct();
+                cartLine.setProductInfo(ob.writeValueAsString(product));
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
             cartLine.setPrice(requestModel.getQuantity() * requestModel.getProduct().getPrice());
             Set<CartLine> cartLines =  new HashSet<>();
             cartLines.add(cartLine);

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Set;
 
@@ -36,12 +37,16 @@ public class OrderController {
         Orders orders =  new Orders(orderService.getOrders());
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
-    @GetMapping("user/{userId}")
+    @GetMapping("users/{userId}")
     public ResponseEntity<?> getOrderForUser(@PathVariable int userId){
-        //check user existance firn
+        //check user existance from godwin
             List<Order> orderList = orderService.getOrdersForUser(userId);
             return new ResponseEntity<>(orderList,HttpStatus.OK);
         //}
+    }
+    @GetMapping("/{orderId}/checkExistance")
+    public ResponseEntity<?> orderExist(@PathVariable int orderId){
+        return new ResponseEntity<>(orderService.checkOrderExistance(orderId),HttpStatus.OK);
     }
 
     @PostMapping()
@@ -61,6 +66,7 @@ public class OrderController {
         }
         return new ResponseEntity<>(new OrderlineEmptyException("You don't have any item to order"),HttpStatus.NOT_FOUND);
     }
+
 
 
 

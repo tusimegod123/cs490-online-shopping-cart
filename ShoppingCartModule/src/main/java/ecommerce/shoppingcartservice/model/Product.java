@@ -15,6 +15,7 @@ public class Product {
     private String description;
     private Double price;
     private String category;
+    private String imgUrl;
 
     public Product(String name,String description,String category,Double price){
         this.category = category;

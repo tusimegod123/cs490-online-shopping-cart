@@ -1,5 +1,6 @@
-package ecommerce.shoppingcartservice.model;
+package ecommerce.shoppingcartservice.dto;
 
+import ecommerce.shoppingcartservice.model.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

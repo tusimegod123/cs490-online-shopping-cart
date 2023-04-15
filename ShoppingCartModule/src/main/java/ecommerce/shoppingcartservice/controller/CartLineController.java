@@ -29,7 +29,6 @@ public class CartLineController {
 
     @PutMapping()
     public ResponseEntity<?> updateCartLine(@RequestBody CartLineRequest cartLineRequest){
-
         if(cartLineService.checkCartLineExistence(cartLineRequest.getId())){
             if(cartLineRequest.getQuantity() <0 )
                 return new ResponseEntity<>(new InvalidQuantity("Quanity can not be negative"),HttpStatus.NOT_FOUND);

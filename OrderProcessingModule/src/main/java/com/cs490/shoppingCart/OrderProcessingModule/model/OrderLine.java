@@ -15,14 +15,13 @@ public class OrderLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @OneToOne(cascade = CascadeType.ALL)
-    private Product product;
     private Integer quantity;
     private Double price;
+    private String productInfo;
 
-    public OrderLine(Product product, Integer quanitiy, Double price){
+    public OrderLine(String productInfo, Integer quanitiy, Double price){
 
-        this.product = product;
+        this.productInfo = productInfo;
         this.quantity = quantity;
         this.price = price;
     }

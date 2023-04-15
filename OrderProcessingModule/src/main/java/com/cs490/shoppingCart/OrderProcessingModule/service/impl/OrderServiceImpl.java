@@ -44,16 +44,14 @@ public class OrderServiceImpl implements OrderService {
         Set<CartLine> cartLines = shoppingCart.getCartLines();
             Order order = new Order();
             Set<OrderLine> orderLines = cartLines.stream().map(cartLine -> {
-                OrderLine orderLine =  new OrderLine(
-                    new Product(cartLine.getProduct().getName(),
-                            cartLine.getProduct().getCategory(),cartLine.getProduct().getDescription(),
-                            cartLine.getProduct().getPrice()), cartLine.getQuantity(),cartLine.getPrice());
-
+                OrderLine orderLine =  new OrderLine();
+                orderLine.setPrice(cartLine.getPrice());
+                orderLine.setQuantity(cartLine.getQuantity());
+                orderLine.setProductInfo(cartLine.getProductInfo());
                 return orderLine;
             }).collect(Collectors.toSet());
             order.setOrderLines(orderLines);
             order.setOrderDate(LocalDateTime.now());
-            //order not payed yet or pending order
             order.setOrderStatus(false);
             order.setUserId(shoppingCart.getUserId());
             order.setTotalPrice(shoppingCart.getTotalPrice());
@@ -80,6 +78,7 @@ public class OrderServiceImpl implements OrderService {
         shoppingCart.setUserId(tempUser.getId());
         return createOrder(shoppingCart);
     }
+
 
     @Override
     public List<Order> getOrdersForUser(int userId) {

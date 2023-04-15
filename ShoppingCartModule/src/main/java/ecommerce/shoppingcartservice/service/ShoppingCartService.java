@@ -1,6 +1,6 @@
 package ecommerce.shoppingcartservice.service;
 
-import ecommerce.shoppingcartservice.model.RequestModel;
+import ecommerce.shoppingcartservice.dto.RequestModel;
 import ecommerce.shoppingcartservice.model.ShoppingCart;
 
 public interface ShoppingCartService {

@@ -14,20 +14,9 @@ import java.util.Objects;
 public class CartLine {
 
     private Integer id;
-    private Product product;
+    private Integer productId;
     private Integer quantity;
     private Double price;
+    private String productInfo;
 
-    @Override
-    public boolean equals(Object obj){
-        if(obj instanceof CartLine){
-            CartLine cartLine = (CartLine) obj;
-            return cartLine.product.getId().equals(id);
-        }
-        return false;
-    }
-    @Override
-    public int hashCode(){
-        return Objects.hash(id);
-    }
 }

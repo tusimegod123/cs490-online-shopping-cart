@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class CartLineRequest {
 
     private Integer id;
-    private Integer productId;
     private Integer quantity;
     private Double productPrice;
+
 }

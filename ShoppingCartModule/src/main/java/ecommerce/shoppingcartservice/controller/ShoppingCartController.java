@@ -1,15 +1,12 @@
 package ecommerce.shoppingcartservice.controller;
 
-import ecommerce.shoppingcartservice.model.CartLine;
-import ecommerce.shoppingcartservice.model.RequestModel;
+import ecommerce.shoppingcartservice.dto.RequestModel;
 import ecommerce.shoppingcartservice.model.ShoppingCart;
 import ecommerce.shoppingcartservice.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
