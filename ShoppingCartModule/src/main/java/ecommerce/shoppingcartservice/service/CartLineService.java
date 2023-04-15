@@ -1,5 +1,6 @@
 package ecommerce.shoppingcartservice.service;
 
+import ecommerce.shoppingcartservice.dto.CartLineRequest;
 import ecommerce.shoppingcartservice.model.CartLine;
 
 public interface CartLineService {
@@ -8,5 +9,5 @@ public interface CartLineService {
 
     public boolean checkCartLineExistence(Integer cartId);
 
-    CartLine updateCartLine(CartLine cartLine);
+    CartLine updateCartLine(CartLineRequest cartLineRequest);
 }

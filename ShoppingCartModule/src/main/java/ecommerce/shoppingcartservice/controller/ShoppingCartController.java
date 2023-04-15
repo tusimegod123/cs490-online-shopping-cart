@@ -37,11 +37,11 @@ public class ShoppingCartController {
     public ResponseEntity<?> checkOut(@PathVariable int cartId
             //, @RequestBody ShoppingCart shoppingCart
                                       ){
-        //if(shoppingCartService.checkCartExistForUser(cartId)){
-            shoppingCartService.checkOut(cartId);
-            return new ResponseEntity<>(HttpStatus.OK);
-        //}
-        //return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if(shoppingCartService.checkCartExistance(cartId)){
+            ShoppingCart shoppingCart = shoppingCartService.checkOut(cartId);
+            return new ResponseEntity<>(shoppingCart,HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 

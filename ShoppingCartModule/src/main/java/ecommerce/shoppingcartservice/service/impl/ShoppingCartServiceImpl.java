@@ -5,7 +5,6 @@ import ecommerce.shoppingcartservice.model.Product;
 import ecommerce.shoppingcartservice.model.RequestModel;
 import ecommerce.shoppingcartservice.model.ShoppingCart;
 import ecommerce.shoppingcartservice.repository.CartLineRepository;
-import ecommerce.shoppingcartservice.repository.ProductRepository;
 import ecommerce.shoppingcartservice.repository.ShoppingCartRepository;
 import ecommerce.shoppingcartservice.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Autowired
     private CartLineRepository cartLineRepository;
-    @Autowired
-    private ProductRepository productRepository;
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -37,47 +35,51 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCart addToCart(RequestModel requestModel) {
 
-        if(checkCartExistForUserAndStatusFalse(requestModel.getAccountId())){
-            ShoppingCart shoppingCart = getCartItems(requestModel.getAccountId());
+        if(checkCartExistForUserAndStatusFalse(requestModel.getUserId())){
+            ShoppingCart shoppingCart = getCartItems(requestModel.getUserId());
 
-            Optional<CartLine> cartLineEx = shoppingCart.getCartLines().stream().filter(cartLine -> cartLine.getProduct().getId().equals(
+            Optional<CartLine> cartLineEx = shoppingCart.getCartLines().stream().filter(cartLine -> cartLine.getProductId().compareTo(
                     //requestModel.getProductId()) && shoppingCart.getCartStatus() == false ).findAny();
-                     requestModel.getProduct().getId())).findAny();
+                     requestModel.getProduct().getId()) == 0 ).findAny();
             if(cartLineEx.isPresent()){
                 CartLine cartLineExisting = cartLineEx.get();
                 cartLineExisting.setQuantity(cartLineExisting.getQuantity()+ requestModel.getQuantity());
+                cartLineExisting.setPrice(requestModel.getProduct().getPrice() * cartLineExisting.getQuantity());
                 Set<CartLine> cartLineSet = new HashSet<>(shoppingCart.getCartLines());
                 cartLineSet.add(cartLineExisting);
                 shoppingCart.setCartLines(cartLineSet);
+                shoppingCart.setTotalPrice(cartLineSet.stream().map(cartLine1 -> cartLine1.getPrice()).reduce(0.0,Double::sum));
                 return shoppingCartRepository.save(shoppingCart);
 
             }else{
 
                 CartLine cartLine = new CartLine();
                 cartLine.setQuantity(requestModel.getQuantity());
-                cartLine.setProduct(requestModel.getProduct());
+                cartLine.setProductId(requestModel.getProduct().getId());
+                cartLine.setPrice(requestModel.getProduct().getPrice() * requestModel.getQuantity());
                         //productRepository.findById(requestModel.getProduct());
                 Set<CartLine> existingLines = new HashSet<>(shoppingCart.getCartLines());
                 existingLines.add(cartLine);
                 shoppingCart.setCartLines(existingLines);
+                shoppingCart.setTotalPrice(existingLines.stream().map(cartLine1 -> cartLine1.getPrice()).reduce(0.0,Double::sum));
                 return shoppingCartRepository.save(shoppingCart);
+
 
             }
         }else {
             ShoppingCart shoppingCart =  new ShoppingCart();
             CartLine cartLine = new CartLine();
-
-            Product product = requestModel.getProduct();
-                    //productRepository.findById(requestModel.getProduct()).get();
-            cartLine.setProduct(product);
+            cartLine.setProductId(requestModel.getProduct().getId());
             cartLine.setQuantity(requestModel.getQuantity());
-            cartLine.setPrice(requestModel.getQuantity() * product.getPrice());
+            cartLine.setPrice(requestModel.getProduct().getPrice() * requestModel.getQuantity());
+            Product product = new Product();
+            cartLine.setPrice(requestModel.getQuantity() * requestModel.getProduct().getPrice());
             Set<CartLine> cartLines =  new HashSet<>();
             cartLines.add(cartLine);
             shoppingCart.setCartLines(cartLines);
             shoppingCart.setCartStatus(false);
             shoppingCart.setCartDate(LocalDateTime.now());
-            shoppingCart.setUserId(requestModel.getAccountId());
+            shoppingCart.setUserId(requestModel.getUserId());
             shoppingCart.setTotalPrice(cartLines.stream().map(cartLine1 -> cartLine1.getPrice()).reduce(0.0,Double::sum));
             return shoppingCartRepository.save(shoppingCart);
             //shoppingCart.setCreatedDate(LocalDate.now());
@@ -99,11 +101,20 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public void checkOut(int cartId) {
+    public ShoppingCart checkOut(int cartId) {
         ShoppingCart shoppingCart = shoppingCartRepository.findById(cartId).get();
         shoppingCart.setCartStatus(true);
-        shoppingCartRepository.save(shoppingCart);
+        return shoppingCartRepository.save(shoppingCart);
        // restTemplate.postForLocation("/url to be updated here ",shoppingCart);
+    }
+
+    @Override
+    public boolean checkCartExistance(int cartId) {
+        if(shoppingCartRepository.existsById(cartId)){
+            boolean cartExist = shoppingCartRepository.findById(cartId).get().getCartStatus();
+            return !cartExist;
+        }
+        return false;
     }
 
 

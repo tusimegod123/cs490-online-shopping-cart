@@ -1,22 +1,20 @@
-package ecommerce.shoppingcartservice.model;
+package com.cs490.shoppingCart.OrderProcessingModule.model.valueobjects;
 
-import jakarta.persistence.*;
+import com.cs490.shoppingCart.OrderProcessingModule.model.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-@Entity
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "cartline")
 public class CartLine {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer id;
-    private Integer productId;
+    private Product product;
     private Integer quantity;
     private Double price;
 
@@ -24,7 +22,7 @@ public class CartLine {
     public boolean equals(Object obj){
         if(obj instanceof CartLine){
             CartLine cartLine = (CartLine) obj;
-            return cartLine.productId.equals(id);
+            return cartLine.product.getId().equals(id);
         }
         return false;
     }

@@ -1,27 +1,31 @@
-package ecommerce.shoppingcartservice.service.impl;
+package com.cs490.shoppingCart.OrderProcessingModule.service.impl;
 
-import ecommerce.shoppingcartservice.dto.CartLineRequest;
-import ecommerce.shoppingcartservice.model.CartLine;
-import ecommerce.shoppingcartservice.model.ShoppingCart;
-import ecommerce.shoppingcartservice.repository.CartLineRepository;
-import ecommerce.shoppingcartservice.repository.ShoppingCartRepository;
-import ecommerce.shoppingcartservice.service.CartLineService;
-import ecommerce.shoppingcartservice.service.ShoppingCartService;
+import com.cs490.shoppingCart.OrderProcessingModule.model.OrderLine;
+import com.cs490.shoppingCart.OrderProcessingModule.repository.OrderLineRepository;
+import com.cs490.shoppingCart.OrderProcessingModule.repository.OrderRepository;
+
+import com.cs490.shoppingCart.OrderProcessingModule.repository.ProductRepository;
+import com.cs490.shoppingCart.OrderProcessingModule.service.OrderLineService;
+import com.cs490.shoppingCart.OrderProcessingModule.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sound.sampled.Line;
+
 @Service
-public class CartLineServiceImpl implements CartLineService {
+public class OrderLineServiceImpl implements OrderLineService {
 
     @Autowired
-    CartLineRepository cartLineRepository;
+    OrderLineRepository cartLineRepository;
 
     @Autowired
-    ShoppingCartRepository shoppingCartRepository;
-
+    OrderRepository shoppingCartRepository;
 
     @Autowired
-    ShoppingCartService shoppingCartService;
+    ProductRepository productRepository;
+
+    @Autowired
+    OrderService orderService;
 
     @Override
     public void removeCartLine(int cartId) {
@@ -34,15 +38,10 @@ public class CartLineServiceImpl implements CartLineService {
     }
 
     @Override
-    public CartLine updateCartLine(CartLineRequest cartLineRequest) {
-
-        CartLine existingCartLine = cartLineRepository.findById(cartLineRequest.getId()).get();
-        existingCartLine.setQuantity(cartLineRequest.getQuantity());
-        ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByCartLinesId(cartLineRequest.getId()).get();
-        shoppingCart.setTotalPrice((shoppingCart.getTotalPrice() - existingCartLine.getPrice()) +cartLineRequest.getProductPrice() * cartLineRequest.getQuantity());
-        existingCartLine.setPrice(cartLineRequest.getProductPrice() * cartLineRequest.getQuantity());
-        shoppingCartRepository.save(shoppingCart);
-        return cartLineRepository.save(existingCartLine);
+    public OrderLine updateCartLine(OrderLine cartLine) {
+        OrderLine existingOrderLine = cartLineRepository.findById(cartLine.getId()).get();
+        existingOrderLine.setQuantity(cartLine.getQuantity());
+        return cartLineRepository.save(existingOrderLine);
     }
 
 //    @Override
