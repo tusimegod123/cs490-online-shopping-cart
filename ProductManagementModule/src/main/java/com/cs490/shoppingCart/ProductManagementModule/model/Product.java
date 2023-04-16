@@ -1,9 +1,6 @@
 package com.cs490.shoppingCart.ProductManagementModule.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,13 +14,15 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
     private String productName;
-    private Double price;
-    private int amount;
     private String description;
+    private Double price;
+    private Double itemCost;
+    private Integer quantity;
     private String imageUrl;
     private Boolean verified;
-
-    private Long userId;
-    private Long categoryId;
+    private Long vendorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 }
