@@ -4,9 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 @Data
 @AllArgsConstructor
@@ -18,7 +17,8 @@ public class Product {
     private Long productId;
     private String productName;
     private Double price;
-    private int amount;
+    private Integer qty;
+    private Double itemCost;
     private String description;
     private String imageUrl;
     private Boolean verified;

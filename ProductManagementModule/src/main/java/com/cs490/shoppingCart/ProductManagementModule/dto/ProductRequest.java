@@ -6,11 +6,11 @@ import lombok.Data;
 public class ProductRequest {
     private String productName;
     private Double price;
-    private int amount;
+    private Integer qty;
+    private Double itemCost;
     private String description;
     private String imageUrl;
     private Boolean verified;
-
     private Long userId;
     private Long categoryId;
 }

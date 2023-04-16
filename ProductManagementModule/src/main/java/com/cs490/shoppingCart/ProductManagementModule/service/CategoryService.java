@@ -1,7 +1,9 @@
 package com.cs490.shoppingCart.ProductManagementModule.service;
 
+import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
+import com.cs490.shoppingCart.ProductManagementModule.mapper.CategoryMapper;
 import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,10 @@ public class CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
+
 
     public Category createCategory(Category category){
 
@@ -39,12 +45,14 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Category getCategoryById(Long id) throws ItemNotFoundException {
+    public CategoryResponse getCategoryById(Long id) throws ItemNotFoundException {
 
         Optional<Category> category = categoryRepository.findById(id);
 
         if (category.isPresent()) {
-            return category.get();
+            Category categoryResult = category.get();
+            CategoryResponse categoryResponse = categoryMapper.fromCategoryResponseToDomain(categoryResult);
+            return categoryResponse;
         } else {
             throw new ItemNotFoundException("No category found with id: " +id);
         }

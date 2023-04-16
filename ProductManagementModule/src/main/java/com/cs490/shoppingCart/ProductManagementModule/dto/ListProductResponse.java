@@ -10,7 +10,6 @@ public class ListProductResponse {
     private Long productId;
     private String productName;
     private Double price;
-    private int amount;
     private String description;
     private String imageUrl;
     private Boolean verified;
