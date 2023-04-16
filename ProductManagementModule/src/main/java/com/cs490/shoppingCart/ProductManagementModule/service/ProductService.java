@@ -10,9 +10,11 @@ import com.cs490.shoppingCart.ProductManagementModule.mapper.ProductMapper;
 import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
 import com.cs490.shoppingCart.ProductManagementModule.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,12 @@ public class ProductService {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${user.endpoint}")
+    private String userEndpoint;
 
     public ProductService(ProductRepository productRepository,
                           ProductMapper productMapper) {
