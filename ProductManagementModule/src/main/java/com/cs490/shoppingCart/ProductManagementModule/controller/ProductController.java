@@ -16,6 +16,7 @@ public class ProductController {
     private final ProductService productService;
 
     public ProductController(ProductService productService) {
+
         this.productService = productService;
     }
 
@@ -26,8 +27,26 @@ public class ProductController {
 
         return productResponse;
     }
-    @GetMapping("/verified")
-    public List<Product> productList(){
-        return productService.allProducts();
+//    @GetMapping("/verified")
+//    public List<Product> productList(){
+//
+//        return productService.allProducts();
+//    }
+
+    @GetMapping
+    public List<ProductResponse> getAllProduct() throws ItemNotFoundException {
+
+        List<ProductResponse> products= productService.allProducts();
+
+        return products;
     }
+
+    @GetMapping("/{id}")
+    public ProductResponse getProductById(@PathVariable Long id) throws ItemNotFoundException {
+
+        ProductResponse productResponse  = productService.getProductById(id);
+        return productResponse;
+    }
+
+
 }

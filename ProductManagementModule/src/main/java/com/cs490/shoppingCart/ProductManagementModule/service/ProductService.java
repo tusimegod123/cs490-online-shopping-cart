@@ -10,7 +10,9 @@ import com.cs490.shoppingCart.ProductManagementModule.repository.ProductReposito
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -48,16 +50,49 @@ public class ProductService {
         Product productToBeModified = productRepository.findById(productId).get();
         return productRepository.save(productToBeModified);
     }
-    public List<Product> allProducts(){
-        return productRepository.findAll();
-    }
-    public List<Product> verifiedProducts(){
+    public List<ProductResponse> allProducts() throws ItemNotFoundException {
+
         List<Product> products = productRepository.findAll();
-        for (Product product: allProducts()) {
-            if (product.getVerified()== true){
-                products.add(product);
-            }
+        List<ProductResponse> productResponses = new ArrayList<>();
+
+        for(int i = 0; i<products.size(); i++){
+
+            // Retrieve category detail from DB
+            Product product = products.get(i);
+            Long categoryId = product.getCategoryId();
+            String categoryName = categoryService.getCategoryById(categoryId).getName();
+            String categoryDescription = categoryService.getCategoryById(categoryId).getDescription();
+
+            Category category = new Category();
+            category.setCategoryId(categoryId);
+            category.setName(categoryName);
+            category.setDescription(categoryDescription);
+
+            ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(product);
+            productResponse.setCategory(category);
+            productResponses.add(productMapper.fromGetAllProductResponseToDomain(productResponse));
         }
-        return products;
+        return productResponses;
+    }
+//    public List<Product> verifiedProducts(){
+//        List<Product> products = productRepository.findAll();
+//        for (Product product: allProducts()) {
+//            if (product.getVerified()== true){
+//                products.add(product);
+//            }
+//        }
+//        return products;
+//    }
+
+    public ProductResponse getProductById(Long id) throws ItemNotFoundException {
+
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            Product productResult = product.get();
+            ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productResult);
+            return productResponse;
+        } else {
+            throw new ItemNotFoundException("No product found with id: " +id);
+        }
     }
 }

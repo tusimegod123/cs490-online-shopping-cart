@@ -14,4 +14,7 @@ public interface ProductMapper {
     Product fromCreateProductRequestToDomain(ProductRequest productRequest);
 
     ProductResponse fromCreateProductResponseToDomain(Product product);
+
+    ProductResponse fromGetAllProductResponseToDomain(ProductResponse productResponse);
+
 }
