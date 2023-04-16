@@ -26,7 +26,7 @@ public class CategoryService {
 
         return categoryRepository.save(category);
     }
-    public Category updateCategory(Category category, Long categoryId) throws ItemNotFoundException, IdNotMatchException {
+    public CategoryResponse updateCategory(Category category, Long categoryId) throws ItemNotFoundException, IdNotMatchException {
 
         Optional<Category> categoryToBeModified = categoryRepository.findById(categoryId);
 
@@ -38,7 +38,10 @@ public class CategoryService {
            throw new IdNotMatchException("Not match id from url with input id");
         }
 
-        return categoryRepository.save(category);
+        Category categoryUpdated = categoryRepository.save(category);
+        CategoryResponse categoryResponse = categoryMapper.fromCategoryResponseToDomain(categoryUpdated);
+
+        return categoryResponse;
     }
     public List<Category> getAllCategories(){
 

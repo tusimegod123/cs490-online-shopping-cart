@@ -49,19 +49,20 @@ public class CategoryController {
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateCategoryById(@PathVariable Long id, @RequestBody Category category) throws IdNotMatchException, ItemNotFoundException {
 
+        CategoryResponse categoryResponse;
         try {
-            categoryService.updateCategory(category,id);
+            categoryResponse = categoryService.updateCategory(category,id);
         } catch (ItemNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IdNotMatchException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-        return new  ResponseEntity<>("Category with id " + id + " is successfully updated", HttpStatus.OK);
+        return new  ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
 
     @DeleteMapping({"/{id}"})
-    public ResponseEntity<String> deleteCategoryById(@PathVariable Long id) throws ItemNotFoundException {
+    public ResponseEntity<String> deleteCategoryById(@PathVariable Long id) {
 
         boolean isDelete = categoryService.deleteCategoryById(id);
 
