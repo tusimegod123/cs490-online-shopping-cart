@@ -102,14 +102,15 @@ public class ProductService {
     public ProductResponse getProductById(Long id) throws ItemNotFoundException {
 
         Optional<Product> product = productRepository.findById(id);
+
         if (product.isPresent()) {
 
             Product productResult = product.get();
 
             Long categoryId = productResult.getCategoryId();
-            String categoryName = categoryService.getCategoryById(categoryId).getName();
-            String categoryDescription = categoryService.getCategoryById(categoryId).getDescription();
-            Category category = new Category(categoryId, categoryName, categoryDescription);
+            Category category = categoryRepository.findById(categoryId).orElseThrow(()-> {
+                return new ItemNotFoundException("No category found");
+            });
 
             ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productResult);
             productResponse.setCategory(category);
