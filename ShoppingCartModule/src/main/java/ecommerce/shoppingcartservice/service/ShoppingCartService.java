@@ -1,6 +1,6 @@
 package ecommerce.shoppingcartservice.service;
 
-import ecommerce.shoppingcartservice.model.RequestModel;
+import ecommerce.shoppingcartservice.dto.RequestModel;
 import ecommerce.shoppingcartservice.model.ShoppingCart;
 
 public interface ShoppingCartService {
@@ -14,5 +14,7 @@ public interface ShoppingCartService {
 
     boolean checkCartExistForUser(Integer id);
 
-    void checkOut(int id);
+    ShoppingCart checkOut(int id);
+
+    boolean checkCartExistance(int cartId);
 }

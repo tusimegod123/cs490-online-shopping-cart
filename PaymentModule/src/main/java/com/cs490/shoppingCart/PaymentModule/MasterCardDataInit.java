@@ -30,11 +30,14 @@ public class MasterCardDataInit implements CommandLineRunner {
 
     public void init() {
 
-        Date currentDate = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentDate);
-        calendar.add(Calendar.YEAR, 2);
-        Date expiryDate = calendar.getTime();
+//        LocalDate currentDate = new Date();
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(currentDate);
+//        calendar.add(Calendar.YEAR, 2);
+//        Date expiryDate = calendar.getTime();
+
+        LocalDate currentDate = LocalDate.now();
+        LocalDate expiryDate = currentDate.plusYears(2);
 
         MasterCard mCardOne = new MasterCard(null,"5567567867897890", "Nqobane", "328", 8000.0, 9000.0, expiryDate, true);
         MasterCard mCardTwo = new MasterCard(null,"5567567867897891", "Selam", "344", 8000.0, 9000.0, expiryDate, true);

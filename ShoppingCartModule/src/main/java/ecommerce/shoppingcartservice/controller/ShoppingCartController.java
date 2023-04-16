@@ -1,15 +1,12 @@
 package ecommerce.shoppingcartservice.controller;
 
-import ecommerce.shoppingcartservice.model.CartLine;
-import ecommerce.shoppingcartservice.model.RequestModel;
+import ecommerce.shoppingcartservice.dto.RequestModel;
 import ecommerce.shoppingcartservice.model.ShoppingCart;
 import ecommerce.shoppingcartservice.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
@@ -37,11 +34,11 @@ public class ShoppingCartController {
     public ResponseEntity<?> checkOut(@PathVariable int cartId
             //, @RequestBody ShoppingCart shoppingCart
                                       ){
-        //if(shoppingCartService.checkCartExistForUser(cartId)){
-            shoppingCartService.checkOut(cartId);
-            return new ResponseEntity<>(HttpStatus.OK);
-        //}
-        //return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if(shoppingCartService.checkCartExistance(cartId)){
+            ShoppingCart shoppingCart = shoppingCartService.checkOut(cartId);
+            return new ResponseEntity<>(shoppingCart,HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 

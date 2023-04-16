@@ -1,5 +1,7 @@
 package ecommerce.shoppingcartservice.controller;
 
+import ecommerce.shoppingcartservice.dto.CartLineRequest;
+import ecommerce.shoppingcartservice.exception.InvalidQuantity;
 import ecommerce.shoppingcartservice.model.CartLine;
 import ecommerce.shoppingcartservice.service.CartLineService;
 import ecommerce.shoppingcartservice.service.ShoppingCartService;
@@ -26,9 +28,11 @@ public class CartLineController {
     }
 
     @PutMapping()
-    public ResponseEntity<CartLine> updateCartLine(@RequestBody CartLine cartLine){
-        if(cartLineService.checkCartLineExistence(cartLine.getId())){
-            CartLine cartLine1 = cartLineService.updateCartLine(cartLine);
+    public ResponseEntity<?> updateCartLine(@RequestBody CartLineRequest cartLineRequest){
+        if(cartLineService.checkCartLineExistence(cartLineRequest.getId())){
+            if(cartLineRequest.getQuantity() <0 )
+                return new ResponseEntity<>(new InvalidQuantity("Quanity can not be negative"),HttpStatus.NOT_FOUND);
+            CartLine cartLine1 = cartLineService.updateCartLine(cartLineRequest);
             return new ResponseEntity<>(cartLine1,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

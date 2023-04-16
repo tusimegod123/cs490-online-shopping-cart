@@ -18,5 +18,12 @@ public class Product {
     private Long productId;
     private String productName;
     private Double price;
+    private int amount;
+    private String description;
+    private String imageUrl;
     private Boolean verified;
+
+    private Long userId;
+    private Long categoryId;
+
 }

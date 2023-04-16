@@ -1,10 +1,10 @@
 package com.cs490.shoppingCart.PaymentModule.service.imp;
 
-import com.cs490.shoppingCart.PaymentModule.DTO.CardDetailDTO;
+import com.cs490.shoppingCart.PaymentModule.DTO.BankResponse;
+import com.cs490.shoppingCart.PaymentModule.DTO.CardDetail;
+import com.cs490.shoppingCart.PaymentModule.DTO.PaymentType;
 import com.cs490.shoppingCart.PaymentModule.model.MasterCard;
 import com.cs490.shoppingCart.PaymentModule.model.VisaCard;
-import com.cs490.shoppingCart.PaymentModule.repository.MasterCardRepository;
-import com.cs490.shoppingCart.PaymentModule.repository.VisaCardRepository;
 import com.cs490.shoppingCart.PaymentModule.service.BankService;
 import com.cs490.shoppingCart.PaymentModule.service.MasterCardService;
 import com.cs490.shoppingCart.PaymentModule.service.VisaCardService;
@@ -21,18 +21,23 @@ public class BankServiceImp implements BankService {
     private MasterCardService masterCardService;
 
     @Override
-    public Double processCard(CardDetailDTO cardDetail) {
-        Double currentBalance = 0.0;
+    public BankResponse processCard(CardDetail cardDetail) {
+        BankResponse response = new BankResponse();
 
-        if(cardDetail.getCardNumber().charAt(0) == 5){
+        if(cardDetail.getCardNumber().charAt(0) == '5'){
             MasterCard card = masterCardService.getMasterDetail(cardDetail);
-            currentBalance = card.getCardValue();
-        } else if(cardDetail.getCardNumber().charAt(0) == 4){
+            System.out.println(card);
+
+            response.setPaymentType(PaymentType.MASTER);
+            response.setCurrentBalance(card.getCardValue());
+        } else if(cardDetail.getCardNumber().charAt(0) == '4'){
             VisaCard card = visaCardService.getVisaDetail(cardDetail);
-            currentBalance = card.getCardValue();
+
+            response.setPaymentType(PaymentType.VISA);
+            response.setCurrentBalance(card.getCardValue());
         }
 
-        return currentBalance;
+        return response;
     }
 
 
