@@ -10,5 +10,6 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
     List<Transaction> findTransactionsByUserId(Integer id);
     Transaction findTransactionByOrderId(Integer id);
-    Transaction findTransactionsByCardNumberOrderByTransactionDate(String cardNumber);
+    Transaction findFirstByCardNumberOrderByIdDesc(String cardNumber);
+
 }

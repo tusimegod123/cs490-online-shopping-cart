@@ -1,9 +1,6 @@
 package com.cs490.shoppingCart.PaymentModule.service.imp;
 
-import com.cs490.shoppingCart.PaymentModule.DTO.BankResponse;
-import com.cs490.shoppingCart.PaymentModule.DTO.PaymentRequest;
-import com.cs490.shoppingCart.PaymentModule.DTO.PaymentType;
-import com.cs490.shoppingCart.PaymentModule.DTO.RegistrationPayment;
+import com.cs490.shoppingCart.PaymentModule.DTO.*;
 import com.cs490.shoppingCart.PaymentModule.model.Transaction;
 import com.cs490.shoppingCart.PaymentModule.model.TransactionStatus;
 import com.cs490.shoppingCart.PaymentModule.model.TransactionType;
@@ -30,53 +27,56 @@ public class PaymentServiceImp implements PaymentService {
         if(!request.getCardNumber().isEmpty()){
 
             //check if user & order or only order exists
+            //call user service & order service
 
             char cardStartWith = request.getCardNumber().charAt(0);
-//            System.out.println(re);
+
             if(request.getCardNumber().length() == 16 && (cardStartWith == '4' || cardStartWith == '5')){
 
-                Transaction lastTransaction = transactionRepository.findTransactionsByCardNumberOrderByTransactionDate(request.getCardNumber());
-                Double currentBalance = lastTransaction.getCardBalance();
-                PaymentType type = lastTransaction.getPaymentType();
-
-                if(lastTransaction.getCardNumber().isEmpty()){
-                    BankResponse response = bankService.processCard(request.getCardDetail());
-                    currentBalance = response.getCurrentBalance();
-                    type = response.getPaymentType();
-                }
+                BankResponse response = getLastTransaction(request.getCardDetail());
 
                 Transaction newTransaction = new Transaction();
-
                 newTransaction.setUserId(request.getUserId());
                 newTransaction.setOrderId(request.getOrderId());
                 newTransaction.setCardNumber(request.getCardNumber());
-                newTransaction.setCardBalance(currentBalance);
+                newTransaction.setCardBalance(response.getCurrentBalance());
                 newTransaction.setTransactionValue(request.getAmount());
                 newTransaction.setTransactionNumber(this.generateTransactionNo());
                 newTransaction.setTransactionDate(new Date());
-                newTransaction.setPaymentType(type);
+                newTransaction.setPaymentType(response.getPaymentType());
                 newTransaction.setTransactionType(TransactionType.OrderPayment);
 
-                if(currentBalance >= request.getAmount()){
-                    //add transaction with TS
-                    //call notification service
-                    //call profit sharing service
+                if(response.getCurrentBalance() >= request.getAmount()){
+                    //add transaction with TS - Done
+
+                    //rest call notification service
+                    //rest call profit sharing service
+
+                    NotificationRequest notificationRequest = new NotificationRequest();
+                    notificationRequest.setFromSystemType(0);
+                    notificationRequest.setOrderId(request.getOrderId());
+
+                    //String response = restTemplate.postForObject("http://notification-service:8084/", notificationRequest, String.class);
+                    // what response should I expect?
 
                     newTransaction.setTransactionStatus(TransactionStatus.TS);
-                    newTransaction.setCardBalance(currentBalance - request.getAmount());
+                    newTransaction.setCardBalance(response.getCurrentBalance() - request.getAmount());
                     transactionRepository.save(newTransaction);
                     return TransactionStatus.TS;
 
                 } else {
-                    //add transaction with TF
+                    //add transaction with TF - Done
                     newTransaction.setTransactionStatus(TransactionStatus.TF);
                     transactionRepository.save(newTransaction);
                     return TransactionStatus.TF;
                 }
             }
+
+            throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only!");
+
         }
 
-        throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only!");
+        throw new Exception("Payment information is not provided!");
     }
 
     @Override
@@ -84,37 +84,37 @@ public class PaymentServiceImp implements PaymentService {
         if(!request.getCardNumber().isEmpty()){
 
             //check if user exists
+            //call user service
+            //Boolean userExist = restTemplate.getForObject("http://user-service:9091/users/getById/" + request.getUserId(), Boolean.class);
 
             char cardStartWith = request.getCardNumber().charAt(0);
 
             if(request.getCardNumber().length() == 16 && (cardStartWith == '4' || cardStartWith == '5')){
-                Transaction lastTransaction = transactionRepository.findTransactionsByCardNumberOrderByTransactionDate(request.getCardNumber());
-                Double currentBalance = lastTransaction.getCardBalance();
-                PaymentType type = lastTransaction.getPaymentType();
-
-                if(lastTransaction.getCardNumber().isEmpty()){
-                    BankResponse response = bankService.processCard(request.getCardDetail());
-                    currentBalance = response.getCurrentBalance();
-                    type = response.getPaymentType();
-                }
+                BankResponse response = getLastTransaction(request.getCardDetail());
 
                 Transaction newTransaction = new Transaction();
-
                 newTransaction.setUserId(request.getUserId());
                 newTransaction.setCardNumber(request.getCardNumber());
-                newTransaction.setCardBalance(currentBalance);
+                newTransaction.setCardBalance(response.getCurrentBalance());
                 newTransaction.setTransactionValue(request.getAmount());
                 newTransaction.setTransactionNumber(this.generateTransactionNo());
                 newTransaction.setTransactionDate(new Date());
-                newTransaction.setPaymentType(type);
+                newTransaction.setPaymentType(response.getPaymentType());
                 newTransaction.setTransactionType(TransactionType.RegistrationFee);
 
-                if(currentBalance >= request.getAmount()){
+                if(response.getCurrentBalance() >= request.getAmount()){
                     //call notification service
                     //call user service - update user status
 
+                    NotificationRequest notificationRequest = new NotificationRequest();
+                    notificationRequest.setFromSystemType(0);
+                    notificationRequest.setOrderId(request.getUserId());
+
+                    //String response = restTemplate.postForObject("http://notification-service:8084/", notificationRequest, String.class);
+                    // what response should I expect?
+
                     newTransaction.setTransactionStatus(TransactionStatus.TS);
-                    newTransaction.setCardBalance(currentBalance - request.getAmount());
+                    newTransaction.setCardBalance(response.getCurrentBalance() - request.getAmount());
                     transactionRepository.save(newTransaction);
                     return TransactionStatus.TS;
 
@@ -125,9 +125,11 @@ public class PaymentServiceImp implements PaymentService {
                     return TransactionStatus.TF;
                 }
             }
+
+            throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only!");
         }
 
-        throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only!");
+        throw new Exception("Payment information is not provided!");
 
     }
 
@@ -138,6 +140,22 @@ public class PaymentServiceImp implements PaymentService {
         String datetime = ft.format(dNow);
 
         return "TRNX-" + datetime;
+    }
+
+    private BankResponse getLastTransaction(CardDetail cardDetail) throws Exception {
+        BankResponse response = new BankResponse();
+        System.out.println(cardDetail.getCardNumber());
+
+        Transaction lastTransaction = transactionRepository.findFirstByCardNumberOrderByIdDesc(cardDetail.getCardNumber());
+
+        if(lastTransaction == null){
+            response = bankService.processCard(cardDetail);
+        } else {
+            response.setCurrentBalance(lastTransaction.getCardBalance());
+            response.setPaymentType(lastTransaction.getPaymentType());
+        }
+
+        return response;
     }
 
     @Override
