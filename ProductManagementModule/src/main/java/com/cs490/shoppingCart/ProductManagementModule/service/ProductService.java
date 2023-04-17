@@ -9,16 +9,17 @@ import com.cs490.shoppingCart.ProductManagementModule.mapper.CategoryMapper;
 import com.cs490.shoppingCart.ProductManagementModule.mapper.ProductMapper;
 import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
+import com.cs490.shoppingCart.ProductManagementModule.repository.CategoryRepository;
 import com.cs490.shoppingCart.ProductManagementModule.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -33,10 +34,13 @@ public class ProductService {
     private CategoryService categoryService;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${user.endpoint}")
-    private String userEndpoint;
+    @Value("${userServiceUrl}")
+    private String userServiceUrl;
 
     public ProductService(ProductRepository productRepository,
                           ProductMapper productMapper) {
@@ -46,7 +50,10 @@ public class ProductService {
 
     public ProductResponse createProduct(ProductRequest productRequest) throws ItemNotFoundException {
         Product product = productMapper.fromCreateProductRequestToDomain(productRequest);
-//        product.setVerified(false);
+        product.setVerified(false);
+
+        // Call the user service to get the user object
+//        User user = restTemplate.getForObject(userServiceUrl + "/users/{userId}", User.class, "userId");
 
         // Get id from input
         Long categoryId = productRequest.getCategoryId();
@@ -70,22 +77,29 @@ public class ProductService {
 
         List<Product> products = productRepository.findAll();
         List<ProductResponse> productResponses = new ArrayList<>();
+        Set<Long> categoryIds = products.stream().map(p -> p.getCategoryId()).collect(Collectors.toSet());
 
-        for(int i = 0; i<products.size(); i++){
+        HashMap<Long, Category> categoryHashMap = getCategoryMap(categoryIds);
 
-            // Retrieve category detail from DB
-            Product product = products.get(i);
-            Long categoryId = product.getCategoryId();
-            String categoryName = categoryService.getCategoryById(categoryId).getName();
-            String categoryDescription = categoryService.getCategoryById(categoryId).getDescription();
-
-            Category category = new Category(categoryId, categoryName, categoryDescription);
-
+        for (Product product : products) {
+            Category category = categoryHashMap.get(product.getCategoryId());
             ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(product);
             productResponse.setCategory(category);
             productResponses.add(productMapper.fromGetAllProductResponseToDomain(productResponse));
         }
         return productResponses;
+    }
+
+    private HashMap<Long, Category> getCategoryMap(Set<Long> categoryIds) {
+
+        List<Category> categoryList = categoryRepository.findAllById(categoryIds);
+        HashMap<Long, Category> categoryMap = new HashMap<>();
+
+        for (Category category : categoryList) {
+            categoryMap.put(category.getCategoryId(), category);
+        }
+
+        return categoryMap;
     }
 //    public List<Product> verifiedProducts(){
 //        List<Product> products = productRepository.findAll();
