@@ -16,11 +16,10 @@ spec:
     spec:
       containers:
         - name: shopping-cart-api-gateway-app
-          image: tusimegodwin256/shopping-cart-api-gateway-module:shopping-cart-api-gateway
+          image: tusimegodwin256/shopping-cart-api-gateway
           imagePullPolicy: Always
           ports:
             - containerPort: 9090
-
 ---
 apiVersion: v1
 kind: Service
@@ -34,5 +33,25 @@ spec:
       protocol: TCP
   selector:
     app: shopping-cart-api-gateway-app
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shopping-cart-api-gateway-config
+data:
+  application.properties: |-
+    spring.application.name=shopping-cart-api-gateway
+    eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/
+    eureka.instance.nonSecurePort=8761
+    eureka.instance.hostname=$(POD_IP)
+    eureka.instance.preferIpAddress=true
+
+# eureka:
+#     client:
+#         service-url:
+#             defaultZone: http://eureka:8761/eureka
+#         fetch-registry: true
+#         register-with-eureka: true
+#         enabled: false
 
 #kubectl create secret docker-registry shopping-cart-secrete --docker-server=https://registry.hub.docker.com --docker-username=tusimegodwin256 --docker-password=goldleftme

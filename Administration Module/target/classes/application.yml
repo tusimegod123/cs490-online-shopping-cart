@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST}/${DATABASE_NAME}?useSSL=false&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME}
-    password: ${MYSQL_ROOT_PASSWORD}
+    url: jdbc:mysql://${DB_HOST:localhost}/${DATABASE_NAME:cs490-swe-2023-administrator}?useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${MYSQL_ROOT_PASSWORD:gold}
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     generate-ddl: true
@@ -19,7 +19,10 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone : http://localhost:8761/eureka/
+      # For running locally
+      defaultZone: http://localhost:8761/eureka/
+      # For running in Docker
+#       defaultZone: http://eureka:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
   instance:

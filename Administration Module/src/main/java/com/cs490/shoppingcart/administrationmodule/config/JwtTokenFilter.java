@@ -30,8 +30,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtTokenFilter extends OncePerRequestFilter{
     private final JwtService jwtUtil;
 
-    @Value("${SECRET}")
-    public   String SECRET;
+//clear
+
+    public  final  String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+
     public JwtTokenFilter(JwtService jwtUtil) {
         this.jwtUtil = jwtUtil;
     }

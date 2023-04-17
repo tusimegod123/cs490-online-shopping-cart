@@ -1,7 +1,7 @@
 package com.cs490.shoppingcart.administrationmodule.service;
 
-import com.cs490.shoppingcart.administrationmodule.dto.UserDto;
 import com.cs490.shoppingcart.administrationmodule.exception.InvalidCredentialsException;
+import com.cs490.shoppingcart.administrationmodule.exception.NotVerifiedException;
 import com.cs490.shoppingcart.administrationmodule.model.Role;
 import com.cs490.shoppingcart.administrationmodule.model.User;
 import io.jsonwebtoken.io.Decoders;
@@ -9,7 +9,6 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.lang.RandomStringUtils;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import com.cs490.shoppingcart.administrationmodule.repository.UserRepository;
@@ -32,8 +31,10 @@ public class UserService {
         this.jwtService = jwtService;
     }
 
-    @Value("${SECRET}")
-    public String SECRET;
+//    @Value("${SECRET}")
+//    public String SECRET;
+
+    public  final  String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
     public String generateRandomPassword(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -44,7 +45,7 @@ public class UserService {
         return RandomStringUtils.random(length, characters);
     }
 
-    public User createUser(UserDto userDto) throws IllegalArgumentException {
+    public User createUser(User userDto) throws IllegalArgumentException {
         User user = new User();
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
@@ -97,11 +98,15 @@ public User verifyVendor(User vendor, Long vendorId, @AuthenticationPrincipal Us
 
     return userRepository.save(vendorToBeVerified);
 }
-    public User fullyVerifyVendor(User vendor, Long vendorId, @AuthenticationPrincipal User admin) {
+    public User fullyVerifyVendor(User vendor, Long vendorId, @AuthenticationPrincipal User admin) throws NotVerifiedException {
         User vendorToBeVerified = userRepository.findById(vendorId).orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + vendorId));
-        vendorToBeVerified.setIsFullyVerified(true);
-        System.out.println("Vendor verified by: " + admin.getName());
-        return userRepository.save(vendorToBeVerified);
+        if (vendorToBeVerified.getIsVerified() == false) {
+            throw new NotVerifiedException("Sorry this vendor is not yet verified, contact the admin");
+        } else {
+            vendorToBeVerified.setIsFullyVerified(true);
+            System.out.println("Vendor verified by: " + admin.getName());
+            return userRepository.save(vendorToBeVerified);
+        }
     }
 
     public User updateUserDetails(User user, Long id){
