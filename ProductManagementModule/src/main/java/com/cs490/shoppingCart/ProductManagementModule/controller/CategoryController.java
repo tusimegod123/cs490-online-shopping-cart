@@ -1,6 +1,7 @@
 package com.cs490.shoppingCart.ProductManagementModule.controller;
 
-import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponseDTO;
+import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponse;
+import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
 import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.service.CategoryService;
@@ -18,37 +19,50 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @PostMapping()
+    @PostMapping
     public Category addCategory(@RequestBody Category category) {
+
         return categoryService.createCategory(category);
     }
 
     @GetMapping()
-    public ResponseEntity<?> getAllCategories() {
-        List<Category> categoryList = categoryService.getAllCategories();
-        CategoryResponseDTO response = new CategoryResponseDTO(categoryList);
+    public List<Category> getAllCategories() {
 
-        if(categoryList != null && categoryList.size() > 0){
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } return new ResponseEntity<>("No records found", HttpStatus.NOT_FOUND);
+        List<Category> categoryList = categoryService.getAllCategories();
+        return categoryList;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCategoryById(@PathVariable Long id) throws ItemNotFoundException {
+    public ResponseEntity<Object> getCategoryById(@PathVariable Long id) throws ItemNotFoundException {
 
-        Category category;
+        CategoryResponse categoryResponse;
 
         try {
-            category = categoryService.getCategoryById(id);
+            categoryResponse = categoryService.getCategoryById(id);
         } catch (ItemNotFoundException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(category, HttpStatus.OK);
+        return new ResponseEntity<>(categoryResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateCategoryById(@PathVariable Long id, @RequestBody Category category) throws IdNotMatchException, ItemNotFoundException {
+
+        CategoryResponse categoryResponse;
+        try {
+            categoryResponse = categoryService.updateCategory(category,id);
+        } catch (ItemNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IdNotMatchException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new  ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
 
     @DeleteMapping({"/{id}"})
-    public ResponseEntity<String> deleteCategoryById(@PathVariable Long id) throws ItemNotFoundException {
+    public ResponseEntity<String> deleteCategoryById(@PathVariable Long id) {
 
         boolean isDelete = categoryService.deleteCategoryById(id);
 
@@ -58,5 +72,7 @@ public class CategoryController {
             return new ResponseEntity<>("Category with id: " + id + " cannot be deleted", HttpStatus.NOT_FOUND);
         }
     }
+
+
 
 }
