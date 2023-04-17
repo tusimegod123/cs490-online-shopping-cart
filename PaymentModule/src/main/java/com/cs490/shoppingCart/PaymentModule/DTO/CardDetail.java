@@ -1,17 +1,24 @@
 package com.cs490.shoppingCart.PaymentModule.DTO;
 
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CardDetailDTO {
+public class CardDetail {
     private String cardNumber;
     private String name;
     private String CCV ;
-    private Date cardExpiry;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate cardExpiry;
 }

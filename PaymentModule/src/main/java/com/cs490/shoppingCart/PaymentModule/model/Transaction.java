@@ -1,9 +1,7 @@
 package com.cs490.shoppingCart.PaymentModule.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.cs490.shoppingCart.PaymentModule.DTO.PaymentType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,9 +23,20 @@ public class Transaction {
     private String cardNumber;
     private Double cardBalance;
     private Double transactionValue;
+
+    @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
+
     private String transactionNumber;
+
+    @Temporal(TemporalType.DATE)
     private Date transactionDate;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
 
 }
 

@@ -1,6 +1,8 @@
 package com.cs490.shoppingCart.PaymentModule.controller;
 
-import com.cs490.shoppingCart.PaymentModule.DTO.PaymentRequestDTO;
+import com.cs490.shoppingCart.PaymentModule.DTO.PaymentRequest;
+import com.cs490.shoppingCart.PaymentModule.DTO.RegistrationPayment;
+import com.cs490.shoppingCart.PaymentModule.model.Transaction;
 import com.cs490.shoppingCart.PaymentModule.model.TransactionStatus;
 import com.cs490.shoppingCart.PaymentModule.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +21,33 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    @GetMapping("/check")
-    public ResponseEntity<?> getAll(){
-        return ResponseEntity.ok().body("Hello from payment module");
-    }
-
-
     @PostMapping("/payOrder")
-    public TransactionStatus makePayment(@RequestBody PaymentRequestDTO request) throws Exception {
-        return paymentService.processPayment(request);
+    public ResponseEntity<TransactionStatus> makePayment(@RequestBody PaymentRequest request) throws Exception {
+        TransactionStatus  status = paymentService.processOrderPayment(request);
+        return ResponseEntity.ok().body(status);
     }
 
+    @PostMapping("/payRegistrationFee")
+    public ResponseEntity<TransactionStatus> registrationFee(@RequestBody RegistrationPayment request) throws Exception {
+        TransactionStatus  status = paymentService.processRegistrationPayment(request);
+        return ResponseEntity.ok().body(status);
+    }
+
+    @GetMapping("/getAllTransactions")
+    public ResponseEntity<?> getAll(){
+        List<Transaction> transactions = paymentService.getAll();
+        return ResponseEntity.ok().body(transactions);
+    }
+
+    @GetMapping("/getTransactionsByUserId/{id}")
+    public ResponseEntity<?> getByUserID(@PathVariable Integer id){
+        List<Transaction> transactions = paymentService.findByUserId(id);
+        return ResponseEntity.ok().body(transactions);
+    }
+
+    @GetMapping("/getTransactionByOrderId/{id}")
+    public ResponseEntity<?> getByOrderID(@PathVariable Integer id){
+        Transaction transaction = paymentService.findByOrderId(id);
+        return ResponseEntity.ok().body(transaction);
+    }
 }
