@@ -8,15 +8,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class User {
+public class UserDTO {
 
     private Integer id;
     private String name;
-    private String password;
-    private String username;
     private String email;
     private String telephoneNumber;
-    private boolean verified;
-    private Role roles;
+
 
 }
