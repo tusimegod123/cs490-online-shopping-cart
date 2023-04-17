@@ -2,7 +2,6 @@ package com.cs490.shoppingCart.OrderProcessingModule.controller;
 
 
 import com.cs490.shoppingCart.OrderProcessingModule.model.Product;
-import com.cs490.shoppingCart.OrderProcessingModule.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

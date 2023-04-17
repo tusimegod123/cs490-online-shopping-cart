@@ -18,9 +18,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Integer userId;
-    private Boolean orderStatus;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
     private LocalDateTime orderDate;
-//   Still in doubt
+    //   Still in doubt
     private Double totalPrice;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "shoppingcart_id")
