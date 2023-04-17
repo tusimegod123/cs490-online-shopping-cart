@@ -70,17 +70,19 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateProductById(@PathVariable Long id, @RequestBody Product product) throws IdNotMatchException, ItemNotFoundException {
+    public ResponseEntity<Object> updateProductById(@PathVariable Long id, @RequestBody Product product) throws IdNotMatchException, ItemNotFoundException {
+
+        ProductResponse productResponse;
 
         try {
-            productService.updateProduct(product,id);
+            productResponse = productService.updateProduct(product,id);
         } catch (ItemNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IdNotMatchException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-        return new  ResponseEntity<>("Product with id " + id + " is successfully updated", HttpStatus.OK);
+        return new  ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 
     //Approve Product

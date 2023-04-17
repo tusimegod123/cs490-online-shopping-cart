@@ -149,7 +149,7 @@ public class ProductService {
         return true;
     }
 
-    public Product updateProduct(Product product, Long productId) throws ItemNotFoundException, IdNotMatchException {
+    public ProductResponse updateProduct(Product product, Long productId) throws ItemNotFoundException, IdNotMatchException {
 
         Optional<Product> productToBeModified = productRepository.findById(productId);
 
@@ -161,7 +161,10 @@ public class ProductService {
             throw new IdNotMatchException("Not match id from url with input id");
         }
 
-        return productRepository.save(product);
+        Product productResult = productRepository.save(product);
+        ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productResult);
+
+        return productResponse;
     }
 
 
