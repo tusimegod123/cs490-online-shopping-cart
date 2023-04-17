@@ -53,8 +53,8 @@ public class ProductService {
         product.setVerified(false);
 
 //        //Get User
-//         User user = restTemplate.getForObject("http://localhost:9898/api/v1/users/{id}",
-//         User.class, productRequest.getUserId());
+         User user = restTemplate.getForObject("http://localhost:9898/api/v1/users/{id}",
+         User.class, productRequest.getUserId());
 
         // Get id from input
         Long categoryId = productRequest.getCategoryId();
