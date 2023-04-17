@@ -13,7 +13,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Product save(Product product);
 
-    @Query("select * from Product p where p.verified = :verified")
+//    @Query("select * from Product p where p.verified = :verified")
     List<Product> findAllByVerified(@Param("verified")boolean verified);
 
 }

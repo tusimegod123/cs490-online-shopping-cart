@@ -16,14 +16,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository repository;
 
-//    @Override
-//    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-//        Optional<User> credential = repository.findByName(name);
-//        return credential.map(User::new).orElseThrow(() -> new UsernameNotFoundException("user not found with name :" + name));
-//    }
-
-    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
-        User user = this.repository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("Email " + userEmail + " not found"));
+    @Override
+        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = this.repository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found"));
         return user;
     }
+
+//    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+//        User user = this.repository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("Email " + userEmail + " not found"));
+//        return user;
+//    }
 }
