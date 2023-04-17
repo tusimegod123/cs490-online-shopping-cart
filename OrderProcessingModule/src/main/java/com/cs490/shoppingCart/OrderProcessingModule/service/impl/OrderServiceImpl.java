@@ -44,13 +44,13 @@ public class OrderServiceImpl implements OrderService {
                 orderRequestDTO.getShoppingCart().getUserId(),pendingOrder.getId(),
                 pendingOrder.getTotalPrice()*0.15 + pendingOrder.getTotalPrice(),
                 new PaymentInfoDTO(
-                orderRequestDTO.getPaymentInfoDTO().getCardNumber(),
-                orderRequestDTO.getPaymentInfoDTO().getNameOnCard(),
+                        orderRequestDTO.getPaymentInfoDTO().getCardNumber(),
+                        orderRequestDTO.getPaymentInfoDTO().getNameOnCard(),
                         orderRequestDTO.getPaymentInfoDTO().getCCV(),
-                orderRequestDTO.getPaymentInfoDTO().getCardExpiry())
+                        orderRequestDTO.getPaymentInfoDTO().getCardExpiry())
         );
-            // call payment module right here
-            return pendingOrder;
+        // call payment module right here
+        return pendingOrder;
 
     }
 
@@ -93,14 +93,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean checkOrderStatusIsNotSuccessful(int orderId) {
 
-            Order order = orderRepository.findById(orderId).get();
-            if(order.getOrderStatus() == OrderStatus.OS){
-                return false;
-            }else{
-                order.setOrderStatus(OrderStatus.OS);
-                orderRepository.save(order);
-                return true;
-            }
+        Order order = orderRepository.findById(orderId).get();
+        if(order.getOrderStatus() == OrderStatus.OS){
+            return false;
+        }else{
+            order.setOrderStatus(OrderStatus.OS);
+            orderRepository.save(order);
+            return true;
+        }
     }
     private Order createOrderLine(ShoppingCart shoppingCart){
 

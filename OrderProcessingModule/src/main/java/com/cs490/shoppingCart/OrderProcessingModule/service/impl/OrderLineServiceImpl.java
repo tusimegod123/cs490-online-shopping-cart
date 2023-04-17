@@ -4,10 +4,13 @@ import com.cs490.shoppingCart.OrderProcessingModule.model.OrderLine;
 import com.cs490.shoppingCart.OrderProcessingModule.repository.OrderLineRepository;
 import com.cs490.shoppingCart.OrderProcessingModule.repository.OrderRepository;
 
+
+
 import com.cs490.shoppingCart.OrderProcessingModule.service.OrderLineService;
 import com.cs490.shoppingCart.OrderProcessingModule.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class OrderLineServiceImpl implements OrderLineService {
@@ -17,6 +20,7 @@ public class OrderLineServiceImpl implements OrderLineService {
 
     @Autowired
     OrderRepository shoppingCartRepository;
+
 
 
     @Autowired
@@ -38,7 +42,6 @@ public class OrderLineServiceImpl implements OrderLineService {
         existingOrderLine.setQuantity(cartLine.getQuantity());
         return cartLineRepository.save(existingOrderLine);
     }
-
 
 
 

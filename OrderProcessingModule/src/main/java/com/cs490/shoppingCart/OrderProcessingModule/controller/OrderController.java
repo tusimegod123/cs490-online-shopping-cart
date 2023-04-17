@@ -16,8 +16,8 @@ import java.util.List;
 @RequestMapping("/orders")
 public class OrderController {
 
-  @Autowired
-  private OrderService orderService;
+    @Autowired
+    private OrderService orderService;
 
     @GetMapping("/{orderId}")
     public ResponseEntity<Order> getOrder(@PathVariable int orderId){
@@ -37,14 +37,14 @@ public class OrderController {
     @GetMapping("users/{userId}")
     public ResponseEntity<?> getOrderForUser(@PathVariable int userId){
         //check user existance from godwin
-            List<Order> orderList = orderService.getOrdersForUser(userId);
-            return new ResponseEntity<>(orderList,HttpStatus.OK);
+        List<Order> orderList = orderService.getOrdersForUser(userId);
+        return new ResponseEntity<>(orderList,HttpStatus.OK);
         //}
     }
     @GetMapping("/{orderId}/checkExistance")
     public ResponseEntity<?> orderExist(@PathVariable int orderId){
         boolean exist = orderService.checkOrderExistance(orderId);
-            return new ResponseEntity<>(orderService.checkOrderExistance(orderId),HttpStatus.OK);
+        return new ResponseEntity<>(orderService.checkOrderExistance(orderId),HttpStatus.OK);
 
     }
 
@@ -52,8 +52,8 @@ public class OrderController {
     public ResponseEntity<?> createOrderRegisteredUser(@RequestBody OrderRequestDTO orderRequestDTO){
         if(!orderRequestDTO.getShoppingCart().getCartLines().isEmpty()){
             //shoppingCart.getCartLines()
-        Order order = orderService.createOrder(orderRequestDTO);
-        return new ResponseEntity<>(order,HttpStatus.CREATED);
+            Order order = orderService.createOrder(orderRequestDTO);
+            return new ResponseEntity<>(order,HttpStatus.CREATED);
         }
         return new ResponseEntity<>(new OrderlineEmptyException("You don't have any item to order"),HttpStatus.NOT_FOUND);
     }
@@ -71,10 +71,9 @@ public class OrderController {
                 return new ResponseEntity<>(HttpStatus.OK);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
+}
 
 
 

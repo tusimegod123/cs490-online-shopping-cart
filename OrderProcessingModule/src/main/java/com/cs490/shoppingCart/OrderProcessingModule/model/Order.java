@@ -21,7 +21,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
     private LocalDateTime orderDate;
-//   Still in doubt
+    //   Still in doubt
     private Double totalPrice;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "shoppingcart_id")
