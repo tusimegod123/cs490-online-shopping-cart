@@ -49,7 +49,16 @@ public class User implements UserDetails {
         this.roles = new HashSet<>();
     }
 
-@Override
+    public User(String name, String email, String password, String telephoneNumber, String username, Set<Role> roles) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.telephoneNumber = telephoneNumber;
+        this.username = username;
+        this.roles = roles;
+    }
+
+    @Override
 public Collection<? extends GrantedAuthority> getAuthorities() {
     Set<Role> roles = getRoles();
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();

@@ -1,5 +1,3 @@
-
-
 spring:
   application:
     name: shopping-cart-api-gateway
@@ -18,14 +16,29 @@ spring:
          predicates:
            - Path=/api/v1/users/**
 
+#eureka:
+#  client:
+#    service-url:
+#      # For running locally
+#      #      defaultZone: http://localhost:8761/eureka/
+#      # For running in Docker
+#      defaultZone: http://eureka:8761/eureka/
+#    fetch-registry: true
+#    register-with-eureka: true
+#  instance:
+#    hostname: localhost
+
 eureka:
   client:
-    serviceUrl:
+    service-url:
+      # For running locally
       defaultZone: http://localhost:8761/eureka/
-      fetch-registry: true
-      register-with-eureka: true
+      # For running in Docker
+    #       defaultZone: http://eureka:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
   instance:
     hostname: localhost
 
 server:
-  port: 9090
+  port: 9191
