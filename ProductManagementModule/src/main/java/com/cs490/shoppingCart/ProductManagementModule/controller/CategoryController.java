@@ -1,6 +1,6 @@
 package com.cs490.shoppingCart.ProductManagementModule.controller;
 
-import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
+import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponseDTO;
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
 import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.service.CategoryService;
@@ -18,21 +18,23 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @PostMapping
+    @PostMapping()
     public Category addCategory(@RequestBody Category category) {
-
         return categoryService.createCategory(category);
     }
 
     @GetMapping()
-    public List<Category> getAllCategories() {
-
+    public ResponseEntity<?> getAllCategories() {
         List<Category> categoryList = categoryService.getAllCategories();
-        return categoryList;
+        CategoryResponseDTO response = new CategoryResponseDTO(categoryList);
+
+        if(categoryList != null && categoryList.size() > 0){
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } return new ResponseEntity<>("No records found", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) throws ItemNotFoundException {
+    public ResponseEntity<?> getCategoryById(@PathVariable Long id) throws ItemNotFoundException {
 
         Category category;
 
@@ -43,20 +45,6 @@ public class CategoryController {
         }
 
         return new ResponseEntity<>(category, HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateCategoryById(@PathVariable Long id, @RequestBody Category category) throws IdNotMatchException, ItemNotFoundException {
-
-        try {
-            categoryService.updateCategory(category,id);
-        } catch (ItemNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IdNotMatchException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-
-        return new  ResponseEntity<>("Category with id " + id + " is successfully updated", HttpStatus.OK);
     }
 
     @DeleteMapping({"/{id}"})

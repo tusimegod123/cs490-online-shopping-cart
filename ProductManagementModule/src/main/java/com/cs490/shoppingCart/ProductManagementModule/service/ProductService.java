@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -29,13 +30,24 @@ public class ProductService {
 
     public ProductResponse createProduct(ProductRequest productRequest) throws ItemNotFoundException {
         Product product = productMapper.fromCreateProductRequestToDomain(productRequest);
+        Category category = null;
         product.setVerified(false);
 
-        // Get id from input
-        Long categoryId = productRequest.getCategoryId();
+        if(productRequest.getCategoryName() == null || productRequest.getCategoryName().isEmpty()){
+            // Get id from input
+            Long categoryId = productRequest.getCategoryId();
 
-        // Get id category from DB
-        Category category = categoryService.getCategoryById(categoryId);
+            // Get id category from DB
+            category = categoryService.getCategoryById(categoryId);
+        }else{
+            //A new category introduced
+            category = new Category();
+            category.setName(productRequest.getCategoryName());
+            category.setDescription(productRequest.getCategoryDescription());
+
+        }
+        product.setCategory(category);
+
 
         // Save product into DB
         Product productToAdd = productRepository.save(product);
@@ -45,19 +57,53 @@ public class ProductService {
     }
 
     public Product modifyProduct(Product product, Long productId){
-        Product productToBeModified = productRepository.findById(productId).get();
-        return productRepository.save(productToBeModified);
+        //Can only update productName, description, price, quantity, verified
+
+        Optional<Product> productToBeModified = productRepository.findById(productId);
+        if(productToBeModified.isPresent()){
+            product.setCategory(productToBeModified.get().getCategory());
+            return productRepository.save(product);
+        }
+        return null;
     }
+
     public List<Product> allProducts(){
         return productRepository.findAll();
     }
     public List<Product> verifiedProducts(){
-        List<Product> products = productRepository.findAll();
-        for (Product product: allProducts()) {
-            if (product.getVerified()== true){
-                products.add(product);
-            }
-        }
+        List<Product> products = productRepository.findAllByVerified(true);
         return products;
+    }
+
+    public List<Product> unverifiedProducts(){
+        List<Product> products = productRepository.findAllByVerified(false);
+        return products;
+    }
+
+    public Product getProductById(Long id) throws ItemNotFoundException {
+
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            return product.get();
+        } else {
+            throw new ItemNotFoundException("No product found with id: " +id);
+        }
+    }
+
+    public boolean approveProducts(Long productId) {
+        if(productId != null) {
+            //approve single product
+            Product product = productRepository.findById(productId).get();
+            product.setVerified(true);
+            productRepository.save(product);
+            return true;
+        }else{
+            //approve all unapproved products
+            List<Product> products = productRepository.findAllByVerified(false);
+            for (Product product: products) {
+                productRepository.save(product);
+            }
+            return true;
+        }
     }
 }

@@ -7,14 +7,13 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 @Data
 public class ProductResponse {
 
-    private Long productId;
     private String productName;
-    private Double price;
-    private int amount;
     private String description;
+    private Double price;
+    private Double itemCost;
+    private Integer quantity;
     private String imageUrl;
+    private Long vendorId;
     private Boolean verified;
-
-    private SecurityProperties.User user;
     private Category category;
 }

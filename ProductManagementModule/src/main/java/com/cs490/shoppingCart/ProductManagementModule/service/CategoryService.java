@@ -1,6 +1,5 @@
 package com.cs490.shoppingCart.ProductManagementModule.service;
 
-import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
 import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.repository.CategoryRepository;
@@ -17,25 +16,10 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     public Category createCategory(Category category){
-
         return categoryRepository.save(category);
     }
-    public Category updateCategory(Category category, Long categoryId) throws ItemNotFoundException, IdNotMatchException {
 
-        Optional<Category> categoryToBeModified = categoryRepository.findById(categoryId);
-
-        if (categoryToBeModified.isEmpty()) {
-            throw new ItemNotFoundException("Not found for id: " + categoryId );
-        }
-
-        if (categoryId != category.getCategoryId()) {
-           throw new IdNotMatchException("Not match id from url with input id");
-        }
-
-        return categoryRepository.save(category);
-    }
     public List<Category> getAllCategories(){
-
         return categoryRepository.findAll();
     }
 
@@ -51,12 +35,7 @@ public class CategoryService {
     }
 
     public boolean deleteCategoryById(Long id) {
-
-        Optional<Category> category = categoryRepository.findById(id);
-
-        if (category.isEmpty()) {
-            return false;
-        }
+        //Optional<Category> category = categoryRepository.findById(id);
 
         try {
             categoryRepository.deleteById(id);
