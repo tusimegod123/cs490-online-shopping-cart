@@ -1,13 +1,15 @@
 package com.cs490.shoppingcart.administrationmodule.service;
 
-import com.cs490.shoppingcart.administrationmodule.dto.UserDto;
+import com.cs490.shoppingcart.administrationmodule.exception.InvalidCredentialsException;
+import com.cs490.shoppingcart.administrationmodule.exception.NotVerifiedException;
 import com.cs490.shoppingcart.administrationmodule.model.Role;
 import com.cs490.shoppingcart.administrationmodule.model.User;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.lang.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import com.cs490.shoppingcart.administrationmodule.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,14 +24,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtService jwtService;
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    private final JwtService jwtService;
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
-    public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+//    @Value("${SECRET}")
+//    public String SECRET;
+
+    public  final  String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
     public String generateRandomPassword(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -39,40 +44,8 @@ public class UserService {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         return RandomStringUtils.random(length, characters);
     }
-//    public User createUser(UserDto userDto) {
-//        User user = new User();
-//
-//        Set<Role> roles = userDto.getRoles().stream().map(roleDto -> {
-//            Role role = new Role();
-//            role.setRoleName(roleDto.getRoleName());
-//            return role;
-//        }).collect(Collectors.toSet());
-//        if (userDto.getRoles().stream().anyMatch(role -> role.getRoleName().equals("Vendor"))){
-//            String randomUsername= generateRandomUsername(6);
-//            user.setUsername(randomUsername); // set default username
-//            String randomPassword = generateRandomPassword(8); // generate random password
-//            user.setPassword(passwordEncoder.encode(randomPassword)); // encode password
-//            userRepository.save(user); // save user to database
-//            // send password to user via email or SMS
-//            sendPasswordToUser(user, randomPassword);
-//        }else {
-//            user.setName(userDto.getName());
-//            user.setEmail(userDto.getEmail());
-//            user.setTelephoneNumber(userDto.getTelephoneNumber());
-//            user.setRoles((List<Role>) roles);
-//            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-//        }
-//       return userRepository.save(user); // save user to database
-//    }
 
-    public User createUser(UserDto userDto) throws IllegalArgumentException {
-//        if (userRepository.existsByEmail(userDto.getEmail())) {
-//            throw new IllegalArgumentException("User with email " + userDto.getEmail() + " already exists.");
-//        }
-//        if (userRepository.existsByUsername(userDto.getUsername())) {
-//            throw new IllegalArgumentException("User with username " + userDto.getUsername() + " already exists.");
-//        }
-
+    public User createUser(User userDto) throws IllegalArgumentException {
         User user = new User();
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
@@ -86,42 +59,58 @@ public class UserService {
 
         // set default username and password for vendors
         if (roles.stream().anyMatch(role -> "Vendor".equals(role.getRoleName()))) {
-            String randomUsername = generateRandomUsername(6);
-            user.setUsername(randomUsername);
-            String randomPassword = generateRandomPassword(8);
-            user.setPassword(passwordEncoder.encode(randomUsername));
-            sendPasswordToUser(user, randomPassword);
-        } else {
-            user.setUsername(userDto.getUsername());
+            user.setIsVerified(false);
+        } else if (roles.stream().anyMatch(role -> "Guest".equals(role.getRoleName()))){
+            user.setIsVerified(false);
+            user.setUsername(null);
+        }
+        else {
+            user.setUsername(userDto.getEmail());
+            user.setIsVerified(true);
+            user.setIsFullyVerified(true);
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
-
         user.setRoles(roles);
         userRepository.save(user);
         return user;
     }
-
-
-    private void sendPasswordToUser(User user, String password) {
+    private void sendPasswordToUser(User vendor, String username, String password) {
         // code to send password to user via email or SMS
-        System.out.println("Hello " + user.getName() + "Your default user name is " + user.getUsername()  + "and default password is " + password);
+        System.out.println("Hello " + vendor.getName() + " Your  username for logging in is " + username  + " and your password is " + password);
     }
 
+public User verifyVendor(User vendor, Long vendorId, @AuthenticationPrincipal User admin) {
+    User vendorToBeVerified = userRepository.findById(vendorId).orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + vendorId));
 
-//    public User createUser(User user)  {
-//        try{
-//            if (userRepository.findByEmail(user.getEmail()) != null) {
-//                 throw new EmailExistsException("Email already exists.");
-//            }
-//        }catch (EmailExistsException e){
-//            e.getMessage();
-//        }
-//        return userRepository.save(user);
-//    }
+    String randomUsername = generateRandomUsername(6);
+    String randomPassword = generateRandomPassword(8);
+
+    vendor.setUsername(randomUsername);
+    vendor.setPassword(randomPassword);
+
+    vendorToBeVerified.setVerifiedBy(admin.getName());
+    vendorToBeVerified.setIsVerified(true);
+    vendorToBeVerified.setUsername(vendor.getUsername());
+    vendorToBeVerified.setPassword(passwordEncoder.encode(randomPassword));
+
+    sendPasswordToUser(vendor, randomUsername, randomPassword);
+    System.out.println("Vendor verified by: " + admin.getName());
+
+    return userRepository.save(vendorToBeVerified);
+}
+    public User fullyVerifyVendor(User vendor, Long vendorId, @AuthenticationPrincipal User admin) throws NotVerifiedException {
+        User vendorToBeVerified = userRepository.findById(vendorId).orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + vendorId));
+        if (vendorToBeVerified.getIsVerified() == false) {
+            throw new NotVerifiedException("Sorry this vendor is not yet verified, contact the admin");
+        } else {
+            vendorToBeVerified.setIsFullyVerified(true);
+            System.out.println("Vendor verified by: " + admin.getName());
+            return userRepository.save(vendorToBeVerified);
+        }
+    }
 
     public User updateUserDetails(User user, Long id){
         User userTobeUpdated = userRepository.findById(id).get();
-        userTobeUpdated.setId(user.getId());
         userTobeUpdated.setPassword(user.getPassword());
         userTobeUpdated.setEmail(user.getEmail());
         userTobeUpdated.setTelephoneNumber(user.getTelephoneNumber());
@@ -138,7 +127,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username) throws InvalidCredentialsException {
         return jwtService.generateToken(username);
     }
 
@@ -149,7 +138,5 @@ public class UserService {
     public void validateToken(String token) {
         jwtService.validateToken(token);
     }
-
-
 
 }

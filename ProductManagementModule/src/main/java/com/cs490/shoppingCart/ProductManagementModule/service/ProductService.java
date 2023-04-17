@@ -53,8 +53,8 @@ public class ProductService {
         product.setVerified(false);
 
 //        //Get User
-         User user = restTemplate.getForObject("http://localhost:9898/api/v1/users/{id}",
-         User.class, productRequest.getUserId());
+//         User user = restTemplate.getForObject("http://localhost:9898/api/v1/users/{id}",
+//         User.class, productRequest.getUserId());
 
         // Get id from input
         Long categoryId = productRequest.getCategoryId();
@@ -112,10 +112,20 @@ public class ProductService {
 
             Product productResult = product.get();
 
+            //TODO:
             Long categoryId = productResult.getCategoryId();
-            Category category = categoryRepository.findById(categoryId).orElseThrow(()-> {
-                return new ItemNotFoundException("No category found");
-            });
+//            Category category = categoryRepository.findById(categoryId).orElseThrow(()-> {
+//                return new ItemNotFoundException("No category found");
+//            });
+
+            Category category;
+            Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
+            if (categoryOpt.isPresent()) {
+                category = categoryOpt.get();
+            } else {
+                category = null;
+            }
+
 
             ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productResult);
             productResponse.setCategory(category);

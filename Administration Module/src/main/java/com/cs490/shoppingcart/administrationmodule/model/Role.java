@@ -14,4 +14,13 @@ public class Role{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer roleId;
     private String roleName;
+
+    public Role(String roleName) {
+        this.roleName = roleName;
+    }
+
+    @Override
+    public String toString() {
+        return this.roleName;
+    }
 }

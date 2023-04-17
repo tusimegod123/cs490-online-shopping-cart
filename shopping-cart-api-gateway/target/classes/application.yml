@@ -1,143 +1,44 @@
 spring:
- cloud:
+  application:
+    name: shopping-cart-api-gateway
+  cloud:
    gateway:
      routes:
-       - id: swiggy-app
-         uri: lb://SWIGGY-APP
-         predicates:
-           - Path=/swiggy/**
-         filters:
-           - AuthenticationFilter
-
        - id: product-service
-         uri: lb://PRODUCT-SERVICE
+         uri: lb://product-service
          predicates:
            - Path=/api/v1/products/**
          filters:
            - AuthenticationFilter
 
        - id: administration-service
-         uri: lb://ADMINISTRATION-MODULE
+         uri: lb://administration-service
          predicates:
            - Path=/api/v1/users/**
 
- application:
-   name: SHOPPING-CART-GATEWAY
+#eureka:
+#  client:
+#    service-url:
+#      # For running locally
+#      #      defaultZone: http://localhost:8761/eureka/
+#      # For running in Docker
+#      defaultZone: http://eureka:8761/eureka/
+#    fetch-registry: true
+#    register-with-eureka: true
+#  instance:
+#    hostname: localhost
 
 eureka:
   client:
-    serviceUrl:
+    service-url:
+      # For running locally
       defaultZone: http://localhost:8761/eureka/
-      fetch-registry: true
-      register-with-eureka: true
+      # For running in Docker
+    #       defaultZone: http://eureka:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
   instance:
     hostname: localhost
 
 server:
-  port: 9090
-
-#spring:
-#  application:
-#    name: API-GATEWAY
-#  cloud:
-#    loadbalancer:
-#      health-check:
-#        refetch-instances: true
-#        refetch-instances-interval: 2s
-#      #        repeat-health-check: true
-#      #        interval: 10s
-#
-#      cache:
-#        ttl: 2s
-#        enabled: true
-#    compatibility-verifier:
-#      enabled: false
-#    gateway:
-#      routes[0]:
-#        id: ACCOUNT-SERVICE
-#        uri: lb://ACCOUNT-SERVICE
-#        predicates[0]:
-#          name: Path
-#          args[0]: /account/**
-#      routes[1]:
-#        id: CREDIT-CARD-SERVICE
-#        uri: lb://CREDIT-CARD-SERVICE
-#        predicates[0]:
-#          name: Path
-#          args[1]: /credit-card/**
-#      routes[2]:
-#        id: PAY-PAL-SERVICE
-#        uri: lb://PAY-PAL-SERVICE
-#        predicates[0]:
-#          name: Path
-#          args[1]: /pay-pal/**
-#      routes[3]:
-#        id: CATALOG-SERVICE
-#        uri: lb://CATALOG-SERVICE
-#        predicates[0]:
-#          name: Path
-#          args[0]: /catalog/**
-#      routes[4]:
-#        id: PRODUCT-SERVICE
-#        uri: lb://PRODUCT-SERVICE
-#        predicates[0]:
-#          name: Path
-#          args[1]: /products/**
-#      routes[5]:
-#        id: SHIPPING-SERVICE
-#        uri: lb://SHIPPING-SERVICE
-#        predicates[0]:
-#          name: Path
-#          args[1]: /shipping/**
-#      routes[6]:
-#        id: ORDER-SERVICE
-#        uri: lb://ORDER-SERVICE
-#        predicates[0]:
-#          name: Path
-#          args[1]: /order/**
-#
-#security:
-#  oauth2:
-#    client:
-#      provider:
-#        my-keycloak-provider:
-#          issuer-uri:  http://localhost:8080/auth/realms/godwin
-#          # Individual properties can also be provided this way
-#      #            token-uri: http://localhost:8080/auth/realms/amrutrealm/protocol/openid-connect/token
-#      #            authorization-uri: http://localhost:8080/auth/realms/amrutrealm/protocol/openid-connect/auth
-#      #            userinfo-uri: http://localhost:8080/auth/realms/amrutrealm/protocol/openid-connect/userinfo
-#      #            user-name-attribute: preferred_username
-#      registration:
-#        keycloak-spring-gateway-client:
-#          provider: my-keycloak-provider
-#          client-id: cs590-mini-project2
-#  #            client-secret:
-#  #            authorization-grant-type: authorization_code
-#  #            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
-#  application:
-#    name: API-GATEWAY
-#eureka:
-#  instance:
-#    hostname: localhost
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka/
-#    fetch-registry: true
-#    #enabled: false
-## Enable these to debug the Authorization flow
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        security:
-#          web: DEBUG
-#server:
-#  port: 9191
-#ribbon:
-#  eureka:
-#    enabled: false
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: "*"
+  port: 9191
