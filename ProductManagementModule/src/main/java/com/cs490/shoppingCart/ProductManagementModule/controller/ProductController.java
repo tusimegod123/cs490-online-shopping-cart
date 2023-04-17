@@ -83,4 +83,25 @@ public class ProductController {
         return new  ResponseEntity<>("Product with id " + id + " is successfully updated", HttpStatus.OK);
     }
 
+    //Approve Product
+    @PutMapping("/approve")
+    public ResponseEntity<?> approveProducts(
+            @RequestParam(value="productId", required = false) Long productId) {
+        boolean approved = productService.approveProducts(productId);
+        if(approved){
+            return new ResponseEntity<>("Products approved.", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Products could not be approved.", HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/unverified")
+    public List<Product> unverifiedProductList(){
+        return productService.unverifiedProducts();
+    }
+
+    @GetMapping("/verified")
+    public List<Product> verifiedProductList(){
+        return productService.verifiedProducts();
+    }
+
 }

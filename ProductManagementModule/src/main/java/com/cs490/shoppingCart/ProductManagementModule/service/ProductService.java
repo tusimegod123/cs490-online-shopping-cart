@@ -9,11 +9,14 @@ import com.cs490.shoppingCart.ProductManagementModule.mapper.CategoryMapper;
 import com.cs490.shoppingCart.ProductManagementModule.mapper.ProductMapper;
 import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
+import com.cs490.shoppingCart.ProductManagementModule.model.User;
 import com.cs490.shoppingCart.ProductManagementModule.repository.CategoryRepository;
 import com.cs490.shoppingCart.ProductManagementModule.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +36,12 @@ public class ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
+//    @Value("${user.endpoint}")
+//    private String userEndpoint;
+
     public ProductService(ProductRepository productRepository,
                           ProductMapper productMapper) {
         this.productRepository = productRepository;
@@ -41,7 +50,11 @@ public class ProductService {
 
     public ProductResponse createProduct(ProductRequest productRequest) throws ItemNotFoundException {
         Product product = productMapper.fromCreateProductRequestToDomain(productRequest);
-//        product.setVerified(false);
+        product.setVerified(false);
+
+//        //Get User
+//         User user = restTemplate.getForObject("http://localhost:9898/api/v1/users/{id}",
+//         User.class, productRequest.getUserId());
 
         // Get id from input
         Long categoryId = productRequest.getCategoryId();
@@ -54,6 +67,7 @@ public class ProductService {
         Product productToAdd = productRepository.save(product);
         ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productToAdd);
         productResponse.setCategory(category);
+//        productResponse.setUser(user);
         return productResponse;
     }
 
@@ -89,15 +103,6 @@ public class ProductService {
 
         return categoryMap;
     }
-//    public List<Product> verifiedProducts(){
-//        List<Product> products = productRepository.findAll();
-//        for (Product product: allProducts()) {
-//            if (product.getVerified()== true){
-//                products.add(product);
-//            }
-//        }
-//        return products;
-//    }
 
     public ProductResponse getProductById(Long id) throws ItemNotFoundException {
 
@@ -150,5 +155,35 @@ public class ProductService {
         }
 
         return productRepository.save(product);
+    }
+
+
+    //Product Approval
+
+    public List<Product> verifiedProducts(){
+        List<Product> products = productRepository.findAllByVerified(true);
+        return products;
+    }
+
+    public List<Product> unverifiedProducts(){
+        List<Product> products = productRepository.findAllByVerified(false);
+        return products;
+    }
+
+    public boolean approveProducts(Long productId) {
+        if(productId != null) {
+            //approve single product
+            Product product = productRepository.findById(productId).get();
+            product.setVerified(true);
+            productRepository.save(product);
+            return true;
+        }else{
+            //approve all unapproved products
+            List<Product> products = productRepository.findAllByVerified(false);
+            for (Product product: products) {
+                productRepository.save(product);
+            }
+            return true;
+        }
     }
 }
