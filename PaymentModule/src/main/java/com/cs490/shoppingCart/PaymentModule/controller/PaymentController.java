@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/payments")
+@RequestMapping("api/v1/payments")
 public class PaymentController {
     @Autowired
     PaymentService paymentService;
@@ -40,13 +40,13 @@ public class PaymentController {
     }
 
     @GetMapping("/getTransactionsByUserId/{id}")
-    public ResponseEntity<?> getByUserID(@PathVariable Integer id){
+    public ResponseEntity<?> getByUserID(@PathVariable Long id){
         List<Transaction> transactions = paymentService.findByUserId(id);
         return ResponseEntity.ok().body(transactions);
     }
 
     @GetMapping("/getTransactionByOrderId/{id}")
-    public ResponseEntity<?> getByOrderID(@PathVariable Integer id){
+    public ResponseEntity<?> getByOrderID(@PathVariable Long id){
         Transaction transaction = paymentService.findByOrderId(id);
         return ResponseEntity.ok().body(transaction);
     }

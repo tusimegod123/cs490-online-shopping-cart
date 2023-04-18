@@ -47,36 +47,35 @@ public class PaymentServiceImp implements PaymentService {
                 newTransaction.setTransactionType(TransactionType.OrderPayment);
 
                 if(response.getCurrentBalance() >= request.getAmount()){
-                    //add transaction with TS - Done
-
-                    //rest call notification service
-                    //rest call profit sharing service
-
-                    NotificationRequest notificationRequest = new NotificationRequest();
-                    notificationRequest.setFromSystemType(0);
-                    notificationRequest.setOrderId(request.getOrderId());
-
-                    //String response = restTemplate.postForObject("http://notification-service:8084/", notificationRequest, String.class);
-                    // what response should I expect?
-
                     newTransaction.setTransactionStatus(TransactionStatus.TS);
                     newTransaction.setCardBalance(response.getCurrentBalance() - request.getAmount());
-                    transactionRepository.save(newTransaction);
+                    Transaction savedTransaction = transactionRepository.save(newTransaction);
+
+                    //call notification service
+                    NotificationRequest notificationRequest = savedTransaction.getNotificationRequest();
+                    //String response = restTemplate.postForObject("http://notification-service:8084/", notificationRequest, String.class);
+                    //1. what response should I expect?
+
+                    //2. rest call profit sharing service
+                    ProfitShareRequest profitShareRequest = savedTransaction.getProfitSharingRequest();
+                    //String response = restTemplate.postForObject("http://profit-sharing-service:8084/", profitShareRequest, String.class);
+                    //3. what response should I expect?
+
                     return TransactionStatus.TS;
 
                 } else {
                     //add transaction with TF - Done
                     newTransaction.setTransactionStatus(TransactionStatus.TF);
                     transactionRepository.save(newTransaction);
-                    return TransactionStatus.TF;
+                    throw new Exception("Transaction failed, the card doesn't have enough balance to perform the transaction.");
                 }
             }
 
-            throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only!");
+            throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only.");
 
         }
 
-        throw new Exception("Payment information is not provided!");
+        throw new Exception("Payment information is not provided.");
     }
 
     @Override
@@ -103,33 +102,33 @@ public class PaymentServiceImp implements PaymentService {
                 newTransaction.setTransactionType(TransactionType.RegistrationFee);
 
                 if(response.getCurrentBalance() >= request.getAmount()){
-                    //call notification service
-                    //call user service - update user status
-
-                    NotificationRequest notificationRequest = new NotificationRequest();
-                    notificationRequest.setFromSystemType(0);
-                    notificationRequest.setOrderId(request.getUserId());
-
-                    //String response = restTemplate.postForObject("http://notification-service:8084/", notificationRequest, String.class);
-                    // what response should I expect?
-
                     newTransaction.setTransactionStatus(TransactionStatus.TS);
                     newTransaction.setCardBalance(response.getCurrentBalance() - request.getAmount());
-                    transactionRepository.save(newTransaction);
+                    Transaction savedTransaction = transactionRepository.save(newTransaction);
+
+                    //0. call notification service
+
+                    NotificationRequest notificationRequest = savedTransaction.getNotificationRequest();
+                    //String response = restTemplate.postForObject("http://notification-service:8084/", notificationRequest, String.class);
+                    //1. what response should I expect?
+
+
+                    //2. call user service - update user status
+
                     return TransactionStatus.TS;
 
                 } else {
 
                     newTransaction.setTransactionStatus(TransactionStatus.TF);
                     transactionRepository.save(newTransaction);
-                    return TransactionStatus.TF;
+                    throw new Exception("Transaction failed, the card doesn't have enough balance to perform the transaction.");
                 }
             }
 
-            throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only!");
+            throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only.");
         }
 
-        throw new Exception("Payment information is not provided!");
+        throw new Exception("Payment information is not provided.");
 
     }
 
@@ -143,14 +142,12 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     private BankResponse getLastTransaction(CardDetail cardDetail) throws Exception {
-        BankResponse response = new BankResponse();
+        BankResponse response = bankService.processCard(cardDetail);
         System.out.println(cardDetail.getCardNumber());
 
         Transaction lastTransaction = transactionRepository.findFirstByCardNumberOrderByIdDesc(cardDetail.getCardNumber());
 
-        if(lastTransaction == null){
-            response = bankService.processCard(cardDetail);
-        } else {
+        if(lastTransaction != null){
             response.setCurrentBalance(lastTransaction.getCardBalance());
             response.setPaymentType(lastTransaction.getPaymentType());
         }
@@ -164,12 +161,12 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     @Override
-    public List<Transaction> findByUserId(Integer id) {
+    public List<Transaction> findByUserId(Long id) {
         return transactionRepository.findTransactionsByUserId(id);
     }
 
     @Override
-    public Transaction findByOrderId(Integer id) {
+    public Transaction findByOrderId(Long id) {
         return transactionRepository.findTransactionByOrderId(id);
     }
 
