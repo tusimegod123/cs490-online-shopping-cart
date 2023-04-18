@@ -86,9 +86,9 @@ public class ProductController {
     }
 
     //Approve Product
-    @PutMapping("/approve")
+    @PutMapping("/approve/{id}")
     public ResponseEntity<?> approveProducts(
-            @RequestParam(value="productId", required = false) Long productId) {
+            @RequestParam(value="id", required = false) Long productId) {
         boolean approved = productService.approveProducts(productId);
         if(approved){
             return new ResponseEntity<>("Products approved.", HttpStatus.OK);
