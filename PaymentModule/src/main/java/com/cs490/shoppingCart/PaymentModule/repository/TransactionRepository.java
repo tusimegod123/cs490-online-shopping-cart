@@ -11,5 +11,4 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findTransactionsByUserId(Long id);
     Transaction findTransactionByOrderId(Long id);
     Transaction findFirstByCardNumberOrderByIdDesc(String cardNumber);
-
 }
