@@ -1,79 +1,37 @@
 package com.cs490.shoppingCart.NotificationModule.service;
 
 public class EmailDTO {
-    private String emailTo;
-    private String vPassword;
-    private String userId;
-    private String orderId;
-    private int fromSystemType;
+    private Long userId;
+    private String username;
+    private String password;
 
-    private boolean approved;
-
-    public EmailDTO(String emailTo, String vPassword, String userId, String orderId, int fromSystemType, boolean approved) {
-        this.emailTo = emailTo;
-        this.vPassword = vPassword;
+    public EmailDTO(Long userId, String username, String password) {
         this.userId = userId;
-        this.orderId = orderId;
-        this.fromSystemType = fromSystemType;
-        this.approved = approved;
+        this.username = username;
+        this.password = password;
     }
 
-    public String getEmailTo() {
-        return emailTo;
-    }
-
-    public void setEmailTo(String emailTo) {
-        this.emailTo = emailTo;
-    }
-
-    public String getvPassword() {
-        return vPassword;
-    }
-
-    public void setvPassword(String vPassword) {
-        this.vPassword = vPassword;
-    }
-
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public int getFromSystemType() {
-        return fromSystemType;
+    public String getPassword() {
+        return password;
     }
 
-    public void setFromSystemType(int fromSystemType) {
-        this.fromSystemType = fromSystemType;
-    }
-
-    public boolean isApproved() {
-        return approved;
-    }
-
-    public void setApproved(boolean approved) {
-        this.approved = approved;
-    }
-
-    @Override
-    public String toString() {
-        return "EmailDTO{" +
-                "emailTo='" + emailTo + '\'' +
-                ", vPassword='" + vPassword + '\'' +
-                ", userId='" + userId + '\'' +
-                ", orderId='" + orderId + '\'' +
-                ", fromSystemType='" + fromSystemType + '\'' +
-                '}';
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

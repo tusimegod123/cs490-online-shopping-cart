@@ -1,7 +1,8 @@
 package com.cs490.shoppingCart.NotificationModule.service;
 
+
 public class UserDTO {
-    private String user_id;
+    private Long user_id;
     private String username;
     private String fullname;
     private String password;
@@ -11,7 +12,7 @@ public class UserDTO {
     private double initial_pay;
     private String acoount_status;
 
-    public UserDTO(String user_id, String username, String fullname, String password, String email, String role_id, AddressDTO userAddress, double initial_pay, String acoount_status) {
+    public UserDTO(Long user_id, String username, String fullname, String password, String email, String role_id, AddressDTO userAddress, double initial_pay, String acoount_status) {
         this.user_id = user_id;
         this.username = username;
         this.fullname = fullname;
@@ -23,11 +24,11 @@ public class UserDTO {
         this.acoount_status = acoount_status;
     }
 
-    public String getUser_id() {
+    public Long getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(String user_id) {
+    public void setUser_id(Long user_id) {
         this.user_id = user_id;
     }
 
