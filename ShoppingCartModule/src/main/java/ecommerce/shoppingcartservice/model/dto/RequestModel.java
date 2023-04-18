@@ -1,6 +1,5 @@
-package ecommerce.shoppingcartservice.dto;
+package ecommerce.shoppingcartservice.model.dto;
 
-import ecommerce.shoppingcartservice.model.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class RequestModel {
 
-    private Integer userId;
-    private Product product;
+    private Long userId;
+    private ProductDTO productDTO;
     private Integer quantity;
 
 }

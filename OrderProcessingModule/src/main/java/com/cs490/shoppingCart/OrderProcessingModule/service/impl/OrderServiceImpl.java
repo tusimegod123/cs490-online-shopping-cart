@@ -1,16 +1,12 @@
 package com.cs490.shoppingCart.OrderProcessingModule.service.impl;
 
-import com.cs490.shoppingCart.OrderProcessingModule.dto.OrderRequestDTO;
-import com.cs490.shoppingCart.OrderProcessingModule.dto.PaymentInfoDTO;
-import com.cs490.shoppingCart.OrderProcessingModule.dto.PaymentRequestDTO;
+import com.cs490.shoppingCart.OrderProcessingModule.dto.*;
 import com.cs490.shoppingCart.OrderProcessingModule.model.*;
-import com.cs490.shoppingCart.OrderProcessingModule.model.valueobjects.CartLine;
-import com.cs490.shoppingCart.OrderProcessingModule.dto.GuestOrderRequest;
-import com.cs490.shoppingCart.OrderProcessingModule.model.valueobjects.ShoppingCart;
-import com.cs490.shoppingCart.OrderProcessingModule.model.valueobjects.UserDTO;
-import com.cs490.shoppingCart.OrderProcessingModule.repository.OrderLineRepository;
+import com.cs490.shoppingCart.OrderProcessingModule.dto.CartLine;
 import com.cs490.shoppingCart.OrderProcessingModule.repository.OrderRepository;
 import com.cs490.shoppingCart.OrderProcessingModule.service.OrderService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,10 +25,13 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public List<Order> getOrders() {
-        return orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+         return orders;
     }
 
     //update
@@ -40,14 +39,17 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder (OrderRequestDTO orderRequestDTO) {
 
         Order pendingOrder = createOrderLine(orderRequestDTO.getShoppingCart());
+        // call UserService to get userDetails
+        UserDTO userDTO = new UserDTO();
+        pendingOrder.setUserInfo(creteUserInfoString(userDTO));
+        orderRepository.save(pendingOrder);
         PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(
                 orderRequestDTO.getShoppingCart().getUserId(),pendingOrder.getId(),
                 pendingOrder.getTotalPrice()*0.15 + pendingOrder.getTotalPrice(),
-                new PaymentInfoDTO(
                         orderRequestDTO.getPaymentInfoDTO().getCardNumber(),
                         orderRequestDTO.getPaymentInfoDTO().getNameOnCard(),
                         orderRequestDTO.getPaymentInfoDTO().getCCV(),
-                        orderRequestDTO.getPaymentInfoDTO().getCardExpiry())
+                        orderRequestDTO.getPaymentInfoDTO().getCardExpiry()
         );
         // call payment module right here
         return pendingOrder;
@@ -55,43 +57,46 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean checkOrderExistance(Integer id) {
+    public boolean checkOrderExistance(Long id) {
         return orderRepository.existsById(id);
     }
 
     @Override
-    public Order getOrder(int orderId) {
+    public Order getOrder(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow();
     }
 
     @Override
-    public Order createGuestOrder(GuestOrderRequest guestOrderRequest) {
+    public OrderDTO createGuestOrder(GuestOrderRequest guestOrderRequest) {
+
         // rest template call to use service returns userobject
         UserDTO tempUser = new UserDTO();
-        ShoppingCart shoppingCart =  guestOrderRequest.getShoppingCart();
+        ShoppingCartDTO shoppingCart =  guestOrderRequest.getShoppingCart();
         shoppingCart.setUserId(tempUser.getId());
         Order pendingOrder = createOrderLine(shoppingCart);
+        pendingOrder.setUserInfo(creteUserInfoString(guestOrderRequest.getUserInfo()));
+        orderRepository.save(pendingOrder);
         PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(
                 tempUser.getId(),pendingOrder.getId(),
                 pendingOrder.getTotalPrice()*0.15 + pendingOrder.getTotalPrice(),
-                new PaymentInfoDTO(
                         guestOrderRequest.getPaymentInfo().getCardNumber(),
                         guestOrderRequest.getPaymentInfo().getNameOnCard(),
                         guestOrderRequest.getPaymentInfo().getCCV(),
-                        guestOrderRequest.getPaymentInfo().getCardExpiry())
+                        guestOrderRequest.getPaymentInfo().getCardExpiry()
         );
+
         // call payment module right here
-        return pendingOrder;
+        return modelMapper.map(pendingOrder,OrderDTO.class);
     }
 
 
     @Override
-    public List<Order> getOrdersForUser(int userId) {
+    public List<Order> getOrdersForUser(Long userId) {
         return orderRepository.findAllByUserIdEquals(userId);
     }
 
     @Override
-    public boolean checkOrderStatusIsNotSuccessful(int orderId) {
+    public boolean checkOrderStatusIsNotSuccessful(Long orderId) {
 
         Order order = orderRepository.findById(orderId).get();
         if(order.getOrderStatus() == OrderStatus.OS){
@@ -102,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
             return true;
         }
     }
-    private Order createOrderLine(ShoppingCart shoppingCart){
+    private Order createOrderLine(ShoppingCartDTO shoppingCart){
 
         Set<CartLine> cartLines = shoppingCart.getCartLines();
         Order order = new Order();
@@ -118,10 +123,18 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(OrderStatus.OP);
         order.setUserId(shoppingCart.getUserId());
         order.setTotalPrice(shoppingCart.getTotalPrice());
-        Order pendingOrder = orderRepository.save(order);
-        return pendingOrder;
+        return order;
     }
-
+    private String creteUserInfoString(UserDTO userDTO){
+        String userInfo = "";
+        try {
+            ObjectMapper ob = new ObjectMapper();
+            userInfo =  ob.writeValueAsString(userDTO);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return userInfo;
+    }
 
 
 }

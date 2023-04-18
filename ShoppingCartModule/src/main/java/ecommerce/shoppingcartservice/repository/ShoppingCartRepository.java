@@ -7,10 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ShoppingCartRepository extends JpaRepository<ShoppingCart,Integer> {
+public interface ShoppingCartRepository extends JpaRepository<ShoppingCart,Long> {
 
-    ShoppingCart findShoppingCartByUserIdEqualsAndCartStatusEquals(Integer id, boolean status);
-    ShoppingCart findShoppingCartByUserId(Integer id);
+    ShoppingCart findShoppingCartByUserIdEqualsAndCartStatusEquals(Long id, boolean status);
+    ShoppingCart findShoppingCartByUserId(Long id);
 
-    Optional<ShoppingCart> findShoppingCartByCartLinesId(int id);
+    Optional<ShoppingCart> findShoppingCartByCartLinesId(Long id);
 }
