@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @Repository
-public interface VisaCardRepository extends JpaRepository<VisaCard, Integer> {
+public interface VisaCardRepository extends JpaRepository<VisaCard, Long> {
     VisaCard getVisaCardByCardNumberAndNameAndCCVAndCardExpiry(
             String cardNumber,
             String name,

@@ -14,7 +14,7 @@ public interface PaymentService {
 
     List<Transaction> getAll();
 
-    List<Transaction> findByUserId(Integer id);
+    List<Transaction> findByUserId(Long id);
 
-    Transaction findByOrderId(Integer id);
+    Transaction findByOrderId(Long id);
 }
