@@ -12,10 +12,14 @@ import java.time.LocalDate;
 
 public class PaymentRequestDTO {
 
-    private Integer userId;
-    private Integer orderId;
+    private Long userId;
+    private Long orderId;
     private Double amount;
-    private PaymentInfoDTO paymentInfoDTO;
+    private String cardNumber;
+    private String nameOnCard;
+    private String CCV;
+    private LocalDate cardExpiry;
+
 
 
 }

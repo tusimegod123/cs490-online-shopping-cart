@@ -1,6 +1,5 @@
-package ecommerce.shoppingcartservice.model;
+package ecommerce.shoppingcartservice.model.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,17 +7,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
-public class Product {
+public class ProductDTO {
 
     private Integer id;
     private String name;
     private String description;
     private Double price;
-    private String category;
     private String imgUrl;
 
-    public Product(String name,String description,String category,Double price){
-        this.category = category;
+    public ProductDTO(String name, String description, Double price){
+
         this.price = price;
         this.description = description;
         this.name =  name;
