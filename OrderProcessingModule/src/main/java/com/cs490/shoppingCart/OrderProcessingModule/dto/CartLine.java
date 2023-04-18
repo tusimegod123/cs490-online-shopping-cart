@@ -1,4 +1,4 @@
-package com.cs490.shoppingCart.OrderProcessingModule.model.valueobjects;
+package com.cs490.shoppingCart.OrderProcessingModule.dto;
 
 import com.cs490.shoppingCart.OrderProcessingModule.model.Product;
 import lombok.AllArgsConstructor;
@@ -13,8 +13,8 @@ import java.util.Objects;
 @AllArgsConstructor
 public class CartLine {
 
-    private Integer id;
-    private Integer productId;
+    private Long id;
+    private Long productId;
     private Integer quantity;
     private Double price;
     private String productInfo;

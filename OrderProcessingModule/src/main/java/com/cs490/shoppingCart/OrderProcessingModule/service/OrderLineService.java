@@ -5,9 +5,9 @@ import com.cs490.shoppingCart.OrderProcessingModule.model.OrderLine;
 
 public interface OrderLineService {
 
-    void removeCartLine(int cartId);
+    void removeCartLine(Long cartId);
 
-    public boolean checkCartLineExistence(Integer cartId);
+    public boolean checkCartLineExistence(Long cartId);
 
     OrderLine updateCartLine(OrderLine cartLine);
 }

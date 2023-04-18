@@ -1,6 +1,7 @@
 package com.cs490.shoppingCart.OrderProcessingModule.service;
 
 
+import com.cs490.shoppingCart.OrderProcessingModule.dto.OrderDTO;
 import com.cs490.shoppingCart.OrderProcessingModule.dto.OrderRequestDTO;
 import com.cs490.shoppingCart.OrderProcessingModule.model.Order;
 import com.cs490.shoppingCart.OrderProcessingModule.dto.GuestOrderRequest;
@@ -15,14 +16,14 @@ public interface OrderService {
 
 
 
-    boolean checkOrderExistance(Integer id);
+    boolean checkOrderExistance(Long id);
 
 
-    Order getOrder(int orderId);
+    Order getOrder(Long orderId);
 
-    Order createGuestOrder(GuestOrderRequest guestOrderRequest);
+    OrderDTO createGuestOrder(GuestOrderRequest guestOrderRequest);
 
-    List<Order> getOrdersForUser(int userId);
+    List<Order> getOrdersForUser(Long userId);
 
-    boolean checkOrderStatusIsNotSuccessful(int orderId);
+    boolean checkOrderStatusIsNotSuccessful(Long orderId);
 }

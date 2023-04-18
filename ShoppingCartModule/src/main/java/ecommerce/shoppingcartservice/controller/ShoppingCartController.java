@@ -1,7 +1,7 @@
 package ecommerce.shoppingcartservice.controller;
 
-import ecommerce.shoppingcartservice.dto.RequestModel;
-import ecommerce.shoppingcartservice.model.ShoppingCart;
+import ecommerce.shoppingcartservice.model.dto.RequestModel;
+import ecommerce.shoppingcartservice.model.dto.ShoppingCartDTO;
 import ecommerce.shoppingcartservice.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,26 +16,24 @@ public class ShoppingCartController {
   private ShoppingCartService shoppingCartService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ShoppingCart> getCartItems(@PathVariable int userId){
+    public ResponseEntity<ShoppingCartDTO> getCartItems(@PathVariable Long userId){
         boolean validUser;  //rest template call about existance of user;
         if(shoppingCartService.checkCartExistForUser(userId)){
-            ShoppingCart cart = shoppingCartService.getCartItems(userId);
+            ShoppingCartDTO cart = shoppingCartService.getCartItems(userId);
             return new ResponseEntity<>(cart, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping()
-    public ResponseEntity<?> addToCart(@RequestBody RequestModel requestModel){
-        ShoppingCart shoppingCart = shoppingCartService.addToCart(requestModel);
+    public ResponseEntity<ShoppingCartDTO> addToCart(@RequestBody RequestModel requestModel){
+        ShoppingCartDTO shoppingCart = shoppingCartService.addToCart(requestModel);
         return new ResponseEntity<>(shoppingCart,HttpStatus.CREATED);
     }
     @PostMapping("/{cartId}/checkout")
-    public ResponseEntity<?> checkOut(@PathVariable int cartId
-            //, @RequestBody ShoppingCart shoppingCart
-                                      ){
+    public ResponseEntity<ShoppingCartDTO> checkOut(@PathVariable Long cartId){
         if(shoppingCartService.checkCartExistance(cartId)){
-            ShoppingCart shoppingCart = shoppingCartService.checkOut(cartId);
+            ShoppingCartDTO shoppingCart = shoppingCartService.checkOut(cartId);
             return new ResponseEntity<>(shoppingCart,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
