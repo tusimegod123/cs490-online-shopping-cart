@@ -47,7 +47,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(requestModel.getUserId());
 
             Optional<CartLine> cartLineEx = shoppingCart.getCartLines().stream().filter(cartLine -> cartLine.getProductId().compareTo(
-                    //requestModel.getProductId()) && shoppingCart.getCartStatus() == false ).findAny();
                      requestModel.getProductDTO().getId()) == 0 ).findAny();
             if(cartLineEx.isPresent()){
                 CartLine cartLineExisting = cartLineEx.get();

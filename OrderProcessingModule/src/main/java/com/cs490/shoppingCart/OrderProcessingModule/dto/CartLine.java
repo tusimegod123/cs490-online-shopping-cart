@@ -14,6 +14,7 @@ import java.util.Objects;
 public class CartLine {
 
     private Long id;
+    private Long userId;
     private Long productId;
     private Integer quantity;
     private Double price;
