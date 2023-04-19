@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.ProductManagementModule.controller;
 
+import com.cs490.shoppingCart.ProductManagementModule.dto.ListProductResponseSpecificID;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
@@ -168,6 +169,13 @@ public class ProductController {
     @DeleteMapping("/delete/{fileName}")
     public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
         return new ResponseEntity<>(productService.deleteFile(fileName), HttpStatus.OK);
+    }
+
+    @GetMapping("/productDetail")
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam(required = true) List<Long> productId){
+
+        return productService.getAllProductWithSpecificIDList(productId);
+
     }
 
 }

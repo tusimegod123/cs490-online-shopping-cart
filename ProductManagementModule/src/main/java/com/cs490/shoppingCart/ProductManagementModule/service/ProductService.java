@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.ProductManagementModule.service;
 
+import com.cs490.shoppingCart.ProductManagementModule.dto.ListProductResponseSpecificID;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
@@ -7,6 +8,7 @@ import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundExce
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -37,5 +39,7 @@ public interface ProductService {
 
 
     public String deleteFile(String fileName);
+
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam List<Long> productId);
 
 }

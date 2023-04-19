@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.ProductManagementModule.mapper;
 
+import com.cs490.shoppingCart.ProductManagementModule.dto.ListProductResponseSpecificID;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
@@ -18,5 +19,7 @@ public interface ProductMapper {
     ProductResponse fromCreateProductResponseToDomain(Product product) throws ItemNotFoundException;
 
     ProductResponse fromGetAllProductResponseToDomain(ProductResponse productResponse);
+
+    ListProductResponseSpecificID fromDomainToListProductResponseSpecificID(Product product);
 
 }

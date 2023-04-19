@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
 import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponse;
+import com.cs490.shoppingCart.ProductManagementModule.dto.ListProductResponseSpecificID;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
@@ -316,5 +317,25 @@ public class ProductServiceImp implements ProductService {
             log.error("Error converting multipartFile to file", e);
         }
         return convertedFile;
+    }
+
+    @Override
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(List<Long> productId) {
+
+        productId.add(1L);
+        productId.add(2L);
+        List<Product> products = productRepository.findAll();
+        List<ListProductResponseSpecificID> list = new ArrayList<>();
+
+
+        for(Product product: products){
+            for(Long id: productId){
+                if(product.getProductId()==id){
+                    list.add(productMapper.fromDomainToListProductResponseSpecificID(product));
+                }
+            }
+        }
+
+        return list;
     }
 }
