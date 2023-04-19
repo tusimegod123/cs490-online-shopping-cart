@@ -173,9 +173,7 @@ public class ProductController {
 
     @GetMapping("/productDetail")
     public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam(required = true) List<Long> productId){
-
         return productService.getAllProductWithSpecificIDList(productId);
-
     }
 
 }
