@@ -320,7 +320,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(List<Long> productId) {
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(Set<Long> productId) {
 
         List<Product> products = productRepository.findAll();
         List<ListProductResponseSpecificID> list = new ArrayList<>();

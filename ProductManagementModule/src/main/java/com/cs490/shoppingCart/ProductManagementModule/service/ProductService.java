@@ -40,6 +40,6 @@ public interface ProductService {
 
     public String deleteFile(String fileName);
 
-    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam List<Long> productId);
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam Set<Long> productId);
 
 }

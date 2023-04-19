@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This Class represents Product Controller for Product Management Module
@@ -172,7 +173,7 @@ public class ProductController {
     }
 
     @GetMapping("/productDetail")
-    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam(required = true) List<Long> productId){
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam(required = true) Set<Long> productId){
         return productService.getAllProductWithSpecificIDList(productId);
     }
 
