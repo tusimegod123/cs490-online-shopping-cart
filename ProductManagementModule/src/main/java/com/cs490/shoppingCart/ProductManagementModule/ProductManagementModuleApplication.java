@@ -16,10 +16,5 @@ public class ProductManagementModuleApplication {
 
 	}
 
-//	@LoadBalanced
-//	@Bean
-//	public RestTemplate restTemplate() {
-//		return new RestTemplate();
-//	}
 
 }
