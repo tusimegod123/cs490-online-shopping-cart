@@ -1,5 +1,10 @@
 package com.cs490.shoppingCart.ProductManagementModule.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
 import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponse;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
@@ -9,16 +14,32 @@ import com.cs490.shoppingCart.ProductManagementModule.mapper.CategoryMapper;
 import com.cs490.shoppingCart.ProductManagementModule.mapper.ProductMapper;
 import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
+import com.cs490.shoppingCart.ProductManagementModule.model.User;
 import com.cs490.shoppingCart.ProductManagementModule.repository.CategoryRepository;
 import com.cs490.shoppingCart.ProductManagementModule.repository.ProductRepository;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * This Class represents Product Service for Product Management Module
+ * @version : version 1.0.0
+ * @author sophearyrin , sonytanget
+ * @since: 2023
+ */
 @Service
+@Slf4j
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -33,11 +54,17 @@ public class ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-//    @Autowired
-//    private RestTemplate restTemplate;
+    @Autowired
+    private RestTemplate restTemplate;
 
-//    @Value("${user.endpoint}")
-//    private String userEndpoint;
+    @Value("${user.endpoint}")
+    private String userEndpoint;
+
+    @Value("${application.bucket.name}")
+    private String bucketName;
+
+    @Autowired
+    private AmazonS3 s3Client;
 
     public ProductService(ProductRepository productRepository,
                           ProductMapper productMapper) {
@@ -45,13 +72,19 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
-    public ProductResponse createProduct(ProductRequest productRequest) throws ItemNotFoundException {
+    /**
+     * To crate a product
+     * @param productRequest product request for creating a product
+     * @return Product Response
+     * @throws ItemNotFoundException
+     */
+    public ProductResponse createProduct(@RequestBody ProductRequest productRequest) throws ItemNotFoundException {
         Product product = productMapper.fromCreateProductRequestToDomain(productRequest);
         product.setVerified(false);
 
-//        //Get User
-//         User user = restTemplate.getForObject("http://localhost:9898/api/v1/users/{id}",
-//         User.class, productRequest.getUserId());
+        //Get User object from userService
+         User user = restTemplate.getForObject(userEndpoint + "/users/{id}",
+         User.class, productRequest.getUserId());
 
         // Get id from input
         Long categoryId = productRequest.getCategoryId();
@@ -64,26 +97,45 @@ public class ProductService {
         Product productToAdd = productRepository.save(product);
         ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productToAdd);
         productResponse.setCategory(category);
-//        productResponse.setUser(user);
+        productResponse.setUser(user);
         return productResponse;
     }
 
-    public Product modifyProduct(Product product, Long productId){
-        Product productToBeModified = productRepository.findById(productId).get();
-        return productRepository.save(productToBeModified);
-    }
-    public List<ProductResponse> allProducts() throws ItemNotFoundException {
+    /**
+     * Get all the products
+     * @param name search product by product name
+     * @param categoryId search product by category Id
+     * @return List of Product Response
+     * @throws ItemNotFoundException
+     */
+    public List<ProductResponse> allProducts(String name, Long categoryId) throws ItemNotFoundException {
 
         List<Product> products = productRepository.findAll();
+
+        //Search Product by ProductName
+        if(name!=null){
+            products = productRepository.findProductByProductName(name);
+        }
+
+        //Search Product by categroyID
+        if(categoryId!=null){
+            products = productRepository.findProductByCategoryId(categoryId);
+        }
+
         List<ProductResponse> productResponses = new ArrayList<>();
         Set<Long> categoryIds = products.stream().map(p -> p.getCategoryId()).collect(Collectors.toSet());
+
 
         HashMap<Long, Category> categoryHashMap = getCategoryMap(categoryIds);
 
         for (Product product : products) {
+            User user = restTemplate.getForObject(userEndpoint + "/users/{id}",
+                    User.class, product.getUserId());
+
             Category category = categoryHashMap.get(product.getCategoryId());
             ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(product);
             productResponse.setCategory(category);
+            productResponse.setUser(user);
             productResponses.add(productMapper.fromGetAllProductResponseToDomain(productResponse));
         }
         return productResponses;
@@ -101,6 +153,12 @@ public class ProductService {
         return categoryMap;
     }
 
+    /**
+     * Get Product by ProductID
+     * @param id product Id
+     * @return ProductResponse
+     * @throws ItemNotFoundException
+     */
     public ProductResponse getProductById(Long id) throws ItemNotFoundException {
 
         Optional<Product> product = productRepository.findById(id);
@@ -109,12 +167,7 @@ public class ProductService {
 
             Product productResult = product.get();
 
-            //TODO:
             Long categoryId = productResult.getCategoryId();
-//            Category category = categoryRepository.findById(categoryId).orElseThrow(()-> {
-//                return new ItemNotFoundException("No category found");
-//            });
-
             Category category;
             Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
             if (categoryOpt.isPresent()) {
@@ -123,15 +176,23 @@ public class ProductService {
                 category = null;
             }
 
+            User user = restTemplate.getForObject(userEndpoint + "/users/{id}",
+                    User.class, productResult.getUserId());
 
             ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productResult);
             productResponse.setCategory(category);
+            productResponse.setUser(user);
             return productResponse;
         } else {
             throw new ItemNotFoundException("No product found with id: " +id);
         }
     }
 
+    /**
+     * Delete the product
+     * @param id : product Id
+     * @return boolean true or false
+     */
     public Boolean deleteProductById(Long id) {
 
         Optional<Product> product = productRepository.findById(id);
@@ -149,6 +210,14 @@ public class ProductService {
         return true;
     }
 
+    /**
+     * To Update the product
+     * @param product request body
+     * @param productId product Id
+     * @return ProductResponse
+     * @throws ItemNotFoundException
+     * @throws IdNotMatchException
+     */
     public ProductResponse updateProduct(Product product, Long productId) throws ItemNotFoundException, IdNotMatchException {
 
         Optional<Product> productToBeModified = productRepository.findById(productId);
@@ -168,18 +237,29 @@ public class ProductService {
     }
 
 
-    //Product Approval
-
+    /**
+     * To get all approval products
+     * @return list of product
+     */
     public List<Product> verifiedProducts(){
         List<Product> products = productRepository.findAllByVerified(true);
         return products;
     }
 
+    /**
+     * To get all un approval products
+     * @return list of product
+     */
     public List<Product> unverifiedProducts(){
         List<Product> products = productRepository.findAllByVerified(false);
         return products;
     }
 
+    /**
+     * To approve the product one by one
+     * @param productId : product Id
+     * @return true or false boolean
+     */
     public boolean approveProducts(Long productId) {
         if(productId != null) {
             //approve single product
@@ -195,5 +275,48 @@ public class ProductService {
             }
             return true;
         }
+    }
+
+    /**
+     * This is optional code
+     * Upload image when create a product
+     */
+
+    public String uploadFile(MultipartFile file) {
+        File fileObj = convertMultiPartFileToFile(file);
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+        fileObj.delete();
+        return "File uploaded : " + fileName;
+    }
+
+
+    public byte[] downloadFile(String fileName) {
+        S3Object s3Object = s3Client.getObject(bucketName, fileName);
+        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+        try {
+            byte[] content = IOUtils.toByteArray(inputStream);
+            return content;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public String deleteFile(String fileName) {
+        s3Client.deleteObject(bucketName, fileName);
+        return fileName + " removed ...";
+    }
+
+
+    private File convertMultiPartFileToFile(MultipartFile file) {
+        File convertedFile = new File(file.getOriginalFilename());
+        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+            fos.write(file.getBytes());
+        } catch (IOException e) {
+            log.error("Error converting multipartFile to file", e);
+        }
+        return convertedFile;
     }
 }

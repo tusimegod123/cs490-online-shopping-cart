@@ -14,6 +14,7 @@ public interface ProductMapper {
     @Mapping(target = "productId", ignore = true)
     Product fromCreateProductRequestToDomain(ProductRequest productRequest);
 
+    @Mapping(target = "user", ignore = true)
     ProductResponse fromCreateProductResponseToDomain(Product product) throws ItemNotFoundException;
 
     ProductResponse fromGetAllProductResponseToDomain(ProductResponse productResponse);
