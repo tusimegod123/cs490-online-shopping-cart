@@ -10,7 +10,4 @@ import java.util.List;
 @Repository
 public interface ProfitRepository extends JpaRepository<Profit, Long> {
 
-
-//    List<Product> findAllByVerified(@Param("verified")boolean verified);
-
 }
