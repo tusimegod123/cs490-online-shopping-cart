@@ -59,16 +59,13 @@ public class PaymentServiceImp implements PaymentService {
                 newTransaction.setTransactionType(TransactionType.OrderPayment);
 
                 if(response.getCurrentBalance() >= request.getAmount()){
+                    //order payment here
                     newTransaction.setTransactionStatus(TransactionStatus.TS);
                     newTransaction.setCardBalance(response.getCurrentBalance() - request.getAmount());
                     Transaction savedTransaction = transactionRepository.save(newTransaction);
 
                     sendNotification(savedTransaction.getNotificationRequest());
-
-                    //2. rest call profit sharing service
-//                    ProfitShareRequest profitShareRequest = savedTransaction.getProfitSharingRequest();
-                    //restTemplate.postForLocation("http://profit-sharing-service:8084/", profitShareRequest);
-//                    System.out.println(profitShareRequest);
+                    sendProfitCalculator(savedTransaction.getProfitSharingRequest());
 
                     return TransactionStatus.TS;
                 } else {
@@ -114,14 +111,7 @@ public class PaymentServiceImp implements PaymentService {
                     newTransaction.setCardBalance(response.getCurrentBalance() - request.getAmount());
                     Transaction savedTransaction = transactionRepository.save(newTransaction);
 
-                    //0. call notification service
-
-                    NotificationRequest notificationRequest = savedTransaction.getNotificationRequest();
-                    //String response = restTemplate.postForObject("http://notification-service:8084/", notificationRequest, String.class);
-                    //1. what response should I expect?
-
-
-                    //2. call user service - update user status
+                    sendNotification(savedTransaction.getNotificationRequest());
 
                     return TransactionStatus.TS;
 
@@ -194,6 +184,26 @@ public class PaymentServiceImp implements PaymentService {
             logger.info("Confirmation email is sent for transaction : " + request.getTransactionNumber());
         }, error -> {
             logger.error("Failed to send confirmation email for transaction : " + request.getTransactionNumber());
+        });
+    }
+
+    private void sendProfitCalculator(ProfitShareRequest request){
+        System.out.println(request);
+
+        WebClient client = WebClient.create("http://localhost:9092");
+
+        Mono<String> response = client.post()
+                .uri("/api/v1/profit/processProfit")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(String.class);
+
+        response.subscribe(result -> {
+            //2. call user service - update user status
+            logger.info("Profit sharing process is done for transaction" + request.getTransactionNumber());
+        }, error -> {
+            logger.error("Failed to process profit for transaction : " + request.getTransactionNumber());
         });
     }
 

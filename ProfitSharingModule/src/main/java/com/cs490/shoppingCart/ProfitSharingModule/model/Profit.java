@@ -12,14 +12,18 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 public class Profit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Long userId;
-    private Long paymentId;
+
+    private Long productId;
     private Double percentage;
     private Double amount;
-    @Temporal(TemporalType.DATE)
+
+    private Long transactionId;
+    private String transactionNumber;
+
     private Date transactionDate;
 }

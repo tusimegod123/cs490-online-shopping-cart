@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 public class ProfitRequest {
 
-    private Long Id;
+    private Long transactionId;
 
     private Long orderId;
 
@@ -17,6 +17,5 @@ public class ProfitRequest {
 
     private String transactionNumber;
 
-    @Temporal(TemporalType.DATE)
     private Date transactionDate;
 }

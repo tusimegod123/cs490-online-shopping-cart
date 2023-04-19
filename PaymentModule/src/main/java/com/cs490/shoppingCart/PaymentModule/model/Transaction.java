@@ -33,7 +33,7 @@ public class Transaction {
 
     private String transactionNumber;
 
-    @Temporal(TemporalType.DATE)
+    //@Temporal(TemporalType.DATE)
     private Date transactionDate;
 
     @Enumerated(EnumType.STRING)
