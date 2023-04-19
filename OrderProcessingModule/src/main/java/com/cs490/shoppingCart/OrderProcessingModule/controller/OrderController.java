@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.OrderProcessingModule.controller;
 
+import com.cs490.shoppingCart.OrderProcessingModule.dto.OrderDTO;
 import com.cs490.shoppingCart.OrderProcessingModule.dto.OrderRequestDTO;
 import com.cs490.shoppingCart.OrderProcessingModule.exception.OrderlineEmptyException;
 import com.cs490.shoppingCart.OrderProcessingModule.model.*;
@@ -20,8 +21,7 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<Order> getOrder(@PathVariable int orderId){
-
+    public ResponseEntity<Order> getOrder(@PathVariable Long orderId){
         if(orderService.checkOrderExistance(orderId)){
             Order order = orderService.getOrder(orderId);
             return new ResponseEntity<>(order, HttpStatus.OK);
@@ -35,14 +35,14 @@ public class OrderController {
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
     @GetMapping("users/{userId}")
-    public ResponseEntity<?> getOrderForUser(@PathVariable int userId){
+    public ResponseEntity<?> getOrderForUser(@PathVariable Long userId){
         //check user existance from godwin
         List<Order> orderList = orderService.getOrdersForUser(userId);
         return new ResponseEntity<>(orderList,HttpStatus.OK);
         //}
     }
     @GetMapping("/{orderId}/checkExistance")
-    public ResponseEntity<?> orderExist(@PathVariable int orderId){
+    public ResponseEntity<?> orderExist(@PathVariable Long orderId){
         boolean exist = orderService.checkOrderExistance(orderId);
         return new ResponseEntity<>(orderService.checkOrderExistance(orderId),HttpStatus.OK);
 
@@ -50,22 +50,25 @@ public class OrderController {
 
     @PostMapping()
     public ResponseEntity<?> createOrderRegisteredUser(@RequestBody OrderRequestDTO orderRequestDTO){
+
         if(!orderRequestDTO.getShoppingCart().getCartLines().isEmpty()){
-            //shoppingCart.getCartLines()
             Order order = orderService.createOrder(orderRequestDTO);
             return new ResponseEntity<>(order,HttpStatus.CREATED);
         }
         return new ResponseEntity<>(new OrderlineEmptyException("You don't have any item to order"),HttpStatus.NOT_FOUND);
     }
+
+
     @PostMapping("/guestUser")
     public ResponseEntity<?> createOrderForGuestUser(@RequestBody GuestOrderRequest guestOrderRequest){
-        if(guestOrderRequest.getShoppingCart().getCartLines().isEmpty()){
-            Order order = orderService.createGuestOrder(guestOrderRequest);
+        if(!guestOrderRequest.getShoppingCart().getCartLines().isEmpty()){
+            OrderDTO order = orderService.createGuestOrder(guestOrderRequest);
+            return new ResponseEntity<>(order,HttpStatus.CREATED);
         }
         return new ResponseEntity<>(new OrderlineEmptyException("You don't have any item to order"),HttpStatus.NOT_FOUND);
     }
     @PostMapping("/{orderId}/updateStatus")
-    public ResponseEntity<?> updateStatus(@PathVariable int orderId){
+    public ResponseEntity<?> updateStatus(@PathVariable Long orderId){
         if(orderService.checkOrderExistance(orderId)){
             if(orderService.checkOrderStatusIsNotSuccessful(orderId))
                 return new ResponseEntity<>(HttpStatus.OK);

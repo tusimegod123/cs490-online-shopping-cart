@@ -2,6 +2,7 @@ package com.cs490.shoppingCart.NotificationModule.web;
 
 import com.cs490.shoppingCart.NotificationModule.service.EmailDTO;
 import com.cs490.shoppingCart.NotificationModule.service.EmailSenderService;
+import com.cs490.shoppingCart.NotificationModule.service.TransactionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +28,16 @@ public class NotificationModuleController {
     @ResponseBody
     public ResponseEntity<String> sendEmail(@RequestBody EmailDTO email) throws Exception{
 
-        senderService.sendSimpleEmail(email);
+        senderService.formatAndSendEmail(null,email);
         return new ResponseEntity<>("An email has been sent successfully!", HttpStatus.OK);
     }
 
+    @PostMapping(path = "/email/transaction")
+    @ResponseBody
+    public ResponseEntity<String> sendTransactionEmail(@RequestBody TransactionDTO transac) throws Exception{
+
+        senderService.formatAndSendEmail(transac, null);
+        return new ResponseEntity<>("An email has been sent successfully!", HttpStatus.OK);
+    }
 
 }

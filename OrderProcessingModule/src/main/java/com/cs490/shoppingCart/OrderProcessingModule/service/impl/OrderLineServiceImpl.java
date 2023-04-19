@@ -27,12 +27,12 @@ public class OrderLineServiceImpl implements OrderLineService {
     OrderService orderService;
 
     @Override
-    public void removeCartLine(int cartId) {
+    public void removeCartLine(Long cartId) {
         cartLineRepository.deleteById(cartId);
     }
 
     @Override
-    public boolean checkCartLineExistence(Integer cartId){
+    public boolean checkCartLineExistence(Long cartId){
         return cartLineRepository.existsById(cartId);
     }
 

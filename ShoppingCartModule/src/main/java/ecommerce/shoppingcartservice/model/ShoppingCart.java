@@ -19,8 +19,8 @@ import java.util.Set;
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private Integer userId;
+    private Long id;
+    private Long userId;
     private Boolean cartStatus;
     private LocalDateTime cartDate;
 //   Still in doubt

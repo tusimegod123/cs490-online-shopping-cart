@@ -1,9 +1,7 @@
 package ecommerce.shoppingcartservice.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ecommerce.shoppingcartservice.dto.CartLineRequest;
+import ecommerce.shoppingcartservice.model.dto.CartLineRequest;
 import ecommerce.shoppingcartservice.model.CartLine;
-import ecommerce.shoppingcartservice.model.Product;
 import ecommerce.shoppingcartservice.model.ShoppingCart;
 import ecommerce.shoppingcartservice.repository.CartLineRepository;
 import ecommerce.shoppingcartservice.repository.ShoppingCartRepository;
@@ -26,12 +24,12 @@ public class CartLineServiceImpl implements CartLineService {
     ShoppingCartService shoppingCartService;
 
     @Override
-    public void removeCartLine(int cartId) {
+    public void removeCartLine(Long cartId) {
         cartLineRepository.deleteById(cartId);
     }
 
     @Override
-    public boolean checkCartLineExistence(Integer cartId){
+    public boolean checkCartLineExistence(Long cartId){
         return cartLineRepository.existsById(cartId);
     }
 
