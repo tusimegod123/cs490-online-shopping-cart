@@ -1,10 +1,9 @@
 package ecommerce.shoppingcartservice.controller;
 
-import ecommerce.shoppingcartservice.dto.CartLineRequest;
+import ecommerce.shoppingcartservice.model.dto.CartLineRequest;
 import ecommerce.shoppingcartservice.exception.InvalidQuantity;
 import ecommerce.shoppingcartservice.model.CartLine;
 import ecommerce.shoppingcartservice.service.CartLineService;
-import ecommerce.shoppingcartservice.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,7 @@ public class CartLineController {
 
 
     @DeleteMapping("/{cartLineId}")
-    public ResponseEntity<?> removeCartLine(@PathVariable Integer cartLineId){
+    public ResponseEntity<?> removeCartLine(@PathVariable Long cartLineId){
         if(cartLineService.checkCartLineExistence(cartLineId)){
             cartLineService.removeCartLine(cartLineId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
