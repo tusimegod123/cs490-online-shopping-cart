@@ -7,8 +7,14 @@ import com.cs490.shoppingCart.PaymentModule.model.TransactionType;
 import com.cs490.shoppingCart.PaymentModule.repository.TransactionRepository;
 import com.cs490.shoppingCart.PaymentModule.service.BankService;
 import com.cs490.shoppingCart.PaymentModule.service.PaymentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,6 +27,12 @@ public class PaymentServiceImp implements PaymentService {
 
     @Autowired
     TransactionRepository transactionRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(PaymentServiceImp.class);
 
     @Override
     public TransactionStatus processOrderPayment(PaymentRequest request) throws Exception {
@@ -51,18 +63,14 @@ public class PaymentServiceImp implements PaymentService {
                     newTransaction.setCardBalance(response.getCurrentBalance() - request.getAmount());
                     Transaction savedTransaction = transactionRepository.save(newTransaction);
 
-                    //call notification service
-                    NotificationRequest notificationRequest = savedTransaction.getNotificationRequest();
-                    //String response = restTemplate.postForObject("http://notification-service:8084/", notificationRequest, String.class);
-                    //1. what response should I expect?
+                    sendNotification(savedTransaction.getNotificationRequest());
 
                     //2. rest call profit sharing service
-                    ProfitShareRequest profitShareRequest = savedTransaction.getProfitSharingRequest();
-                    //String response = restTemplate.postForObject("http://profit-sharing-service:8084/", profitShareRequest, String.class);
-                    //3. what response should I expect?
+//                    ProfitShareRequest profitShareRequest = savedTransaction.getProfitSharingRequest();
+                    //restTemplate.postForLocation("http://profit-sharing-service:8084/", profitShareRequest);
+//                    System.out.println(profitShareRequest);
 
                     return TransactionStatus.TS;
-
                 } else {
                     //add transaction with TF - Done
                     newTransaction.setTransactionStatus(TransactionStatus.TF);
@@ -168,6 +176,25 @@ public class PaymentServiceImp implements PaymentService {
     @Override
     public Transaction findByOrderId(Long id) {
         return transactionRepository.findTransactionByOrderId(id);
+    }
+
+    private void sendNotification(NotificationRequest request){
+        System.out.println(request);
+
+        WebClient client = WebClient.create("http://localhost:8080");
+
+        Mono<String> response = client.post()
+                .uri("/onlineshopping/notification/email/transaction")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(String.class);
+
+        response.subscribe(result -> {
+            logger.info("Confirmation email is sent for transaction : " + request.getTransactionNumber());
+        }, error -> {
+            logger.error("Failed to send confirmation email for transaction : " + request.getTransactionNumber());
+        });
     }
 
 }
