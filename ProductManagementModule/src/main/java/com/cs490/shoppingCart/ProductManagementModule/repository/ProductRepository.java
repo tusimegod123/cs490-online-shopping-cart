@@ -16,8 +16,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 //    @Query("select * from Product p where p.verified = :verified")
     List<Product> findAllByVerified(@Param("verified")boolean verified);
 
-
-    List<Product> findProductByProductName(String name);
+    @Query(value = "select * from product p where p.product_name LIKE %:productName%", nativeQuery = true)
+    List<Product> findProductByProductName(@Param("productName") String productName);
 
     List<Product> findProductByCategoryId(Long categoryId);
 

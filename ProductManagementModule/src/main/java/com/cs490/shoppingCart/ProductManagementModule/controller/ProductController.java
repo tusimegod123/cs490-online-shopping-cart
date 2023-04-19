@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.ProductManagementModule.controller;
 
+import com.cs490.shoppingCart.ProductManagementModule.dto.ListProductResponseSpecificID;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This Class represents Product Controller for Product Management Module
@@ -168,6 +170,11 @@ public class ProductController {
     @DeleteMapping("/delete/{fileName}")
     public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
         return new ResponseEntity<>(productService.deleteFile(fileName), HttpStatus.OK);
+    }
+
+    @GetMapping("/productDetail")
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam(required = true) Set<Long> productId){
+        return productService.getAllProductWithSpecificIDList(productId);
     }
 
 }
