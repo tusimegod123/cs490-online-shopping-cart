@@ -41,9 +41,8 @@ public class OrderServiceImpl implements OrderService {
 
         Order pendingOrder = createOrderLine(orderRequestDTO.getShoppingCart());
         UserDTO userDTO = restTemplate.getForObject("http://localhost:9898/api/v1/users/1", UserDTO.class);
-        //UserDTOx userDTOx = new UserDTOx();
         pendingOrder.setUserInfo(creteUserInfoString(userDTO));
-        orderRepository.save(pendingOrder);
+        Order order=orderRepository.save(pendingOrder);
         PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(
                 orderRequestDTO.getShoppingCart().getUserId(),pendingOrder.getId(),
                 pendingOrder.getTotalPrice()*0.15 + pendingOrder.getTotalPrice(),
@@ -52,7 +51,8 @@ public class OrderServiceImpl implements OrderService {
                         orderRequestDTO.getPaymentInfoDTO().getCCV(),
                         orderRequestDTO.getPaymentInfoDTO().getCardExpiry()
         );
-
+        String status = restTemplate.postForObject("http://localhost:8086/api/v1/payments/payOrder",paymentRequestDTO,String.class);
+        updateOrderStatus(status,order);
         return pendingOrder;
 
     }
@@ -89,7 +89,6 @@ public class OrderServiceImpl implements OrderService {
                         guestOrderRequest.getPaymentInfo().getCCV(),
                         guestOrderRequest.getPaymentInfo().getCardExpiry()
         );
-
         String status = restTemplate.postForObject("http://localhost:8086/api/v1/payments/payOrder",paymentRequestDTO,String.class);
         updateOrderStatus(status,order);
         return modelMapper.map(order,OrderDTO.class);
@@ -143,9 +142,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void updateOrderStatus(String status,Order order){
-        if(status.equalsIgnoreCase("TS"))
+        if(status.contains("TS"))
             order.setOrderStatus(OrderStatus.OS);
-        else if(status.equalsIgnoreCase("TF"))
+        else if(status.contains("TF"))
             order.setOrderStatus(OrderStatus.OF);
         orderRepository.save(order);
     }

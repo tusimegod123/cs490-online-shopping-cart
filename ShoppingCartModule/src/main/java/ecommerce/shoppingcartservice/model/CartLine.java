@@ -19,6 +19,7 @@ public class CartLine {
     private Integer quantity;
     private Double price;
     private Integer productId;
+    @Column(length = 65500 )
     private String productInfo;
     @Override
     public boolean equals(Object obj){
