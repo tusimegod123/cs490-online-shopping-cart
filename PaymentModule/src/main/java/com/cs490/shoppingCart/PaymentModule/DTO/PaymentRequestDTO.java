@@ -11,12 +11,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentRequestDTO {
+
     private Integer orderId;
-
     private Integer userId;
-//    private PaymentType paymentType;
     private Double amount;
-
     private String cardNumber;
     private String nameOnCard;
     private String CCV ;
