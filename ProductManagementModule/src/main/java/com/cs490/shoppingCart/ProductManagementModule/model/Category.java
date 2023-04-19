@@ -5,9 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,9 +12,9 @@ import java.util.List;
 public class Category {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Long id;
+   private Long categoryId;
    private String name;
    private String description;
-   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-   private List<Product> products = new ArrayList<>();
+//   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+//   private List<Product> products = new ArrayList<>();
 }

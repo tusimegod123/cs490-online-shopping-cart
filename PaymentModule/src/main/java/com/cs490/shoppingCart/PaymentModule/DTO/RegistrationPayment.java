@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegistrationPayment {
-    private Integer userId;
+    private Long userId;
 
     private Double amount;
 

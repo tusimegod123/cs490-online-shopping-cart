@@ -5,13 +5,12 @@ import lombok.Data;
 @Data
 public class ProductRequest {
     private String productName;
-    private String description;
     private Double price;
+    private Integer qty;
     private Double itemCost;
-    private Integer quantity;
+    private String description;
     private String imageUrl;
-    private Long vendorId;
+    private Boolean verified;
+    private Long userId;
     private Long categoryId;
-    private String categoryName;
-    private String categoryDescription;
 }

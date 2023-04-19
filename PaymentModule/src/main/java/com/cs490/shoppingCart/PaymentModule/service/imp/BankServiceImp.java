@@ -21,17 +21,24 @@ public class BankServiceImp implements BankService {
     private MasterCardService masterCardService;
 
     @Override
-    public BankResponse processCard(CardDetail cardDetail) {
+    public BankResponse processCard(CardDetail cardDetail) throws Exception {
         BankResponse response = new BankResponse();
 
         if(cardDetail.getCardNumber().charAt(0) == '5'){
             MasterCard card = masterCardService.getMasterDetail(cardDetail);
             System.out.println(card);
+            if(card == null) {
+                throw new Exception("The card doesn't exists in MASTER card table!");
+            }
 
             response.setPaymentType(PaymentType.MASTER);
             response.setCurrentBalance(card.getCardValue());
         } else if(cardDetail.getCardNumber().charAt(0) == '4'){
             VisaCard card = visaCardService.getVisaDetail(cardDetail);
+
+            if(card == null) {
+                throw new Exception("The card doesn't exists in VISA card table!");
+            }
 
             response.setPaymentType(PaymentType.VISA);
             response.setCurrentBalance(card.getCardValue());
