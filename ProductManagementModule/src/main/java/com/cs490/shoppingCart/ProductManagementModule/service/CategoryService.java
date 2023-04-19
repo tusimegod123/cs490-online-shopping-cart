@@ -11,7 +11,7 @@ public interface CategoryService {
 
     public Category createCategory(Category category);
     public CategoryResponse updateCategory(Category category, Long categoryId) throws ItemNotFoundException, IdNotMatchException;
-    public List<Category> getAllCategories();
+    public List<Category> getAllCategories() throws ItemNotFoundException;
 
     public CategoryResponse getCategoryById(Long id) throws ItemNotFoundException;
 

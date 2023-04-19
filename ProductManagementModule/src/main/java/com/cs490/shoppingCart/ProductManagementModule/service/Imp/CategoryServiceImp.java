@@ -45,9 +45,14 @@ public class CategoryServiceImp implements CategoryService {
 
         return categoryResponse;
     }
-    public List<Category> getAllCategories(){
+    public List<Category> getAllCategories() throws ItemNotFoundException {
 
-        return categoryRepository.findAll();
+        List<Category> categoryList = categoryRepository.findAll();
+
+        if (categoryList.isEmpty()) {
+            throw new ItemNotFoundException("No category found in database");
+        }
+        return categoryList;
     }
 
     public CategoryResponse getCategoryById(Long id) throws ItemNotFoundException {
