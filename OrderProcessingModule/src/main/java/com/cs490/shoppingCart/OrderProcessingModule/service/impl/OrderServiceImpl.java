@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,10 +40,9 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder (OrderRequestDTO orderRequestDTO) {
 
         Order pendingOrder = createOrderLine(orderRequestDTO.getShoppingCart());
-        // call UserService to get userDetails
-        UserDTO userDTO = new UserDTO();
+        UserDTO userDTO = restTemplate.getForObject("http://localhost:9898/api/v1/users/1", UserDTO.class);
         pendingOrder.setUserInfo(creteUserInfoString(userDTO));
-        orderRepository.save(pendingOrder);
+        Order order=orderRepository.save(pendingOrder);
         PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(
                 orderRequestDTO.getShoppingCart().getUserId(),pendingOrder.getId(),
                 pendingOrder.getTotalPrice()*0.15 + pendingOrder.getTotalPrice(),
@@ -51,7 +51,8 @@ public class OrderServiceImpl implements OrderService {
                         orderRequestDTO.getPaymentInfoDTO().getCCV(),
                         orderRequestDTO.getPaymentInfoDTO().getCardExpiry()
         );
-        // call payment module right here
+        String status = restTemplate.postForObject("http://localhost:8086/api/v1/payments/payOrder",paymentRequestDTO,String.class);
+        updateOrderStatus(status,order);
         return pendingOrder;
 
     }
@@ -69,24 +70,28 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO createGuestOrder(GuestOrderRequest guestOrderRequest) {
 
-        // rest template call to use service returns userobject
-        UserDTO tempUser = new UserDTO();
+        Set<Role> roles = new HashSet<>();
+        Role role =  new Role("Guest");
+        roles.add(role);
+        UserDTO request =  new UserDTO(guestOrderRequest.getUserInfo().getName(),guestOrderRequest.getUserInfo().getEmail(), guestOrderRequest.getUserInfo().getTelephoneNumber(),roles);
+        UserDTO tempUser = restTemplate.postForObject("http://localhost:9898/api/v1/users/register",request, UserDTO.class);
+        //UserDTOx tempUser = new UserDTOx();
         ShoppingCartDTO shoppingCart =  guestOrderRequest.getShoppingCart();
-        shoppingCart.setUserId(tempUser.getId());
+        shoppingCart.setUserId(tempUser.getUserId());
         Order pendingOrder = createOrderLine(shoppingCart);
         pendingOrder.setUserInfo(creteUserInfoString(guestOrderRequest.getUserInfo()));
-        orderRepository.save(pendingOrder);
+        Order order = orderRepository.save(pendingOrder);
         PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(
-                tempUser.getId(),pendingOrder.getId(),
+                tempUser.getUserId(),pendingOrder.getId(),
                 pendingOrder.getTotalPrice()*0.15 + pendingOrder.getTotalPrice(),
                         guestOrderRequest.getPaymentInfo().getCardNumber(),
                         guestOrderRequest.getPaymentInfo().getNameOnCard(),
                         guestOrderRequest.getPaymentInfo().getCCV(),
                         guestOrderRequest.getPaymentInfo().getCardExpiry()
         );
-
-        // call payment module right here
-        return modelMapper.map(pendingOrder,OrderDTO.class);
+        String status = restTemplate.postForObject("http://localhost:8086/api/v1/payments/payOrder",paymentRequestDTO,String.class);
+        updateOrderStatus(status,order);
+        return modelMapper.map(order,OrderDTO.class);
     }
 
 
@@ -136,5 +141,12 @@ public class OrderServiceImpl implements OrderService {
         return userInfo;
     }
 
+    private void updateOrderStatus(String status,Order order){
+        if(status.contains("TS"))
+            order.setOrderStatus(OrderStatus.OS);
+        else if(status.contains("TF"))
+            order.setOrderStatus(OrderStatus.OF);
+        orderRepository.save(order);
+    }
 
 }
