@@ -22,8 +22,8 @@ public class EmailSenderService {
     private static final Logger LOG = LoggerFactory.getLogger(EmailSenderService.class);
     @Autowired
     private JavaMailSender mailSender;
-    @Value("${spring.mail.username}")
-    private static String fromMail;
+
+    private static String fromMail = "Team3@gmail.com";
     private static ShoppingCartApplicationRestClient restClient= new ShoppingCartApplicationRestClient();
 
     public void sendSimpleEmail(MimeMessage mime) {
@@ -37,10 +37,11 @@ public class EmailSenderService {
 
         MimeMessage mime =mailSender.createMimeMessage();
         MimeMessageHelper message=new MimeMessageHelper(mime);
-        message.setFrom("cs490@gmail.com", "CS490MP-T3 Online Store");
+        message.setFrom(fromMail, "CS490MP-T3 Online Store");
         StringBuilder body=new StringBuilder("<html><body><div><br><br>");
+        Long userId = transaction!=null? transaction.getUserId(): email.getUserId();
 
-        UserDTO user = restClient.getUser(transaction.getUserId());
+        UserDTO user = restClient.getUser(userId);
         AddressDTO address= user!=null? user.getUserAddress():null;
 
         if(transaction != null){
@@ -66,22 +67,32 @@ public class EmailSenderService {
                 body.append("<tr><td><br><p style='font-size:18px;'><b>Estimated shipping time:</b></p></td><td>      </td><td> </td></tr>");
                 body.append("<tr><td>3 days</td><td>      </td><td> </td></tr></table><br><br>");
             }else{
+                //RegistrationFee
                 message.setSubject("Payment Confirmation: We've received your payment!");
                 body.append("<H2 style='text-align:center;'>Dear "+ user.getFullname()+ "</H2>");
                 body.append("<H3 style='text-align:center;'>Thanks for your payment</H3>");
 
-                body.append("<p style='text-align:center;'>Your payment of $"+transaction.getTransactionValue()+" posted to us on "+transaction.getTransactionDate());
+                body.append("<br><br><p style='text-align:center;'>Your payment of $"+transaction.getTransactionValue()+" posted to us on "+transaction.getTransactionDate()+"<br><br><br>");
             }
 
         }
 
         if(email != null){
             message.setTo(user.getEmail());
-            message.setSubject("Welcome to our online store!");
             body.append("<H2 style='text-align:center;'>Dear "+ user.getFullname()+ "</H2>");
-            body.append("<H3 style='text-align:center;'>Thank you for doing business with us.<br><br></H3>");
-            body.append("<H4 style='text-align:center;'>Please take note of your login password below:<br>Password:"+
-                    user.getPassword()+"</H4><br><br>");
+            if(email.getEmailType().equalsIgnoreCase("WelcomeEmail")){
+                message.setSubject("Welcome to our online store!");
+                body.append("<H3 style='text-align:center;'>Thank you for doing business with us.<br><br></H3>");
+                body.append("<H4 style='text-align:center;'>Please take note of your login details below:<br>Username:"+
+                        user.getUsername()+"<br>Password:"+user.getPassword()+"</H4><br><br>");
+            }else{
+                //OtherCommunication - products un/approved
+                String msg = email.getMessage() !=null && !email.getMessage().isEmpty()? email.getMessage():
+                        "Congratulations! Your recent products has been approved";
+                message.setSubject("An update on your recent products with us");
+                body.append("<H4 style='text-align:center;'>"+ msg +".</H4><br><br>");
+            }
+
 
         }
 

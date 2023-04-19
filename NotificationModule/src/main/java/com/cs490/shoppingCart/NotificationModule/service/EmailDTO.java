@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EmailDTO {
     private Long userId;
-    private String username;
-    private String password;
+    private String emailType;
+    private String message;
 }
