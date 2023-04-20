@@ -39,7 +39,7 @@ public class ProfitServiceImp implements ProfitService {
         Long vendorId = -1l;
         Long systemId = 0l;
 
-        OrderDTO order = restTemplate.getForObject("http://localhost:8093/orders/" + profitRequest.getOrderId(), OrderDTO.class);
+        OrderDTO order = restTemplate.getForObject("http://order-service:8085/api/v1/orders/" + profitRequest.getOrderId(), OrderDTO.class);
 
         for (OrderLineDTO orderLine: order.getOrderLines()) {
             Double totalPrice = orderLine.getPrice();
@@ -116,7 +116,7 @@ public class ProfitServiceImp implements ProfitService {
             queryParams.put("productId", id);
         }
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://localhost:9799/api/v1/products/productDetail");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://product-service:8083/api/v1/products/productDetail");
 
         for (Map.Entry<String, Long> entry : queryParams.entrySet()) {
             builder.queryParam(entry.getKey(), entry.getValue());

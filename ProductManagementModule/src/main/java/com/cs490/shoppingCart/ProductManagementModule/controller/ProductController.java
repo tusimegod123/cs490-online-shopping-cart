@@ -8,12 +8,11 @@ import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundExce
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
 import com.cs490.shoppingCart.ProductManagementModule.service.ProductService;
 import jakarta.validation.Valid;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Set;
 
@@ -26,11 +25,12 @@ import java.util.Set;
 @RestController
 @RequestMapping("api/v1/products")
 public class ProductController {
-    private final ProductService productService;
+    @Autowired
+    private ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+//    public ProductController(ProductServiceImp productService) {
+//        this.productService = productService;
+//    }
 
     /**
      * To create a product

@@ -59,11 +59,11 @@ public class ProductServiceImp implements ProductService {
     @Value("${user.endpoint}")
     private String userEndpoint;
 
-    @Value("${application.bucket.name}")
-    private String bucketName;
+//    @Value("${application.bucket.name}")
+//    private String bucketName;
 
-    @Autowired
-    private AmazonS3 s3Client;
+//    @Autowired
+//    private AmazonS3 s3Client;
 
     public ProductServiceImp(ProductRepository productRepository,
                           ProductMapper productMapper) {
