@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.ProfitSharingModule.controller;
 import com.cs490.shoppingCart.ProfitSharingModule.dto.ProfitRequest;
+import com.cs490.shoppingCart.ProfitSharingModule.dto.ReportRequest;
 import com.cs490.shoppingCart.ProfitSharingModule.service.ProfitService;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,19 @@ public class ProfitController {
     @PostMapping("/processProfit")
     public ResponseEntity<?> processProfit(@RequestBody ProfitRequest request)  {
         profitService.processProfit(request);
-        return ResponseEntity.ok().body("done");
+        return ResponseEntity.ok().body("Profit share is divided successfully!");
     }
 
-    //add more api for report
+    @PostMapping("/getProfit")
+    public ResponseEntity<?> getProfit(@RequestBody ReportRequest request)  {
+        Double profit = profitService.getProfit(request);
+        return ResponseEntity.ok().body(profit);
+    }
+
+    @PostMapping("/getRevenue")
+    public ResponseEntity<?> getRevenue(@RequestBody ReportRequest request)  {
+        Double revenue = profitService.getRevenue(request);
+        return ResponseEntity.ok().body(revenue);
+    }
+
 }

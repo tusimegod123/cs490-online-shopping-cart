@@ -8,10 +8,10 @@
 		<version>3.0.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.javatechie</groupId>
-	<artifactId>swiggy-gateway</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>swiggy-gateway</name>
+	<groupId>com.cs490.shoppingCart</groupId>
+	<artifactId>shopping-cart-api-gateway</artifactId>
+	<version>0.0.1</version>
+	<name>shopping-cart-api-gateway</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
@@ -35,15 +35,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
-
-		<dependency>
-
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-dependencies</artifactId>
-			<version>2022.0.1</version>
-			<type>pom</type>
-			<scope>import</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -108,34 +99,34 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>1.4.13</version>
-				<executions>
-					<execution>
-						<id>default</id>
-						<goals>
-							<goal>build</goal>
-							<goal>push</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<repository>tusimegodwin256/shopping-cart-api-gateway-module</repository>
-					<tag>shopping-cart-api-gateway</tag>
-					<!--                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>-->
-				</configuration>
-				<dependencies>
-					<!-- To make this work on JDK 9+ -->
-					<dependency>
-						<groupId>javax.activation</groupId>
-						<artifactId>javax.activation-api</artifactId>
-						<version>1.2.0</version>
-					</dependency>
-				</dependencies>
+<!--			<plugin>-->
+<!--				<groupId>com.spotify</groupId>-->
+<!--				<artifactId>dockerfile-maven-plugin</artifactId>-->
+<!--				<version>1.4.13</version>-->
+<!--&lt;!&ndash;				<executions>&ndash;&gt;-->
+<!--&lt;!&ndash;					<execution>&ndash;&gt;-->
+<!--&lt;!&ndash;						<id>default</id>&ndash;&gt;-->
+<!--&lt;!&ndash;						<goals>&ndash;&gt;-->
+<!--&lt;!&ndash;							<goal>build</goal>&ndash;&gt;-->
+<!--&lt;!&ndash;							<goal>push</goal>&ndash;&gt;-->
+<!--&lt;!&ndash;						</goals>&ndash;&gt;-->
+<!--&lt;!&ndash;					</execution>&ndash;&gt;-->
+<!--&lt;!&ndash;				</executions>&ndash;&gt;-->
+<!--&lt;!&ndash;				<configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;					<repository>tusimegodwin256/shopping-cart-api-gateway-module</repository>&ndash;&gt;-->
+<!--&lt;!&ndash;					<tag>shopping-cart-api-gateway</tag>&ndash;&gt;-->
+<!--&lt;!&ndash;					&lt;!&ndash;                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;				</configuration>&ndash;&gt;-->
+<!--				<dependencies>-->
+<!--					&lt;!&ndash; To make this work on JDK 9+ &ndash;&gt;-->
+<!--					<dependency>-->
+<!--						<groupId>javax.activation</groupId>-->
+<!--						<artifactId>javax.activation-api</artifactId>-->
+<!--						<version>1.2.0</version>-->
+<!--					</dependency>-->
+<!--				</dependencies>-->
 
-			</plugin>
+<!--			</plugin>-->
 		</plugins>
 	</build>
 	<repositories>

@@ -1,44 +1,101 @@
-spring:
-  application:
-    name: shopping-cart-api-gateway
-  cloud:
-   gateway:
-     routes:
-       - id: product-service
-         uri: lb://product-service
-         predicates:
-           - Path=/api/v1/products/**
-         filters:
-           - AuthenticationFilter
-
-       - id: administration-service
-         uri: lb://administration-service
-         predicates:
-           - Path=/api/v1/users/**
-
+#spring:
+#  application:
+#    name: shopping-cart-api-gateway
+#  cloud:
+#   gateway:
+#     routes:
+#       - id: product-service
+#         uri: lb://product-service
+#         predicates:
+#           - Path=/api/v1/products/**
+#         filters:
+#           - AuthenticationFilter
+#
+#       - id: administration-service
+#         uri: lb://administration-service
+#         predicates:
+#           - Path=/api/v1/users/**
+#
 #eureka:
 #  client:
 #    service-url:
-#      # For running locally
-#      #      defaultZone: http://localhost:8761/eureka/
-#      # For running in Docker
-#      defaultZone: http://eureka:8761/eureka/
+#      defaultZone: http://eureka-server:8761/eureka/
 #    fetch-registry: true
 #    register-with-eureka: true
 #  instance:
 #    hostname: localhost
+#    prefer-ip-address: true
+#
+#server:
+#  port: 9191
+
+
+
+
+#spring:
+#  application:
+#    name: shopping-cart-api-gateway
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: product-service
+#          uri: lb://product-service
+#          predicates:
+#            - Path=/api/v1/products/**
+#          filters:
+#            - AuthenticationFilter
+#
+#        - id: administration-service
+#          uri: lb://administration-service
+#          predicates:
+#            - Path=/api/v1/users/**
+#
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8762/eureka/
+#    fetch-registry: true
+#    register-with-eureka: true
+#  instance:
+#    hostname: localhost
+#    prefer-ip-address: true
+#
+#server:
+#  port: 9191
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+#    fetch-registry: true
+#    register-with-eureka: true
+#  instance:
+#    hostname: localhost
+#    prefer-ip-address: true
+
+spring:
+  application:
+    name: shopping-cart-api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/v1/products/**
+          filters:
+            - AuthenticationFilter
+
+        - id: administration-service
+          uri: lb://administration-service
+          predicates:
+            - Path=/api/v1/users/**
 
 eureka:
   client:
-    service-url:
-      # For running locally
+    serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-      # For running in Docker
-    #       defaultZone: http://eureka:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
-  instance:
-    hostname: localhost
 
 server:
   port: 9191
