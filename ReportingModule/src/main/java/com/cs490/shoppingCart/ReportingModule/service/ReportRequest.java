@@ -4,13 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDTO {
-    private Long id;
-    private Long userId;
-    private Double totalPrice;
+@Data
+public class ReportRequest {
+//@Temporal(TemporalType.DATE)
+private LocalDate fromDate;
+//@Temporal(TemporalType.DATE)
+private LocalDate toDate;
+private Long userId;
 }
