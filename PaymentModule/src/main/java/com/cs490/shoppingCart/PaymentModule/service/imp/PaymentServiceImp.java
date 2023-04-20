@@ -87,10 +87,6 @@ public class PaymentServiceImp implements PaymentService {
     public TransactionStatus processRegistrationPayment(RegistrationPayment request) throws Exception {
         if(!request.getCardNumber().isEmpty()){
 
-            //check if user exists
-            //call user service
-            //Boolean userExist = restTemplate.getForObject("http://user-service:9091/users/getById/" + request.getUserId(), Boolean.class);
-
             char cardStartWith = request.getCardNumber().charAt(0);
 
             if(request.getCardNumber().length() == 16 && (cardStartWith == '4' || cardStartWith == '5')){
@@ -112,6 +108,7 @@ public class PaymentServiceImp implements PaymentService {
                     Transaction savedTransaction = transactionRepository.save(newTransaction);
 
                     sendNotification(savedTransaction.getNotificationRequest());
+//                    verifyVendor(request.getUserId());
 
                     return TransactionStatus.TS;
 
@@ -169,9 +166,8 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     private void sendNotification(NotificationRequest request){
-        System.out.println(request);
 
-        WebClient client = WebClient.create("http://localhost:8080");
+        WebClient client = WebClient.create("http://notification-service:8088");
 
         Mono<String> response = client.post()
                 .uri("/onlineshopping/notification/email/transaction")
@@ -188,9 +184,7 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     private void sendProfitCalculator(ProfitShareRequest request){
-        System.out.println(request);
-
-        WebClient client = WebClient.create("http://localhost:9092");
+        WebClient client = WebClient.create("http://profit-service:8087");
 
         Mono<String> response = client.post()
                 .uri("/api/v1/profit/processProfit")
@@ -204,6 +198,24 @@ public class PaymentServiceImp implements PaymentService {
             logger.info("Profit sharing process is done for transaction" + request.getTransactionNumber());
         }, error -> {
             logger.error("Failed to process profit for transaction : " + request.getTransactionNumber());
+        });
+    }
+
+    private void verifyVendor(Long userId){
+        WebClient client = WebClient.create("http://user-servicet:8082");
+
+        Mono<String> response = client.put()
+                .uri("/api/v1/users/vendor/fullyVerify/" + userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(null)
+                .retrieve()
+                .bodyToMono(String.class);
+
+        response.subscribe(result -> {
+            //2. call user service - update user status
+            logger.info("Vendor with id " + userId + " is fully verified!");
+        }, error -> {
+            logger.error("Failed to fully verify a vendor with id: " + userId);
         });
     }
 
