@@ -43,7 +43,7 @@
 #  instance:
 #    hostname: localhost
 server:
-  port: 9897
+  port: 8082
 
 spring:
   datasource:

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponse;
+import com.cs490.shoppingCart.ProductManagementModule.dto.ListProductResponseSpecificID;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
@@ -23,11 +24,7 @@ import com.cs490.shoppingCart.ProductManagementModule.repository.CategoryReposit
 import com.cs490.shoppingCart.ProductManagementModule.repository.ProductRepository;
 import com.cs490.shoppingCart.ProductManagementModule.service.CategoryService;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import com.cs490.shoppingCart.ProductManagementModule.service.Imp.ProductServiceImp;
 import org.junit.jupiter.api.Test;
@@ -336,6 +333,38 @@ class ProductServiceImpTest {
         when(productRepository.findAll()).thenReturn(new ArrayList<>());
         assertTrue(productServiceImp.getAllProductWithSpecificIDList(new HashSet<>()).isEmpty());
         verify(productRepository).findAll();
+    }
+
+    @Test
+    public void testGetAllProductWithSpecificIdList() {
+
+//        List<Product> products = productRepository.findAll();
+//        List<ListProductResponseSpecificID> list = new ArrayList<>();
+//
+//        for (Product product : products) {
+//            Long productId = product.getProductId();
+//            if (productIdSet.contains(productId)) {
+//                list.add(productMapper.fromDomainToListProductResponseSpecificID(product));
+//            }
+//        }
+//
+//        return list;
+
+        Product product1 = new Product(1L, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+        Product product2 = new Product(2L, "Pepsi", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+        Product product3 = new Product(3L, "Fanta", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+
+        List<Product> productList = new ArrayList<>();
+        productList.add(product1);
+        productList.add(product2);
+        productList.add(product3);
+
+        Set<Long> productIdSet = Collections.emptySet();
+        productIdSet.add(1L);
+        productIdSet.add(2L);
+        productIdSet.add(3L);
+
+
     }
 
 

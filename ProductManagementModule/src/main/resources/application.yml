@@ -8,27 +8,27 @@ spring:
       max-file-size: 5MB
       max-request-size: 10MB
 
-eureka:
-  client:
-    service-url:
-      defaultZone : http://localhost:8761/eureka/
-    fetch-registry: true
-    register-with-eureka: true
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone : http://localhost:8761/eureka/
+#    fetch-registry: true
+#    register-with-eureka: true
 
-cloud:
-  aws:
-    credentials:
-      access-key: AKIATOVYPVPPTBSM33QK
-      secret-key: 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
-    region:
-      static: us-east-2
-    stack:
-      auto: false
-
-application:
-  bucket:
-    name: online-shopping-cart-storage
+#cloud:
+#  aws:
+#    credentials:
+#      access-key: AKIATOVYPVPPTBSM33QK
+#      secret-key: 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
+#    region:
+#      static: us-east-2
+#    stack:
+#      auto: false
+#
+#application:
+#  bucket:
+#    name: online-shopping-cart-storage
 
 
 server:
-  port: 9799
+  port: 8083
