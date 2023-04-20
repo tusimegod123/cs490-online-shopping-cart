@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SalesDTO {
     private int noOfSales;
-    private String annualProfit;
-    private String annualLoss;
-    private String annualRevenue;
+    private Double annualProfit;
+    private Double annualLoss;
+    private Double annualRevenue;
 }
