@@ -328,7 +328,6 @@ public class ProductServiceImp implements ProductService {
                 list.add(productMapper.fromDomainToListProductResponseSpecificID(product));
             }
         }
-
         return list;
     }
 }
