@@ -2,7 +2,6 @@ package com.cs490.shoppingcart.filter;
 
 import com.cs490.shoppingcart.UnauthorizedException.UnAuthorizedException;
 import com.cs490.shoppingcart.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.io.buffer.DataBuffer;

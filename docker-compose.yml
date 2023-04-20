@@ -12,7 +12,7 @@ services:
   shopping-cart-api-gateway:
     image: shopping-cart-api-gateway
     ports:
-      - "9090:9090"
+      - "9191:9191"
     depends_on:
       - eureka-server
     environment:
@@ -36,7 +36,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=gold
+      - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=cs490-swe-2023-administrator
     volumes:
       - db-data:/var/lib/mysql

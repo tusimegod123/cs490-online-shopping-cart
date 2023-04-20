@@ -4,6 +4,7 @@
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/payload/response/UserInfoResponse.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/model/Role.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/payload/request/SignupRequest.java
+/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/exception/NotVerifiedException.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/model/User.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/service/UserService.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/repository/RoleRepository.java

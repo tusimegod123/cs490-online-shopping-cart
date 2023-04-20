@@ -99,6 +99,10 @@
             <artifactId>modelmapper</artifactId>
             <version>3.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -141,11 +145,11 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <repository>tusimegodwin256/administration-module</repository>
-                    <tag>${project.version}</tag>
-                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
-                </configuration>
+<!--                <configuration>-->
+<!--                    <repository>tusimegodwin256/administration-module</repository>-->
+<!--                    <tag>${project.version}</tag>-->
+<!--                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>-->
+<!--                </configuration>-->
                 <dependencies>
                     <!-- To make this work on JDK 9+ -->
                     <dependency>
