@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/cartLine")
+@RequestMapping("api/v1/cartLine")
 public class CartLineController {
 
     @Autowired
