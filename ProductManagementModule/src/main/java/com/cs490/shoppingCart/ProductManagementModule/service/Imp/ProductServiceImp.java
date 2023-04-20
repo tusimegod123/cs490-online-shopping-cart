@@ -59,11 +59,11 @@ public class ProductServiceImp implements ProductService {
     @Value("${user.endpoint}")
     private String userEndpoint;
 
-    @Value("${application.bucket.name}")
-    private String bucketName;
+//    @Value("${application.bucket.name}")
+//    private String bucketName;
 
-    @Autowired
-    private AmazonS3 s3Client;
+//    @Autowired
+//    private AmazonS3 s3Client;
 
     public ProductServiceImp(ProductRepository productRepository,
                           ProductMapper productMapper) {
@@ -169,12 +169,12 @@ public class ProductServiceImp implements ProductService {
             Long categoryId = productResult.getCategoryId();
             Category category;
             Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
+
             if (categoryOpt.isPresent()) {
                 category = categoryOpt.get();
             } else {
                 category = null;
             }
-
             User user = restTemplate.getForObject(userEndpoint + "/users/{id}",
                     User.class, productResult.getUserId());
 
@@ -259,78 +259,73 @@ public class ProductServiceImp implements ProductService {
      * @param productId : product Id
      * @return true or false boolean
      */
-    public boolean approveProducts(Long productId) {
-        if(productId != null) {
-            //approve single product
-            Product product = productRepository.findById(productId).get();
-            product.setVerified(true);
-            productRepository.save(product);
-            return true;
-        }else{
-            //approve all unapproved products
+    public void approveProducts(Long productId) {
+
+        if (productId == null) {  //approve all unapproved products
             List<Product> products = productRepository.findAllByVerified(false);
             for (Product product: products) {
                 productRepository.save(product);
             }
-            return true;
+        } else {   //approve single product
+            Product product = productRepository.findById(productId).get();
+            product.setVerified(true);
+            productRepository.save(product);
         }
     }
-
     /**
      * This is optional code
      * Upload image when create a product
      */
 
-    public String uploadFile(MultipartFile file) {
-        File fileObj = convertMultiPartFileToFile(file);
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-        fileObj.delete();
-        return "File uploaded : " + fileName;
-    }
 
-
-    public byte[] downloadFile(String fileName) {
-        S3Object s3Object = s3Client.getObject(bucketName, fileName);
-        S3ObjectInputStream inputStream = s3Object.getObjectContent();
-        try {
-            byte[] content = IOUtils.toByteArray(inputStream);
-            return content;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    public String deleteFile(String fileName) {
-        s3Client.deleteObject(bucketName, fileName);
-        return fileName + " removed ...";
-    }
-
-
-    private File convertMultiPartFileToFile(MultipartFile file) {
-        File convertedFile = new File(file.getOriginalFilename());
-        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-            fos.write(file.getBytes());
-        } catch (IOException e) {
-            log.error("Error converting multipartFile to file", e);
-        }
-        return convertedFile;
-    }
+//    public String uploadFile(MultipartFile file) {
+//        File fileObj = convertMultiPartFileToFile(file);
+//        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+//        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+//        fileObj.delete();
+//        return "File uploaded : " + fileName;
+//    }
+//
+//
+//    public byte[] downloadFile(String fileName) {
+//        S3Object s3Object = s3Client.getObject(bucketName, fileName);
+//        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+//        try {
+//            byte[] content = IOUtils.toByteArray(inputStream);
+//            return content;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+//
+//
+//    public String deleteFile(String fileName) {
+//        s3Client.deleteObject(bucketName, fileName);
+//        return fileName + " removed ...";
+//    }
+//
+//
+//    private File convertMultiPartFileToFile(MultipartFile file) {
+//        File convertedFile = new File(file.getOriginalFilename());
+//        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+//            fos.write(file.getBytes());
+//        } catch (IOException e) {
+//            log.error("Error converting multipartFile to file", e);
+//        }
+//        return convertedFile;
+//    }
 
     @Override
-    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(Set<Long> productId) {
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(Set<Long> productIdSet) {
 
         List<Product> products = productRepository.findAll();
         List<ListProductResponseSpecificID> list = new ArrayList<>();
 
-
-        for(Product product: products){
-            for(Long id: productId){
-                if(product.getProductId()==id){
-                    list.add(productMapper.fromDomainToListProductResponseSpecificID(product));
-                }
+        for (Product product : products) {
+            Long productId = product.getProductId();
+            if (productIdSet.contains(productId)) {
+                list.add(productMapper.fromDomainToListProductResponseSpecificID(product));
             }
         }
 

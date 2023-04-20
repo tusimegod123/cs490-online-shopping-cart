@@ -26,7 +26,7 @@ public class CategoryController {
     }
 
     @GetMapping()
-    public List<Category> getAllCategories() {
+    public List<Category> getAllCategories() throws ItemNotFoundException {
 
         List<Category> categoryList = categoryService.getAllCategories();
         return categoryList;

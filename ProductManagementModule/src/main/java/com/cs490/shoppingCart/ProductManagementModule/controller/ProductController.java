@@ -8,12 +8,11 @@ import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundExce
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
 import com.cs490.shoppingCart.ProductManagementModule.service.ProductService;
 import jakarta.validation.Valid;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Set;
 
@@ -26,11 +25,12 @@ import java.util.Set;
 @RestController
 @RequestMapping("api/v1/products")
 public class ProductController {
-    private final ProductService productService;
+    @Autowired
+    private ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+//    public ProductController(ProductServiceImp productService) {
+//        this.productService = productService;
+//    }
 
     /**
      * To create a product
@@ -124,14 +124,12 @@ public class ProductController {
      * @param productId product Id
      * @return Object
      */
+
     @PutMapping("/approve")
-    public ResponseEntity<?> approveProducts(
-            @RequestParam(value="productId", required = false) Long productId) {
-        boolean approved = productService.approveProducts(productId);
-        if(approved){
-            return new ResponseEntity<>("Products approved.", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Products could not be approved.", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> approveProducts(@RequestParam(value="productId", required = false) Long productId) {
+
+        productService.approveProducts(productId);
+        return new ResponseEntity<>("Products approved.", HttpStatus.OK);
     }
 
     @GetMapping("/unverified")
@@ -149,28 +147,28 @@ public class ProductController {
      * This is optional code
      * Upload image when create a product
      */
-    @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file) {
-        return new ResponseEntity<>(productService.uploadFile(file), HttpStatus.OK);
-    }
-
-
-    @GetMapping("/download/{fileName}")
-    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {
-        byte[] data = productService.downloadFile(fileName);
-        ByteArrayResource resource = new ByteArrayResource(data);
-        return ResponseEntity
-                .ok()
-                .contentLength(data.length)
-                .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
-                .body(resource);
-    }
-
-    @DeleteMapping("/delete/{fileName}")
-    public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
-        return new ResponseEntity<>(productService.deleteFile(fileName), HttpStatus.OK);
-    }
+//    @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+//    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file) {
+//        return new ResponseEntity<>(productService.uploadFile(file), HttpStatus.OK);
+//    }
+//
+//
+//    @GetMapping("/download/{fileName}")
+//    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {
+//        byte[] data = productService.downloadFile(fileName);
+//        ByteArrayResource resource = new ByteArrayResource(data);
+//        return ResponseEntity
+//                .ok()
+//                .contentLength(data.length)
+//                .header("Content-type", "application/octet-stream")
+//                .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
+//                .body(resource);
+//    }
+//
+//    @DeleteMapping("/delete/{fileName}")
+//    public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
+//        return new ResponseEntity<>(productService.deleteFile(fileName), HttpStatus.OK);
+//    }
 
     @GetMapping("/productDetail")
     public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam(required = true) Set<Long> productId){
