@@ -256,7 +256,7 @@ class ProductServiceImpTest {
      * Method under test: {@link ProductServiceImp#getAllProductWithSpecificIDList(Set)}
      */
     @Test
-    void testGetAllProductWithSpecificIDList() {
+    void testGetAllProductWithSpecificIDList() throws ItemNotFoundException {
         when(productRepository.findAll()).thenReturn(new ArrayList<>());
         assertTrue(productServiceImp.getAllProductWithSpecificIDList(new HashSet<>()).isEmpty());
         verify(productRepository).findAll();
