@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -15,7 +14,7 @@ public class TransactionDTO {
   private Long orderId;
   private double transactionValue;
   private String transactionNumber;
-  private LocalDate transactionDate;
+  private Date transactionDate;
   private String paymentType;
   private String transactionType;
 }
