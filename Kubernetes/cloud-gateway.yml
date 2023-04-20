@@ -1,57 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: shopping-cart-api-gateway-app
+  name:  shopping-cart-api-gateway
   labels:
-    app: shopping-cart-api-gateway-app
+    app:  shopping-cart-api-gateway
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: shopping-cart-api-gateway-app
+      app:  shopping-cart-api-gateway
   template:
     metadata:
       labels:
-        app: shopping-cart-api-gateway-app
+        app: shopping-cart-api-gateway
     spec:
       containers:
-        - name: shopping-cart-api-gateway-app
-          image: tusimegodwin256/shopping-cart-api-gateway
+        - name: shopping-cart-api-gateway
+          image: tusimegodwin256/shopping-cart-api-gateway:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 9090
+            - containerPort: 8081
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: shopping-cart-api-gateway-app
+  name: cloud-gateway-svc
 spec:
-  type: LoadBalancer
+  selector:
+    app: shopping-cart-api-gateway
   ports:
     - port: 80
-      targetPort: 9090
+      targetPort: 8081
       protocol: TCP
-  selector:
-    app: shopping-cart-api-gateway-app
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: shopping-cart-api-gateway-config
-data:
-  application.properties: |-
-    spring.application.name=shopping-cart-api-gateway
-    eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/
-    eureka.instance.nonSecurePort=8761
-    eureka.instance.hostname=$(POD_IP)
-    eureka.instance.preferIpAddress=true
+  type: LoadBalancer
 
-# eureka:
-#     client:
-#         service-url:
-#             defaultZone: http://eureka:8761/eureka
-#         fetch-registry: true
-#         register-with-eureka: true
-#         enabled: false
-
-#kubectl create secret docker-registry shopping-cart-secrete --docker-server=https://registry.hub.docker.com --docker-username=tusimegodwin256 --docker-password=goldleftme
