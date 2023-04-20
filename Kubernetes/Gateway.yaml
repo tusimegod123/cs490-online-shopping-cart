@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+spec:
+  selector:
+    matchLabels:
+      app: gateway-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+    spec:
+      containers:
+        - name: gateway-service
+          image: nattystar/gateway:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  ports:
+    - protocol: "TCP"
+      # nodePort: 30200
+      port: 8081 # Port inside the cluster
+      targetPort: 8081 # Port exposed to the outside
+  selector:
+    app: gateway-service
+  type: LoadBalancer

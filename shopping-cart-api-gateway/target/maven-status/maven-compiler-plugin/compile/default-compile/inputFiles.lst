@@ -1,7 +1,0 @@
-/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/shopping-cart-api-gateway/src/main/java/com/cs490/shoppingcart/util/JwtUtil.java
-/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/shopping-cart-api-gateway/src/main/java/com/cs490/shoppingcart/FallBackMethodController.java
-/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/shopping-cart-api-gateway/src/main/java/com/cs490/shoppingcart/filter/AuthenticationFilter.java
-/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/shopping-cart-api-gateway/src/main/java/com/cs490/shoppingcart/ShoppingCartApiGatewayApplication.java
-/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/shopping-cart-api-gateway/src/main/java/com/cs490/shoppingcart/UnauthorizedException/UnAuthorizedException.java
-/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/shopping-cart-api-gateway/src/main/java/com/cs490/shoppingcart/filter/RouteValidator.java
-/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/shopping-cart-api-gateway/src/main/java/com/cs490/shoppingcart/config/AppConfig.java

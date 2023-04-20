@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profit-deployment
+  labels:
+    app: profit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: profit
+  template:
+    metadata:
+      labels:
+        app: profit
+    spec:
+      containers:
+      - name: profit
+        image: syilma/profitservice:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8087 # port to access the app in the container
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: profit-service
+spec:
+  selector:
+    app: profit
+  type: NodePort # LoadBalancer for or NodePort external service
+  ports:
+    - protocol: TCP
+      port: 8087 # port to access the pod
+      targetPort: 8087 # must be the same as the containerPort

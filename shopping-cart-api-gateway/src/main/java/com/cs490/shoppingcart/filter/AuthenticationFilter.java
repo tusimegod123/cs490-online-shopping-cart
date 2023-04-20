@@ -2,6 +2,7 @@ package com.cs490.shoppingcart.filter;
 
 import com.cs490.shoppingcart.UnauthorizedException.UnAuthorizedException;
 import com.cs490.shoppingcart.util.JwtUtil;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Flux;
 import java.nio.charset.StandardCharsets;
 
 @Component
+@RefreshScope
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
     private final RouteValidator validator;
