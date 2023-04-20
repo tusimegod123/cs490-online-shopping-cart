@@ -28,7 +28,7 @@ public class AuthConfig {
         return http.cors().and().csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/users/**","/api/v1/users/who","/api/v1/users/register", "/v3/api-docs/**","/swagger-ui/**",
-                        "/api/v1/users/login", "/api/v1/users/validate", "/api/v2/api-docs").permitAll()
+                        "/api/v1/users/login", "/api/v1/users/validate", "/api/v2/api-docs","api/v1/users/roles").permitAll()
                 .requestMatchers("/api/v1/users/vendor/verify/**").permitAll()
                 .and()
                 .build();

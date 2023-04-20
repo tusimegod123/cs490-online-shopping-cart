@@ -30,7 +30,7 @@ public class User implements UserDetails {
     private Boolean isFullyVerified;
     private String paymentCardNumber;
     private String verifiedBy;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany
     @JsonSerialize
     private Set<Role> roles;
 
