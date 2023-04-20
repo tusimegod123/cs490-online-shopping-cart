@@ -79,9 +79,9 @@ public ResponseEntity<?> verifyVendor(@RequestBody User vendor, @PathVariable Lo
 }
 
 @PutMapping(value = "/vendor/fullyVerify/{id}")
-public ResponseEntity<?> fullyVerifyVendor(@RequestBody User vendor, @PathVariable Long id, @AuthenticationPrincipal User admin) {
+public ResponseEntity<?> fullyVerifyVendor( @PathVariable Long id) {
     try {
-        User verifiedVendor = userService.fullyVerifyVendor(vendor, id,admin);
+        User verifiedVendor = userService.fullyVerifyVendor(id);
         return ResponseEntity.ok().body(verifiedVendor);
     } catch (NotVerifiedException e) {
         String errorJson = "{\"error\":\"" + e.getMessage() + "\"}";

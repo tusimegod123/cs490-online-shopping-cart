@@ -1,10 +1,12 @@
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/dto/AuthRequest.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/payload/response/MessageResponse.java
+/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/controller/RollController.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/config/JwtTokenFilter.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/payload/response/UserInfoResponse.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/model/Role.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/payload/request/SignupRequest.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/exception/NotVerifiedException.java
+/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/dto/EmailType.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/model/User.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/service/UserService.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/repository/RoleRepository.java
@@ -13,6 +15,7 @@
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/exception/ErrorResponse.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/dto/UserDto.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/payload/response/AuthResponse.java
+/Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/dto/NotificationRequest.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/service/JwtService.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/controller/UserController.java
 /Users/tusimegodwin/Downloads/cs490-shopping-cart-project/Administration Module/src/main/java/com/cs490/shoppingcart/administrationmodule/exception/EmailExistsException.java

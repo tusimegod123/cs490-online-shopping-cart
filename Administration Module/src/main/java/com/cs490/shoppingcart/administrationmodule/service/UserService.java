@@ -1,5 +1,6 @@
 package com.cs490.shoppingcart.administrationmodule.service;
 
+import com.cs490.shoppingcart.administrationmodule.dto.NotificationRequest;
 import com.cs490.shoppingcart.administrationmodule.exception.InvalidCredentialsException;
 import com.cs490.shoppingcart.administrationmodule.exception.NotVerifiedException;
 import com.cs490.shoppingcart.administrationmodule.exception.UserNotFoundException;
@@ -8,11 +9,15 @@ import com.cs490.shoppingcart.administrationmodule.model.User;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.commons.lang.RandomStringUtils;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.cs490.shoppingcart.administrationmodule.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,11 +28,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
+    private static final Logger logger =
+            LoggerFactory.getLogger(UserService.class);
 
     private final JwtService jwtService;
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, JwtService jwtService) {
@@ -41,6 +51,8 @@ public class UserService {
 //    public String SECRET;
 
     public  final  String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+
+
 
     public String generateRandomPassword(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -57,12 +69,11 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setTelephoneNumber(userDto.getTelephoneNumber());
 
-        Set<Role> roles = userDto.getRoles().stream().map(roleDto -> {
+        List<Role> roles = userDto.getRoles().stream().map(roleDto -> {
             Role role = roleService.findRole(roleDto.getRoleId());
             role.setRoleId(roleDto.getRoleId());
             return role;
-        }).collect(Collectors.toSet());
-
+        }).collect(Collectors.toList());
         // set default username and password for vendors
         if (roles.stream().anyMatch(role -> "VENDOR".equals(role.getRoleName()))) {
             user.setIsVerified(false);
@@ -110,6 +121,9 @@ public ResponseEntity<?> verifyVendor(User vendor, Long vendorId, @Authenticatio
         vendorToBeVerified.setPassword(passwordEncoder.encode(randomPassword));
 
         sendPasswordToUser(vendor, randomUsername, randomPassword);
+        // Send email to the vendor
+        sendNotification(vendorToBeVerified.getNotificationRequest());
+
         System.out.println("Vendor verified by: " + admin.getName());
         //return userRepository.save(vendorToBeVerified);
         return  ResponseEntity.ok(userRepository.save(vendorToBeVerified));
@@ -119,13 +133,12 @@ public ResponseEntity<?> verifyVendor(User vendor, Long vendorId, @Authenticatio
     }
 }
 
-    public User fullyVerifyVendor(User vendor, Long vendorId, @AuthenticationPrincipal User admin) throws NotVerifiedException {
+    public User fullyVerifyVendor(Long vendorId) throws NotVerifiedException {
         User vendorToBeVerified = userRepository.findById(vendorId).orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + vendorId));
         if (vendorToBeVerified.getIsVerified() == false) {
             throw new NotVerifiedException("Sorry " +vendorToBeVerified.getName() + "  is not yet verified, contact the admin");
         } else {
             vendorToBeVerified.setIsFullyVerified(true);
-            System.out.println("Vendor verified by: " + admin.getName());
             return userRepository.save(vendorToBeVerified);
         }
     }
@@ -179,5 +192,30 @@ public ResponseEntity<?> findUser(Long id){
     public void validateToken(String token) {
         jwtService.validateToken(token);
     }
+
+    private void sendNotification(NotificationRequest request) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:8080/onlineshopping/notification/email";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<NotificationRequest> entity = new HttpEntity<>(request, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            String decryptedPassword = passwordEncoder.encode(request.getPassword());
+
+            logger.info("userId: " + request.getUserId());
+            logger.info("emailType: " + request.getEmailType());
+            logger.info("password:  " + decryptedPassword);
+            logger.info("message: " + request.getMessage() );
+
+        } else {
+            logger.error("Failed ");
+        }
+    }
+
 
 }
