@@ -21,9 +21,9 @@ public class UserDto {
     private Boolean isVerified;
     private Boolean isFullyVerified;
     private String verifiedBy;
-    private Set<Role> roles;
+    private List<Role> roles;
 
-    public UserDto(String name, String email, String telephoneNumber, String username, Boolean isVerified, Boolean isFullyVerified, String verifiedBy, Set<Role> roles) {
+    public UserDto(String name, String email, String telephoneNumber, String username, Boolean isVerified, Boolean isFullyVerified, String verifiedBy, List<Role> roles) {
         this.name = name;
         this.email = email;
         this.telephoneNumber = telephoneNumber;
