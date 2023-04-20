@@ -20,13 +20,8 @@ public class PaymentRequest {
     private String cardNumber;
     private String nameOnCard;
     private String CCV ;
-
-//    @Temporal(TemporalType.DATE)
-//    private Date cardExpiry;
-
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate cardExpiry;
-
     @JsonIgnore
     public CardDetail getCardDetail(){
         return new CardDetail(this.cardNumber,

@@ -18,11 +18,9 @@ public class RegistrationPayment {
     private Long userId;
 
     private Double amount;
-
     private String cardNumber;
     private String nameOnCard;
     private String CCV ;
-//    private Date cardExpiry;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate cardExpiry;
 
