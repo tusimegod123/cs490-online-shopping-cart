@@ -23,10 +23,14 @@ public class ShoppingCartApplicationRestClient {
     RestTemplate restTemplate = new RestTemplate();
     Logger logger= LoggerFactory.getLogger(ShoppingCartApplicationRestClient.class);
 
-    public UserDTO getUser(String userId) {
+    public UserDTO getUser(Long userId) {
         UserDTO user=null;
         try{
-            user =restTemplate.getForObject(userUrl+ "/" + userId, UserDTO.class);
+            //Mocking user
+            user=new UserDTO(847849949L,"HHGEHZX","Nqobane Masuku","873856","masukunqoba9@gmail.com","",
+                    new AddressDTO("12","1000 N 4th street","Fairfield","Iowa","52557","USA"),0.0,"");
+
+            //user =restTemplate.getForObject(userUrl+ "/" + userId, UserDTO.class);
         }catch(Exception e){
             logger.error("Resquested operation failed, "+ e.getMessage());
         }

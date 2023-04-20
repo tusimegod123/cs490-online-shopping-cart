@@ -53,16 +53,16 @@ public class MasterCardDataInit implements CommandLineRunner {
 
 
 
-        masterCardRepository.save(mCardOne);
-        masterCardRepository.save(mCardTwo);
-        masterCardRepository.save(mCardThr);
-        masterCardRepository.save(mCardFou);
-        masterCardRepository.save(mCardFiv);
-
-        visaCardRepository.save(vCardOne);
-        visaCardRepository.save(vCardTwo);
-        visaCardRepository.save(vCardThr);
-        visaCardRepository.save(vCardFour);
-        visaCardRepository.save(vCardFive);
+//        masterCardRepository.save(mCardOne);
+//        masterCardRepository.save(mCardTwo);
+//        masterCardRepository.save(mCardThr);
+//        masterCardRepository.save(mCardFou);
+//        masterCardRepository.save(mCardFiv);
+//
+//        visaCardRepository.save(vCardOne);
+//        visaCardRepository.save(vCardTwo);
+//        visaCardRepository.save(vCardThr);
+//        visaCardRepository.save(vCardFour);
+//        visaCardRepository.save(vCardFive);
     }
 }

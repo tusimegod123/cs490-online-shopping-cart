@@ -1,0 +1,36 @@
+#server:
+#  port: 9696
+#
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://${DB_HOST}/${DATABASE_NAME}?useSSL=false&allowPublicKeyRetrieval=true
+#    username: ${DB_USERNAME}
+#    password: ${MYSQL_ROOT_PASSWORD}
+#  jpa:
+#    database-platform: org.hibernate.dialect.MySQL5Dialect
+#    jdbc:
+#      lob:
+#        non_contextual_creation: true
+#    id:
+#      new_generator_mappings: false
+#    generate-ddl: true
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: create
+#  application:
+#    name:  PROFIT-SHARING-MODULE
+#  cloud:
+#    loadbalancer:
+#      health-check:
+#        refetch-instances: true
+#        refetch-instances-interval: 2s
+#
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone : http://localhost:8761/eureka/
+#    fetch-registry: true
+#    register-with-eureka: true
+#  instance:
+#    hostname: localhost

@@ -1,19 +1,21 @@
 package com.cs490.shoppingCart.ProductManagementModule.dto;
 
 import com.cs490.shoppingCart.ProductManagementModule.model.Category;
+import com.cs490.shoppingCart.ProductManagementModule.model.User;
 import lombok.Data;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 @Data
 public class ProductResponse {
 
+    private Long productId;
     private String productName;
-    private String description;
     private Double price;
+    private Integer qty;
     private Double itemCost;
-    private Integer quantity;
+    private String description;
     private String imageUrl;
-    private Long vendorId;
     private Boolean verified;
+
+    private User user;
     private Category category;
 }

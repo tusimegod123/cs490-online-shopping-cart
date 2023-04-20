@@ -16,13 +16,15 @@ import java.util.Set;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private Integer userId;
-    private Boolean orderStatus;
+    private Long id;
+    private Long userId;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
     private LocalDateTime orderDate;
-//   Still in doubt
+    //   Still in doubt
     private Double totalPrice;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "shoppingcart_id")
     private Set<OrderLine> orderLines;
+    private String userInfo;
 }

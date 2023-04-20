@@ -16,7 +16,7 @@ import java.util.Date;
 public class VisaCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer Id;
+    private Long Id;
 
     @Column(unique=true)
     private String cardNumber;

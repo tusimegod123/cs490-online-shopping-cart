@@ -1,6 +1,12 @@
 spring:
   application:
     name: PRODUCT-SERVICE
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2MB
+      max-file-size: 5MB
+      max-request-size: 10MB
 
 eureka:
   client:
@@ -9,14 +15,20 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
 
-zuul:
-  routes:
-    ADMINISTRATION-MODULE:
-      path: /users/**
-      serviceId: ADMINISTRATION-MODULE
-    PRODUCT-SERVICE:
-      path: /products/**
-      serviceId: PRODUCT-SERVICE
+cloud:
+  aws:
+    credentials:
+      access-key: AKIATOVYPVPPTBSM33QK
+      secret-key: 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
+    region:
+      static: us-east-2
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: online-shopping-cart-storage
+
 
 server:
   port: 9799

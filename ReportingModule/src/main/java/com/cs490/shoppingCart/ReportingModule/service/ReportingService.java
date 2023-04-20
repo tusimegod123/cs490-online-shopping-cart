@@ -14,62 +14,72 @@ public class ReportingService {
 
     public Optional<SalesDTO> getSalesByDays(String days){
         Orders orders = client.getOrders("days",days);
-        //Some processing here
-        return Optional.empty();
+        SalesDTO sales=new SalesDTO();
+        sales.setNoOfSales(orders.getOrders().size());
+        return Optional.of(sales);
     }
 
     public  Optional<SalesDTO> getSalesByProduct(String productName){
         Orders orders = client.getOrders("productName",productName);
-        //Some processing here
-        return Optional.empty();
+        SalesDTO sales=new SalesDTO();
+        sales.setNoOfSales(orders.getOrders().size());
+        return Optional.of(sales);
     }
 
     public  Optional<SalesDTO> getSalesByCategory(String category){
         Orders orders = client.getOrders("category",category);
-        //Some processing here
-        return Optional.empty();
+        SalesDTO sales=new SalesDTO();
+        sales.setNoOfSales(orders.getOrders().size());
+        return Optional.of(sales);
     }
 
     public  Optional<SalesDTO> getSalesByVendor(String vendorId){
         Orders orders = client.getOrders("vendorId",vendorId);
-        //Some processing here
-        return Optional.empty();
+        SalesDTO sales=new SalesDTO();
+        sales.setNoOfSales(orders.getOrders().size());
+        return Optional.of(sales);
     }
 
     public Optional<SalesDTO> getAnnulProfitByVendor(String vendorId) {
-        String revenueDetails = client.getAnnualProfit("vendorId",vendorId);
-        //some processing here
-        return Optional.empty();
+        String profit = client.getAnnualProfit("vendorId",vendorId);
+        SalesDTO sales=new SalesDTO();
+        sales.setAnnualProfit(profit);
+        return Optional.of(sales);
     }
 
     public Optional<SalesDTO> getTotalAnnualProfit() {
-        String revenueDetails = client.getAnnualProfit("total",null);
-        //some processing here
-        return Optional.empty();
+        String profit = client.getAnnualProfit("total",null);
+        SalesDTO sales=new SalesDTO();
+        sales.setAnnualProfit(profit);
+        return Optional.of(sales);
     }
 
     public Optional<SalesDTO> getAnnulLossByVendor(String vendorId) {
-        String revenueDetails = client.getAnnualLoss("vendorId",vendorId);
-        //some processing here
-        return Optional.empty();
+        String loss = client.getAnnualLoss("vendorId",vendorId);
+        SalesDTO sales=new SalesDTO();
+        sales.setAnnualLoss(loss);
+        return Optional.of(sales);
     }
 
     public Optional<SalesDTO> getTotalAnnualLoss() {
-        String revenueDetails = client.getAnnualLoss("total",null);
-        //some processing here
-        return Optional.empty();
+        String loss = client.getAnnualLoss("total",null);
+        SalesDTO sales=new SalesDTO();
+        sales.setAnnualLoss(loss);
+        return Optional.of(sales);
     }
 
     public Optional<SalesDTO> getAnnulRevenueByVendor(String vendorId) {
         String revenueDetails = client.getAnnualRevenue("vendorId",vendorId);
-        //some processing here
-        return Optional.empty();
+        SalesDTO sales=new SalesDTO();
+        sales.setAnnualRevenue(revenueDetails);
+        return Optional.of(sales);
     }
 
     public Optional<SalesDTO> getTotalAnnualRevenue() {
         String revenueDetails = client.getAnnualRevenue("total",null);
-        //some processing here
-        return Optional.empty();
+        SalesDTO sales=new SalesDTO();
+        sales.setAnnualRevenue(revenueDetails);
+        return Optional.of(sales);
     }
 
 }
