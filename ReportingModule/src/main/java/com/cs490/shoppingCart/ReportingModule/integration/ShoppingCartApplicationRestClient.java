@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.ReportingModule.integration;
-import com.cs490.shoppingCart.ReportingModule.service.Orders;
+import com.cs490.shoppingCart.ReportingModule.service.OrderList;
+import com.cs490.shoppingCart.ReportingModule.service.ReportRequest;
 import com.cs490.shoppingCart.ReportingModule.service.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,22 +23,11 @@ public class ShoppingCartApplicationRestClient {
     RestTemplate restTemplate = new RestTemplate();
     Logger logger= LoggerFactory.getLogger(ShoppingCartApplicationRestClient.class);
 
-    public Orders getOrders(String searchType, String searchValue) {
-        Orders orders=null;
+    public OrderList getOrders(ReportRequest request) {
+        OrderList orders=null;
         try{
-            if(searchType.equals("days")){
-                orders =restTemplate.getForObject(orderUrl+"?days={days}",Orders.class,searchValue);
-            }
-            if(searchType.equals("productName")){
-                orders =restTemplate.getForObject(orderUrl+"?productName={productName}",Orders.class,searchValue);
-            }
-            if(searchType.equals("category")){
-                orders =restTemplate.getForObject(orderUrl+"?category={category}",Orders.class,searchValue);
-            }
-
-            if(searchType.equals("vendorId")){
-                orders =restTemplate.getForObject(orderUrl+"?vendorId={vendorId}",Orders.class,searchValue);
-            }
+            orders =restTemplate.getForObject(orderUrl+"?vendorId={vendorId}?&fromDate={fromDate}?&toDate={toDate}", OrderList.class,request.getFromDate(),
+                    request.getToDate(),request.getUserId());
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }
@@ -45,48 +35,30 @@ public class ShoppingCartApplicationRestClient {
     }
 
 
-    public String getAnnualProfit(String searchType, String searchValue) {
-        String profitValue=null;
+    public Double getAnnualProfit(ReportRequest request) {
+        Double profitValue=null;
         try{
-            if(searchType.equals("vendorId")){
-                profitValue =restTemplate.getForObject(profitSharingUrl+"/profit?vendorId={vendorId}",String.class,searchValue);
-            }
-            else{
-                profitValue =restTemplate.getForObject(profitSharingUrl+"/profit",String.class);
-            }
-
+            profitValue = restTemplate.postForObject(profitSharingUrl, request, Double.class);
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }
         return profitValue;
     }
 
-    public String getAnnualLoss(String searchType, String searchValue) {
-        String lossValue=null;
+    public Double getAnnualLoss(ReportRequest request) {
+        Double lossValue=null;
         try{
-            if(searchType.equals("vendorId")){
-                lossValue =restTemplate.getForObject(profitSharingUrl+"/loss?vendorId={vendorId}",String.class,searchValue);
-            }
-            else{
-                lossValue =restTemplate.getForObject(profitSharingUrl+"/loss",String.class);
-            }
-
+            lossValue = restTemplate.postForObject(profitSharingUrl, request, Double.class);
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }
         return lossValue;
     }
 
-    public String getAnnualRevenue(String searchType, String searchValue) {
-        String revenueValue=null;
+    public Double getAnnualRevenue(ReportRequest request) {
+        Double revenueValue=null;
         try{
-            if(searchType.equals("vendorId")){
-                revenueValue =restTemplate.getForObject(profitSharingUrl+"/revenue?vendorId={vendorId}",String.class,searchValue);
-            }
-            else{
-                revenueValue =restTemplate.getForObject(profitSharingUrl+"/revenue",String.class);
-            }
-
+            revenueValue = restTemplate.postForObject(profitSharingUrl, request, Double.class);
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }

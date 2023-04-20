@@ -6,6 +6,7 @@ import com.cs490.shoppingCart.OrderProcessingModule.dto.OrderRequestDTO;
 import com.cs490.shoppingCart.OrderProcessingModule.model.Order;
 import com.cs490.shoppingCart.OrderProcessingModule.dto.GuestOrderRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface OrderService {
@@ -26,4 +27,6 @@ public interface OrderService {
     List<Order> getOrdersForUser(Long userId);
 
     boolean checkOrderStatusIsNotSuccessful(Long orderId);
+
+     List<OrderDTO> getAllOrdersForReport(LocalDate initalDate, LocalDate finalDate, Long vendorId);
 }

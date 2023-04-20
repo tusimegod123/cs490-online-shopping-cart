@@ -84,7 +84,7 @@ public class EmailSenderService {
                 message.setSubject("Welcome to our online store!");
                 body.append("<H3 style='text-align:center;'>Thank you for doing business with us.<br><br></H3>");
                 body.append("<H4 style='text-align:center;'>Please take note of your login details below:<br>Username:"+
-                        user.getUsername()+"<br>Password:"+user.getPassword()+"</H4><br><br>");
+                        user.getUsername()+"<br>Password:"+email.getPassword()+"</H4><br><br>");
             }else{
                 //OtherCommunication - products un/approved
                 String msg = email.getMessage() !=null && !email.getMessage().isEmpty()? email.getMessage():

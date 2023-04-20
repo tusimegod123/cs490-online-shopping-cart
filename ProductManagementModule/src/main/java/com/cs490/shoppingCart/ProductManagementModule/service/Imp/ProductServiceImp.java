@@ -169,12 +169,12 @@ public class ProductServiceImp implements ProductService {
             Long categoryId = productResult.getCategoryId();
             Category category;
             Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
+
             if (categoryOpt.isPresent()) {
                 category = categoryOpt.get();
             } else {
                 category = null;
             }
-
             User user = restTemplate.getForObject(userEndpoint + "/users/{id}",
                     User.class, productResult.getUserId());
 
@@ -259,23 +259,19 @@ public class ProductServiceImp implements ProductService {
      * @param productId : product Id
      * @return true or false boolean
      */
-    public boolean approveProducts(Long productId) {
-        if(productId != null) {
-            //approve single product
-            Product product = productRepository.findById(productId).get();
-            product.setVerified(true);
-            productRepository.save(product);
-            return true;
-        }else{
-            //approve all unapproved products
+    public void approveProducts(Long productId) {
+
+        if (productId == null) {  //approve all unapproved products
             List<Product> products = productRepository.findAllByVerified(false);
             for (Product product: products) {
                 productRepository.save(product);
             }
-            return true;
+        } else {   //approve single product
+            Product product = productRepository.findById(productId).get();
+            product.setVerified(true);
+            productRepository.save(product);
         }
     }
-
     /**
      * This is optional code
      * Upload image when create a product
@@ -321,17 +317,15 @@ public class ProductServiceImp implements ProductService {
 //    }
 
     @Override
-    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(Set<Long> productId) {
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(Set<Long> productIdSet) {
 
         List<Product> products = productRepository.findAll();
         List<ListProductResponseSpecificID> list = new ArrayList<>();
 
-
-        for(Product product: products){
-            for(Long id: productId){
-                if(product.getProductId()==id){
-                    list.add(productMapper.fromDomainToListProductResponseSpecificID(product));
-                }
+        for (Product product : products) {
+            Long productId = product.getProductId();
+            if (productIdSet.contains(productId)) {
+                list.add(productMapper.fromDomainToListProductResponseSpecificID(product));
             }
         }
 

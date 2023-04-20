@@ -124,14 +124,12 @@ public class ProductController {
      * @param productId product Id
      * @return Object
      */
+
     @PutMapping("/approve")
-    public ResponseEntity<?> approveProducts(
-            @RequestParam(value="productId", required = false) Long productId) {
-        boolean approved = productService.approveProducts(productId);
-        if(approved){
-            return new ResponseEntity<>("Products approved.", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Products could not be approved.", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> approveProducts(@RequestParam(value="productId", required = false) Long productId) {
+
+        productService.approveProducts(productId);
+        return new ResponseEntity<>("Products approved.", HttpStatus.OK);
     }
 
     @GetMapping("/unverified")

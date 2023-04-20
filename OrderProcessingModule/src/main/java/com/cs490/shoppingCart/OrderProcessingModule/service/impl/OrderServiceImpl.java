@@ -5,13 +5,17 @@ import com.cs490.shoppingCart.OrderProcessingModule.model.*;
 import com.cs490.shoppingCart.OrderProcessingModule.dto.CartLine;
 import com.cs490.shoppingCart.OrderProcessingModule.repository.OrderRepository;
 import com.cs490.shoppingCart.OrderProcessingModule.service.OrderService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -112,6 +116,32 @@ public class OrderServiceImpl implements OrderService {
             return true;
         }
     }
+
+    @Override
+    public List<OrderDTO> getAllOrdersForReport(LocalDate initalDate, LocalDate finalDate, Long vendorId) {
+        List<Order> orders = new ArrayList<>();
+        //Set<Order> orderIds = new HashSet<>();
+        orders = orderRepository.findAllByOrderDateBetween(initalDate.atStartOfDay() ,finalDate.atStartOfDay());
+//        orders.forEach(order -> order.getOrderLines().stream().anyMatch(
+//                orderLine -> createProductDTO(orderLine.getProductInfo()).getUserId().equals(vendorId)));
+        if(vendorId != null){
+//           for(Order or : orders){
+//                for(OrderLine ol : or.getOrderLines()){
+//                    System.out.println(createProductDTO(ol.getProductInfo()).getUserId().equals(vendorId));
+//                    if(createProductDTO(ol.getProductInfo()).getUserId().intValue() == vendorId.intValue())
+//                        orderIds.add(or);
+//                }
+//           }
+             return orders.stream().filter(
+                    order -> order.getOrderLines().stream().anyMatch(
+                            orderLine -> createProductDTO(orderLine.getProductInfo()).getUserId().equals(vendorId)))
+                     .map(order -> modelMapper.map(order,OrderDTO.class))
+                .collect(Collectors.toList());
+        }
+        return orders.stream().map(order -> modelMapper.map(order,OrderDTO.class)).collect(Collectors.toList());
+                //orderIds.stream().toList();
+    }
+
     private Order createOrderLine(ShoppingCartDTO shoppingCart){
 
         Set<CartLine> cartLines = shoppingCart.getCartLines();
@@ -139,6 +169,20 @@ public class OrderServiceImpl implements OrderService {
             ex.printStackTrace();
         }
         return userInfo;
+    }
+    private ProductDTO createProductDTO(String productDTO){
+        ProductDTO productDTO1 = new ProductDTO();
+        try {
+            ObjectMapper ob = new ObjectMapper();
+             productDTO1 = ob.readValue(productDTO,ProductDTO.class);
+        }catch (RuntimeException ex){
+            ex.printStackTrace();
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return productDTO1;
     }
 
     private void updateOrderStatus(String status,Order order){

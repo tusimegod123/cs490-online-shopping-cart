@@ -1,23 +1,23 @@
 package com.cs490.shoppingCart.ProfitSharingModule.service.imp;
-import com.cs490.shoppingCart.ProfitSharingModule.dto.OrderDTO;
-import com.cs490.shoppingCart.ProfitSharingModule.dto.OrderLineDTO;
-import com.cs490.shoppingCart.ProfitSharingModule.dto.ProductDTO;
-import com.cs490.shoppingCart.ProfitSharingModule.dto.ProfitRequest;
+import com.cs490.shoppingCart.ProfitSharingModule.dto.*;
 import com.cs490.shoppingCart.ProfitSharingModule.model.Profit;
 import com.cs490.shoppingCart.ProfitSharingModule.repository.ProfitRepository;
 import com.cs490.shoppingCart.ProfitSharingModule.service.ProfitService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Date;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class ProfitServiceImp implements ProfitService {
@@ -80,5 +80,100 @@ public class ProfitServiceImp implements ProfitService {
         }
 
         return true;
+    }
+
+    @Override
+    public Double getProfit(ReportRequest request) {
+        List<Profit> profitList;
+
+        if(request.getUserId() != null){
+            profitList = profitRepository.findAllByUserIdAndTransactionDateIsBetween(
+                    request.getUserId(),
+                    Date.from(request.getFromDate().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                    Date.from(request.getToDate().atStartOfDay(ZoneId.systemDefault()).toInstant())
+            );
+        } else {
+            profitList = profitRepository.findAllByTransactionDateIsBetween(
+                    Date.from(request.getFromDate().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                     Date.from(request.getToDate().atStartOfDay(ZoneId.systemDefault()).toInstant())
+            );
+        }
+
+        AtomicReference<Double> salePrice = new AtomicReference<>(0d);
+        Double buyPrice = 0d;
+        Set<Long> productIds = new HashSet();
+
+        profitList.stream().filter(p -> p.getUserId() != 0 )
+                .forEach( p -> {
+                    salePrice.updateAndGet(v -> v + p.getAmount());
+                    productIds.add(p.getProductId());
+                });
+
+        //connect with product service
+        Map<String, Long> queryParams = new HashMap<>();
+
+        for(Long id : productIds){
+            queryParams.put("productId", id);
+        }
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://localhost:9799/api/v1/products/productDetail");
+
+        for (Map.Entry<String, Long> entry : queryParams.entrySet()) {
+            builder.queryParam(entry.getKey(), entry.getValue());
+        }
+
+        String uriString = builder.toUriString();
+
+        try {
+            List<ProductResponseDTO> productList = restTemplate.exchange(
+                    uriString,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<ProductResponseDTO>>() {}).getBody();
+            System.out.println(productList);
+
+            for (Profit p: profitList) {
+                if(p.getUserId() != 0){
+                    Optional<ProductResponseDTO> product = productList.stream()
+                            .filter(obj -> obj.getProductId() == p.getProductId())
+                            .findFirst();
+                    if(product.isPresent()){
+                        buyPrice += product.get().getItemCost();
+                    }
+                }
+            }
+
+        } catch (Exception ex) {
+           logger.error("Error occurred while sending the request to product service!");
+        }
+
+        return salePrice.get() - buyPrice;
+    }
+
+    @Override
+    public Double getRevenue(ReportRequest request) {
+        System.out.println(request);
+
+        List<Profit> profitList;
+
+        if(request.getUserId() != null){
+            profitList = profitRepository.findAllByUserIdAndTransactionDateIsBetween(
+                    request.getUserId(),
+                    Date.from(request.getFromDate().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                            Date.from(request.getToDate().atStartOfDay(ZoneId.systemDefault()).toInstant())
+            );
+        } else {
+            profitList = profitRepository.findAllByTransactionDateIsBetween(
+                    Date.from(request.getFromDate().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                            Date.from(request.getToDate().atStartOfDay(ZoneId.systemDefault()).toInstant())
+            );
+        }
+
+        Double revenue = profitList.stream()
+                .filter(p -> p.getUserId() != 0)
+                .mapToDouble(p -> p.getAmount())
+                .sum();
+
+        return revenue;
     }
 }
