@@ -1,17 +1,18 @@
-package com.cs490.shoppingCart.ProductManagementModule.service.Imp;
+package com.cs490.shoppingCart.ProductManagementModule.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponse;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
+import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
 import com.cs490.shoppingCart.ProductManagementModule.mapper.CategoryMapper;
 import com.cs490.shoppingCart.ProductManagementModule.mapper.ProductMapper;
@@ -27,10 +28,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import com.cs490.shoppingCart.ProductManagementModule.service.Imp.ProductServiceImp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestClientException;
@@ -39,6 +43,7 @@ import org.springframework.web.client.RestTemplate;
 @ContextConfiguration(classes = {ProductServiceImp.class})
 @ExtendWith(SpringExtension.class)
 class ProductServiceImpTest {
+
     @MockBean
     private AmazonS3 amazonS3;
 
@@ -212,6 +217,43 @@ class ProductServiceImpTest {
         verify(productMapper).fromCreateProductResponseToDomain((Product) any());
     }
 
+    @Test
+    public void getProductByIdWithItemNotFound() throws ItemNotFoundException {
+
+        Long id = 1L;
+
+        when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            productServiceImp.getProductById(1L);
+        } catch (ItemNotFoundException e) {
+            assertThat(e.getMessage()).isEqualTo("No product found with id: " + id);
+        }
+
+    }
+
+    @Test
+    public void getProductByIdWithEmptyCategory() throws ItemNotFoundException {
+
+        Long id = 1L;
+        Product product = new Product();
+        product.setProductId(id);
+
+        Category category = new Category();
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setProductId(id);
+
+        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+        when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
+        when(productMapper.fromCreateProductResponseToDomain(product)).thenReturn(productResponse);
+
+        ProductResponse productResult = productServiceImp.getProductById(id);
+
+        assertThat(productResult.getCategory()).isEqualTo(null);
+
+    }
+
     /**
      * Method under test: {@link ProductServiceImp#verifiedProducts()}
      */
@@ -244,12 +286,46 @@ class ProductServiceImpTest {
      * Method under test: {@link ProductServiceImp#approveProducts(Long)}
      */
     @Test
-    void testApproveProducts() {
-        when(productRepository.save((Product) any())).thenReturn(new Product());
-        when(productRepository.findById((Long) any())).thenReturn(Optional.of(new Product()));
-        assertTrue(productServiceImp.approveProducts(123L));
-        verify(productRepository).save((Product) any());
-        verify(productRepository).findById((Long) any());
+    public void testApproveSingleProducts() {
+
+        Long id = 1L;
+        Product product = new Product();
+        product.setProductId(id);
+
+        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+
+        productServiceImp.approveProducts(id);
+        assertThat(product.getVerified()).isTrue();
+        verify(productRepository).save(product);
+    }
+
+    @Test
+    public void testApproveAllUnapprovedProducts() {
+
+        Product product1 = new Product(1L, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+        Product product2 = new Product(2L, "Pepsi", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+        Product product3 = new Product(3L, "Fanta", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+
+        List<Product> productList = new ArrayList<>();
+        productList.add(product1);
+        productList.add(product2);
+        productList.add(product3);
+
+        when(productRepository.findAllByVerified(false)).thenReturn(productList);
+
+        productServiceImp.approveProducts(null);
+
+        verify(productRepository, times(3)).save(any(Product.class));
+    }
+
+    @Test
+    public void testApproveProductsWithAllUnapprovedProducts() {
+
+
+
+        Long id = 1L;
+
+
     }
 
     /**
@@ -263,6 +339,96 @@ class ProductServiceImpTest {
     }
 
 
+    @Test
+    public void testDeleteProductById() {
 
+        Long id = 1L;
+        Product product = new Product();
+        product.setProductId(id);
+
+        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+
+        productServiceImp.deleteProductById(id);
+    }
+
+    @Test
+    public void testDeleteProductByIdEmptyResult() {
+
+        when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        Boolean isDelete = productServiceImp.deleteProductById(1L);
+        assertThat(isDelete).isFalse();
+    }
+
+    @Test
+    public void testDeleteProductByIdWithEmptyResultDataAccessException() {
+
+        Long id = 1L;
+
+        // mock the behavior of the repository
+        when(productRepository.findById(id)).thenReturn(Optional.of(new Product()));
+        doThrow(new EmptyResultDataAccessException(1)).when(productRepository).deleteById(id);
+
+        // test the method
+        boolean result = productServiceImp.deleteProductById(id);
+        assertThat(result).isFalse();
+
+        // verify that the repository methods were called
+        verify(productRepository, times(1)).findById(id);
+        verify(productRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    public void testUpdateProductById() throws ItemNotFoundException, IdNotMatchException {
+
+        Long id = 1L;
+        Product product = new Product();
+        product.setProductId(id);
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setProductId(id);
+
+        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+        when(productMapper.fromCreateProductResponseToDomain(product)).thenReturn(productResponse);
+
+        productServiceImp.updateProduct(product, id);
+
+        verify(productRepository).save(product);
+    }
+
+    @Test
+    public void testUpdateProductByIdNotFound() {
+
+        Long id = 1L;
+        Product product = new Product();
+
+        when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            productServiceImp.updateProduct(product, id);
+        } catch (IdNotMatchException e) {
+            throw new RuntimeException(e);
+        } catch (ItemNotFoundException e) {
+            assertThat(e.getMessage()).isEqualTo("Not found for id: " + id);
+        }
+    }
+
+    @Test
+    public void testUpdateProductByIdNotMatch() {
+
+        Long id = 1L;
+        Long idNotMatch = 2L;
+        Product productNotMatch = new Product(idNotMatch, "Pepsi", 10.0, 4, 8.0, "The energy drink", "https://coke.img", false, 1L, 1L);
+
+        when(productRepository.findById(id)).thenReturn(Optional.of(productNotMatch));
+
+        try {
+            productServiceImp.updateProduct(productNotMatch, id);
+        } catch (IdNotMatchException e) {
+            assertThat(e.getMessage()).isEqualTo("Not match id from url with input id");
+        } catch (ItemNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

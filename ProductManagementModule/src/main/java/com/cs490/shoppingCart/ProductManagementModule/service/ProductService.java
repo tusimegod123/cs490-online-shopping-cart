@@ -30,7 +30,7 @@ public interface ProductService {
     public List<Product> unverifiedProducts();
 
 
-    public boolean approveProducts(Long productId);
+    public void approveProducts(Long productId);
 
 //    public String uploadFile(MultipartFile file);
 //
