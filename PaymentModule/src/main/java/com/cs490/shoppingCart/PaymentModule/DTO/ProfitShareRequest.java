@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class ProfitShareRequest {
 
-    private Long Id;
+    private Long transactionId;
 
     private Long orderId;
 

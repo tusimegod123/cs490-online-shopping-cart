@@ -10,9 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDTO {
-    private String order_id;
-    private String user_id;
-    private double total_price;
-    private Date order_date;
-    private String order_status;
+    private Long id;
+    private Long userId;
+    private Double totalPrice;
 }

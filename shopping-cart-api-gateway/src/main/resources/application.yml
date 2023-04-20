@@ -30,7 +30,7 @@ spring:
             - AuthenticationFilter
 
         - id: administration-service
-          uri: http://localhost:9897/
+          uri: http://localhost:8082/
           predicates:
             - Path=/api/v1/users/**
 
