@@ -6,21 +6,6 @@ spring:
     name: shopping-cart-api-gateway
   cloud:
     gateway:
-      globalcors:
-      cors-configurations:
-      '[/**]':
-      allowed-origins:
-        - "http://localhost:3000"
-        - "http://34.66.179.100:3000"
-      allowed-methods:
-        - GET
-        - POST
-        - DELETE
-        - PUT
-        - PATCH
-      allowed-headers:
-        - "*"
-      allow-credentials: true
       routes:
         - id: product-service
           uri: lb://product-service
@@ -30,7 +15,7 @@ spring:
             - AuthenticationFilter
 
         - id: administration-service
-          uri: http://localhost:8082/
+          uri: http://administration-service-svc:8082/
           predicates:
             - Path=/api/v1/users/**
 
