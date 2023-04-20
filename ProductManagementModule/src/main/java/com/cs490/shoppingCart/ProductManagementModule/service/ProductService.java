@@ -32,13 +32,13 @@ public interface ProductService {
 
     public boolean approveProducts(Long productId);
 
-    public String uploadFile(MultipartFile file);
-
-
-    public byte[] downloadFile(String fileName);
-
-
-    public String deleteFile(String fileName);
+//    public String uploadFile(MultipartFile file);
+//
+//
+//    public byte[] downloadFile(String fileName);
+//
+//
+//    public String deleteFile(String fileName);
 
     public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam Set<Long> productId);
 
