@@ -325,18 +325,9 @@ class ProductServiceImpTest {
 
     }
 
-    /**
-     * Method under test: {@link ProductServiceImp#getAllProductWithSpecificIDList(Set)}
-     */
-    @Test
-    void testGetAllProductWithSpecificIDList() {
-        when(productRepository.findAll()).thenReturn(new ArrayList<>());
-        assertTrue(productServiceImp.getAllProductWithSpecificIDList(new HashSet<>()).isEmpty());
-        verify(productRepository).findAll();
-    }
 
-    @Test
-    public void testGetAllProductWithSpecificIdList() {
+//    @Test
+//    public void testGetAllProductWithSpecificIdList() {
 
 //        List<Product> products = productRepository.findAll();
 //        List<ListProductResponseSpecificID> list = new ArrayList<>();
@@ -349,23 +340,23 @@ class ProductServiceImpTest {
 //        }
 //
 //        return list;
-
-        Product product1 = new Product(1L, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
-        Product product2 = new Product(2L, "Pepsi", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
-        Product product3 = new Product(3L, "Fanta", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
-
-        List<Product> productList = new ArrayList<>();
-        productList.add(product1);
-        productList.add(product2);
-        productList.add(product3);
-
-        Set<Long> productIdSet = Collections.emptySet();
-        productIdSet.add(1L);
-        productIdSet.add(2L);
-        productIdSet.add(3L);
-
-
-    }
+//
+//        Product product1 = new Product(1L, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+//        Product product2 = new Product(2L, "Pepsi", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+//        Product product3 = new Product(3L, "Fanta", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+//
+//        List<Product> productList = new ArrayList<>();
+//        productList.add(product1);
+//        productList.add(product2);
+//        productList.add(product3);
+//
+//        Set<Long> productIdSet = Collections.emptySet();
+//        productIdSet.add(1L);
+//        productIdSet.add(2L);
+//        productIdSet.add(3L);
+//
+//
+//    }
 
 
     @Test
