@@ -15,7 +15,7 @@ spring:
             - AuthenticationFilter
 
         - id: administration-service
-          uri: http://administration-service-svc:8082/
+          uri: lb://adminstration-service
           predicates:
             - Path=/api/v1/users/**
 

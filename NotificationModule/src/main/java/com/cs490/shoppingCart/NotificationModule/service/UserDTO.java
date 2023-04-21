@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
-    private Long user_id;
+    private Long userId;
     private String username;
-    private String fullname;
+    private String name;
     private String password;
     private String email;
-    private String role_id;
+    private String roleId;
     private AddressDTO userAddress;
     private double initial_pay;
     private String acoount_status;

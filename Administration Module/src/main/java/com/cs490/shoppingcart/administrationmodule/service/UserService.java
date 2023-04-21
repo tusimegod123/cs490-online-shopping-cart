@@ -63,6 +63,10 @@ public class UserService {
         return RandomStringUtils.random(length, characters);
     }
 
+    public  String randomPassword = generateRandomPassword(8);
+    public  String passwordBeforeEncoded = randomPassword;
+
+
     public User createUser(User userDto) throws IllegalArgumentException {
         User user = new User();
         user.setName(userDto.getName());
@@ -98,40 +102,40 @@ public class UserService {
         userRepository.save(user);
         return user;
     }
-    private void sendPasswordToUser(User vendor, String username, String password) {
-        // code to send password to user via email or SMS
-        System.out.println("Hello " + vendor.getName() + " Your  username for logging in is " + username  + " and your password is " + password);
+    private String sendPasswordToUser(String password) {
+        return password;
     }
 
-public ResponseEntity<?> verifyVendor(User vendor, Long vendorId, @AuthenticationPrincipal User admin) {
-    User vendorToBeVerified = userRepository.findById(vendorId).orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + vendorId));
+    public String getPassword(){
+        return randomPassword;
+    }
 
-    String randomUsername = generateRandomUsername(6);
-    String randomPassword = generateRandomPassword(8);
+    public ResponseEntity<?> verifyVendor(User vendor, Long vendorId, @AuthenticationPrincipal User admin) throws UserNotFoundException {
+        String randomUsername = generateRandomUsername(6);
+        String randomPassword = generateRandomPassword(8);
+        vendor.setUsername(randomUsername);
+        vendor.setPassword(randomPassword);
 
-    vendor.setUsername(randomUsername);
-    vendor.setPassword(randomPassword);
-    try {
-        if (admin == null) {
-            throw new UserNotFoundException("  you not authorised to verify this vendor, Kindly login as an Admin");
+        Optional<User> vendorToBeVerified = userRepository.findById(vendorId);
+        if (!vendorToBeVerified.isPresent()) {
+            throw new UserNotFoundException("Sorry, this user does not exist.");
         }
-        vendorToBeVerified.setVerifiedBy(admin.getName());
-        vendorToBeVerified.setIsVerified(true);
-        vendorToBeVerified.setUsername(vendor.getUsername());
-        vendorToBeVerified.setPassword(passwordEncoder.encode(randomPassword));
 
-        sendPasswordToUser(vendor, randomUsername, randomPassword);
-        // Send email to the vendor
-        sendNotification(vendorToBeVerified.getNotificationRequest());
+        if (admin == null) {
+            throw new UserNotFoundException("You are not authorized to verify this vendor. Please log in as an admin.");
+        }
 
-        System.out.println("Vendor verified by: " + admin.getName());
-        //return userRepository.save(vendorToBeVerified);
-        return  ResponseEntity.ok(userRepository.save(vendorToBeVerified));
-    } catch (UserNotFoundException e) {
-        String errorJson = "{\"Sorry\":\"" + e.getMessage() + "\"}";
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorJson);
+        vendorToBeVerified.get().setVerifiedBy(admin.getName());
+        vendorToBeVerified.get().setIsVerified(true);
+        vendorToBeVerified.get().setUsername(vendor.getUsername());
+        vendorToBeVerified.get().setPassword(passwordEncoder.encode(randomPassword));
+        userRepository.save(vendorToBeVerified.get());
+        sendPasswordToUser(randomPassword);
+        sendNotification(vendorToBeVerified.get().getNotificationRequest(randomPassword));
+
+        return ResponseEntity.ok(vendorToBeVerified.get());
     }
-}
+
 
     public User fullyVerifyVendor(Long vendorId) throws NotVerifiedException {
         User vendorToBeVerified = userRepository.findById(vendorId).orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + vendorId));
@@ -177,6 +181,8 @@ public ResponseEntity<?> findUser(Long id){
     }
 }
 
+
+
     public List<User> allUsers(){
         return userRepository.findAll();
     }
@@ -195,7 +201,7 @@ public ResponseEntity<?> findUser(Long id){
 
     private void sendNotification(NotificationRequest request) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8080/onlineshopping/notification/email";
+        String url = "http://localhost:8088/notification-service/notification/email";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -205,12 +211,15 @@ public ResponseEntity<?> findUser(Long id){
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            String decryptedPassword = passwordEncoder.encode(request.getPassword());
+           // String decryptedPassword = passwordEncoder().decode(request.getPassword());
 
             logger.info("userId: " + request.getUserId());
             logger.info("emailType: " + request.getEmailType());
-            logger.info("password:  " + decryptedPassword);
-            logger.info("message: " + request.getMessage() );
+//            logger.info("password: " + request.setPassword(randomPassword));
+            request.setPassword(passwordBeforeEncoded);
+            System.out.println(passwordBeforeEncoded);
+            logger.info("password: "+request.getPassword());
+            logger.info("message: " + request.getMessage());
 
         } else {
             logger.error("Failed ");

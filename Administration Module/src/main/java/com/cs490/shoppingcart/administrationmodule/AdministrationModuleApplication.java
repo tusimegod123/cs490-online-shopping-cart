@@ -9,11 +9,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 //rCqX2JCo
 //        godwin@example.comand
 @SpringBootApplication
-//@EnableDiscoveryClient
+@EnableDiscoveryClient
 //@OpenAPIDefinition
 //@EnableSwagger2
 public class AdministrationModuleApplication implements CommandLineRunner {

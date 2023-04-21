@@ -17,16 +17,18 @@ public class ShoppingCartApplicationRestClient {
     @Value("${order.management.url}")
     private String orderUrl;
 
-    @Value("${user.management.url}")
-    private String userUrl;
+    @Value("${userUrl}")
+    private String userUrl = "http://localhost:8082/api/v1/users";
 
     RestTemplate restTemplate = new RestTemplate();
     Logger logger= LoggerFactory.getLogger(ShoppingCartApplicationRestClient.class);
 
     public UserDTO getUser(Long userId) {
-        UserDTO user=null;
+        UserDTO user=restTemplate.getForObject(userUrl+ "/" + userId, UserDTO.class);;
         try{
-            user =restTemplate.getForObject(userUrl+ "/" + userId, UserDTO.class);
+            if (user == null){
+                System.out.println("User is null");
+            }
         }catch(Exception e){
             logger.error("Resquested operation failed, "+ e.getMessage());
         }

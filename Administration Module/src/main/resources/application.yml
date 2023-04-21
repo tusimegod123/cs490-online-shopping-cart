@@ -44,12 +44,13 @@
 #    hostname: localhost
 server:
   port: 8082
-
+#  jdbc:mysql://localhost:3306/cs490_onlineshopping_cart_db_docker
+  #jdbc:mysql://onlineshoppingcartdockerdb:3306/cs490_onlineshopping_cart_db_docker
 spring:
   datasource:
-    url: jdbc:mysql://cs490-online-shopping-cart-database-instance.cmrjghmuczi9.us-west-1.rds.amazonaws.com:3306/onlineShoppingCartDatabase?user=admin&password=helloworld
-    username: admin
-    password: helloworld
+    url: jdbc:mysql://localhost:3306/cs490-swe-2023-administrator
+    username: root
+    password: gold
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect

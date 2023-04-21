@@ -5,6 +5,7 @@ import com.cs490.shoppingcart.administrationmodule.dto.AuthRequest;
 import com.cs490.shoppingcart.administrationmodule.dto.UserDto;
 import com.cs490.shoppingcart.administrationmodule.exception.InvalidCredentialsException;
 import com.cs490.shoppingcart.administrationmodule.exception.NotVerifiedException;
+import com.cs490.shoppingcart.administrationmodule.exception.UserNotFoundException;
 import com.cs490.shoppingcart.administrationmodule.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -74,8 +75,13 @@ public class UserController {
     }
 
 @PutMapping(value = "/vendor/verify/{id}")
-public ResponseEntity<?> verifyVendor(@RequestBody User vendor, @PathVariable Long id, @AuthenticationPrincipal User  admin) {
-    return userService.verifyVendor(vendor, id,admin);
+public ResponseEntity<?> verifyVendor(@RequestBody User vendor, @PathVariable Long id, @AuthenticationPrincipal User admin) {
+    try {
+        return userService.verifyVendor(vendor, id, admin);
+    } catch (UserNotFoundException e) {
+        String errorJson = "{\"error\":\"" + e.getMessage() + "\"}";
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorJson);
+    }
 }
 
 @PutMapping(value = "/vendor/fullyVerify/{id}")
