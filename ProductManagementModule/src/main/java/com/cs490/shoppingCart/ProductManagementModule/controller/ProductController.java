@@ -54,11 +54,17 @@ public class ProductController {
      * @throws ItemNotFoundException
      */
     @GetMapping
-    public List<ProductResponse> getAllProduct(@RequestParam(required = false) String name, @RequestParam(required = false) Long categoryId) throws ItemNotFoundException {
+    public ResponseEntity<Object> getAllProduct(@RequestParam(required = false) String name, @RequestParam(required = false) Long categoryId) throws ItemNotFoundException {
 
-        List<ProductResponse> products= productService.allProducts(name, categoryId);
+        List<ProductResponse> products;
 
-        return products;
+        try {
+            products = productService.allProducts(name, categoryId);
+        }catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(products,HttpStatus.OK);
     }
 
     /**

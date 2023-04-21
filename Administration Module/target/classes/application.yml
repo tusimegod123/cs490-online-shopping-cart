@@ -47,9 +47,12 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://cs490-online-shopping-cart-database-instance.cmrjghmuczi9.us-west-1.rds.amazonaws.com:3306/onlineShoppingCartDatabase?user=admin&password=helloworld
-    username: admin
-    password: helloworld
+#    url: jdbc:mysql://cs490-online-shopping-cart-database-instance.cmrjghmuczi9.us-west-1.rds.amazonaws.com:3306/onlineShoppingCartDatabase?user=admin&password=helloworld
+#    username: admin
+#    password: helloworld
+    url: jdbc:mysql://${DB_HOST}/${DATABASE_NAME}?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
