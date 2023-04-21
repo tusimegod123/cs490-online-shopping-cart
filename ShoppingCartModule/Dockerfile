@@ -1,7 +1,10 @@
-FROM openjdk:17-jdk-slim
+#FROM openjdk:17-jdk-slim
+#ARG JAR_FILE=target/*.jar
+#COPY ${JAR_FILE} app.jar
+#ENTRYPOINT ["java","-jar","/app.jar"]
+
+FROM openjdk:17
 ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-ENV DB_URL=jdbc:mysql://localhost:3306/shoppingcartmodule \
-    DB_USERNAME=root \
-    DB_PASSWORD=Realkhiw@123
-ENTRYPOINT ["java","-jar","/app.jar"]
+COPY ${JAR_FILE} shoppingcart-module.jar
+ENTRYPOINT ["java","-jar","/shoppingcart-module.jar"]
+EXPOSE 8084

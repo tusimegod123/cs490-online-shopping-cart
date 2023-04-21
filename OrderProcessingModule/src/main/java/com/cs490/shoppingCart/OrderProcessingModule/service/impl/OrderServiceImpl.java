@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,6 +34,15 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Value("${USER_SERVICE_URL:user-service:8082}")
+    private String userServiceUrl;
+
+    @Value("${PAYMENT_SERVICE_URL:user-service:8082}")
+    private String paymentServiceUrl;
+
+
+
+
     @Override
     public List<Order> getOrders() {
         List<Order> orders = orderRepository.findAll();
@@ -44,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder (OrderRequestDTO orderRequestDTO) {
 
         Order pendingOrder = createOrderLine(orderRequestDTO.getShoppingCart());
-        UserDTO userDTO = restTemplate.getForObject("http://localhost:9898/api/v1/users/1", UserDTO.class);
+        UserDTO userDTO = restTemplate.getForObject("http://"+userServiceUrl+"/api/v1/users/1", UserDTO.class);
         pendingOrder.setUserInfo(creteUserInfoString(userDTO));
         Order order=orderRepository.save(pendingOrder);
         PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(
@@ -55,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
                         orderRequestDTO.getPaymentInfoDTO().getCCV(),
                         orderRequestDTO.getPaymentInfoDTO().getCardExpiry()
         );
-        String status = restTemplate.postForObject("http://localhost:8086/api/v1/payments/payOrder",paymentRequestDTO,String.class);
+        String status = restTemplate.postForObject("http://"+paymentServiceUrl+"/api/v1/payments/payOrder",paymentRequestDTO,String.class);
         updateOrderStatus(status,order);
         return pendingOrder;
 
@@ -78,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
         Role role =  new Role("Guest");
         roles.add(role);
         UserDTO request =  new UserDTO(guestOrderRequest.getUserInfo().getName(),guestOrderRequest.getUserInfo().getEmail(), guestOrderRequest.getUserInfo().getTelephoneNumber(),roles);
-        UserDTO tempUser = restTemplate.postForObject("http://localhost:9898/api/v1/users/register",request, UserDTO.class);
+        UserDTO tempUser = restTemplate.postForObject("http://"+userServiceUrl+"/api/v1/users/register",request, UserDTO.class);
         //UserDTOx tempUser = new UserDTOx();
         ShoppingCartDTO shoppingCart =  guestOrderRequest.getShoppingCart();
         shoppingCart.setUserId(tempUser.getUserId());
@@ -93,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
                         guestOrderRequest.getPaymentInfo().getCCV(),
                         guestOrderRequest.getPaymentInfo().getCardExpiry()
         );
-        String status = restTemplate.postForObject("http://localhost:8086/api/v1/payments/payOrder",paymentRequestDTO,String.class);
+        String status = restTemplate.postForObject("http://"+paymentServiceUrl+"/api/v1/payments/payOrder",paymentRequestDTO,String.class);
         updateOrderStatus(status,order);
         return modelMapper.map(order,OrderDTO.class);
     }
@@ -122,16 +132,7 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders = new ArrayList<>();
         //Set<Order> orderIds = new HashSet<>();
         orders = orderRepository.findAllByOrderDateBetween(initalDate.atStartOfDay() ,finalDate.atStartOfDay());
-//        orders.forEach(order -> order.getOrderLines().stream().anyMatch(
-//                orderLine -> createProductDTO(orderLine.getProductInfo()).getUserId().equals(vendorId)));
         if(vendorId != null){
-//           for(Order or : orders){
-//                for(OrderLine ol : or.getOrderLines()){
-//                    System.out.println(createProductDTO(ol.getProductInfo()).getUserId().equals(vendorId));
-//                    if(createProductDTO(ol.getProductInfo()).getUserId().intValue() == vendorId.intValue())
-//                        orderIds.add(or);
-//                }
-//           }
              return orders.stream().filter(
                     order -> order.getOrderLines().stream().anyMatch(
                             orderLine -> createProductDTO(orderLine.getProductInfo()).getUserId().equals(vendorId)))
@@ -139,7 +140,7 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
         }
         return orders.stream().map(order -> modelMapper.map(order,OrderDTO.class)).collect(Collectors.toList());
-                //orderIds.stream().toList();
+
     }
 
     private Order createOrderLine(ShoppingCartDTO shoppingCart){

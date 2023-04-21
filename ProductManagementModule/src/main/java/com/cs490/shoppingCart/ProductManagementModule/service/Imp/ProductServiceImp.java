@@ -56,7 +56,7 @@ public class ProductServiceImp implements ProductService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${user.endpoint}")
+    @Value("${userServiceUrl}")
     private String userEndpoint;
 
 //    @Value("${application.bucket.name}")

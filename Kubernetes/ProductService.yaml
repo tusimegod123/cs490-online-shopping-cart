@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-deployment
+  labels:
+    app: product
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+      - name: product
+        image: hiwotret/productservice:1.0
+        #----//sophearyrin/productservice:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8083 # port to access the app in the container
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product
+  type: NodePort # LoadBalancer for or NodePort external service
+  ports:
+    - protocol: TCP
+      port: 8083 # port to access the pod
+      targetPort: 8083 # must be the same as the containerPort
