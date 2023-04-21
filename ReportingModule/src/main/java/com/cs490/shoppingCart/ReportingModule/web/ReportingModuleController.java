@@ -17,8 +17,7 @@ import java.util.Optional;
  * The Class ReportingController.
  */
 @RestController
-@CrossOrigin
-@RequestMapping("/reporting")
+@CrossOrigin("*")
 public class ReportingModuleController {
 
     @Autowired

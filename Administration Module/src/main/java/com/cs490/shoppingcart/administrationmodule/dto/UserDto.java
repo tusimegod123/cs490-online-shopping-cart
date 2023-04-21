@@ -23,7 +23,8 @@ public class UserDto {
     private String verifiedBy;
     private List<Role> roles;
 
-    public UserDto(String name, String email, String telephoneNumber, String username, Boolean isVerified, Boolean isFullyVerified, String verifiedBy, List<Role> roles) {
+    public UserDto(Long userId, String name, String email, String telephoneNumber, String username, Boolean isVerified, Boolean isFullyVerified, String verifiedBy, List<Role> roles) {
+        this.userId = userId;
         this.name = name;
         this.email = email;
         this.telephoneNumber = telephoneNumber;

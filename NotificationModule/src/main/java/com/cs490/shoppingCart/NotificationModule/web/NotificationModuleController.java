@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
  * The Class NotificationController.
  */
 @RestController
-@RequestMapping("/notification")
 public class NotificationModuleController {
 
     @Autowired

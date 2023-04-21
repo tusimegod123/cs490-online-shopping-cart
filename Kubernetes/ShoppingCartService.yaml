@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shoppingcart-deployment
+  labels:
+    app: shoppingcart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shoppingcart
+  template:
+    metadata:
+      labels:
+        app: shoppingcart
+    spec:
+      containers:
+      - name: shoppingcart
+        image: syilma/cartservice:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8084 # port to access the app in the container
+        env: # Setting Environmental Variables
+          - name: DB_HOST # Setting Database host address
+            value: ecommercedb
+          - name: DB_NAME # Setting Database name
+            value: ecommerce
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: myvault
+                key: DB_USER_NAME
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: myvault
+                key: DB_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shoppingcart-service
+spec:
+  selector:
+    app: shoppingcart
+#  type: NodePort # LoadBalancer for or NodePort external service
+  ports:
+    - protocol: TCP
+      port: 8084 # port to access the pod
+      targetPort: 8084 # must be the same as the containerPort
+#      nodePort: 30300 ## for external service port

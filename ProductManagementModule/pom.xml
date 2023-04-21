@@ -152,8 +152,21 @@
 		</dependencies>
 	</dependencyManagement>
 
+
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -179,34 +192,34 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>1.4.13</version>
-				<executions>
-					<execution>
-						<id>default</id>
-						<goals>
-							<goal>build</goal>
-							<goal>push</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<repository>tusimegodwin256/administration-module</repository>
-					<tag>administration-module</tag>
-					<!--                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>-->
-				</configuration>
-				<dependencies>
-					<!-- To make this work on JDK 9+ -->
-					<dependency>
-						<groupId>javax.activation</groupId>
-						<artifactId>javax.activation-api</artifactId>
-						<version>1.2.0</version>
-					</dependency>
-				</dependencies>
+<!--			<plugin>-->
+<!--				<groupId>com.spotify</groupId>-->
+<!--				<artifactId>dockerfile-maven-plugin</artifactId>-->
+<!--				<version>1.4.13</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>default</id>-->
+<!--						<goals>-->
+<!--							<goal>build</goal>-->
+<!--							<goal>push</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--				<configuration>-->
+<!--					<repository>tusimegodwin256/administration-module</repository>-->
+<!--					<tag>administration-module</tag>-->
+<!--					&lt;!&ndash;                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>&ndash;&gt;-->
+<!--				</configuration>-->
+<!--				<dependencies>-->
+<!--					&lt;!&ndash; To make this work on JDK 9+ &ndash;&gt;-->
+<!--					<dependency>-->
+<!--						<groupId>javax.activation</groupId>-->
+<!--						<artifactId>javax.activation-api</artifactId>-->
+<!--						<version>1.2.0</version>-->
+<!--					</dependency>-->
+<!--				</dependencies>-->
 
-			</plugin>
+<!--			</plugin>-->
 
 		</plugins>
 	</build>

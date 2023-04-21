@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  labels:
+    app: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: syilma/userservice:v1 # Replace with your image name and tag
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 808
+        env: # Setting Environmental Variables
+          - name: DB_HOST # Setting Database host address
+            value: ecommercedb
+          - name: DB_NAME # Setting Database name
+            value: ecommerce
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: myvault
+                key: DB_USER_NAME
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: myvault
+                key: DB_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+   - port: 8082
+     targetPort: 8082
+     protocol: TCP

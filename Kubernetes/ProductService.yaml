@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-deployment
+  labels:
+    app: product
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+      - name: product
+        image: syilma/productservice:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8083 # port to access the app in the container
+        env: # Setting Environmental Variables
+          - name: DB_HOST # Setting Database host address
+            value: ecommercedb
+          - name: DB_NAME # Setting Database name
+            value: ecommerce
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: myvault
+                key: DB_USER_NAME
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: myvault
+                key: DB_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product
+#  type: NodePort # LoadBalancer for or NodePort external service
+  ports:
+    - protocol: TCP
+      port: 8083 # port to access the pod
+      targetPort: 8083 # must be the same as the containerPort

@@ -104,7 +104,7 @@ public ResponseEntity<List<UserDto>>getUsers() {
     List<User> users = userService.allUsers();
     List<UserDto> userDtos = new ArrayList<>();
     for (User user : users) {
-        UserDto userDto = new UserDto(user.getName(), user.getEmail(),
+        UserDto userDto = new UserDto(user.getUserId(), user.getName(), user.getEmail(),
                 user.getTelephoneNumber(), user.getUsername(), user.getIsVerified(),
                 user.getIsFullyVerified(), user.getVerifiedBy(),
                 user.getRoles());
