@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-deployment
+  labels:
+    app: payment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      containers:
+      - name: payment
+        image: syilma/paymentservice:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8086 # port to access the app in the container
+        env: # Setting Environmental Variables
+          - name: DB_HOST # Setting Database host address
+            value: ecommercedb
+          - name: DB_NAME # Setting Database name
+            value: ecommerce
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: myvault
+                key: DB_USER_NAME
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: myvault
+                key: DB_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+spec:
+  selector:
+    app: payment
+  type: NodePort # LoadBalancer for or NodePort external service
+  ports:
+    - protocol: TCP
+      port: 8086 # port to access the pod 
+      targetPort: 8086 # must be the same as the containerPort 
+#      nodePort: 30300 ## for external service port

@@ -33,12 +33,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: administration-service-svc
+  name: administration-service
 spec:
   selector:
     app: administration-service
   ports:
-   - port: 80
+   - port: 8082
      targetPort: 8082
      protocol: TCP
 ---
