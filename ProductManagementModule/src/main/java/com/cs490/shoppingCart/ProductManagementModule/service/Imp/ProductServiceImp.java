@@ -107,17 +107,18 @@ public class ProductServiceImp implements ProductService {
      * @return List of Product Response
      * @throws ItemNotFoundException
      */
+
     public List<ProductResponse> allProducts(String name, Long categoryId) throws ItemNotFoundException {
 
         List<Product> products = productRepository.findAll();
 
         //Search Product by ProductName
-        if(name!=null){
+        if( name != null ){
             products = productRepository.findProductByProductName(name);
         }
 
-        //Search Product by categroyID
-        if(categoryId!=null){
+        //Search Product by categoryID
+        if(categoryId != null){
             products = productRepository.findProductByCategoryId(categoryId);
         }
 

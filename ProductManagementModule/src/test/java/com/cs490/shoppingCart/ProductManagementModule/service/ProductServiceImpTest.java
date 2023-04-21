@@ -25,10 +25,12 @@ import com.cs490.shoppingCart.ProductManagementModule.repository.ProductReposito
 import com.cs490.shoppingCart.ProductManagementModule.service.CategoryService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.cs490.shoppingCart.ProductManagementModule.service.Imp.ProductServiceImp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -144,17 +146,116 @@ class ProductServiceImpTest {
     /**
      * Method under test: {@link ProductServiceImp#allProducts(String, Long)}
      */
+//    @Test
+//    void testAllProducts() throws ItemNotFoundException {
+//        when(categoryRepository.findAllById((Iterable<Long>) any())).thenReturn(new ArrayList<>());
+//        when(productRepository.findProductByCategoryId((Long) any())).thenReturn(new ArrayList<>());
+//        when(productRepository.findProductByProductName((String) any())).thenReturn(new ArrayList<>());
+//        when(productRepository.findAll()).thenReturn(new ArrayList<>());
+//        assertTrue(productServiceImp.allProducts("Name", 123L).isEmpty());
+//        verify(categoryRepository).findAllById((Iterable<Long>) any());
+//        verify(productRepository).findProductByCategoryId((Long) any());
+//        verify(productRepository).findProductByProductName((String) any());
+//        verify(productRepository).findAll();
+//    }
+
     @Test
-    void testAllProducts() throws ItemNotFoundException {
-        when(categoryRepository.findAllById((Iterable<Long>) any())).thenReturn(new ArrayList<>());
-        when(productRepository.findProductByCategoryId((Long) any())).thenReturn(new ArrayList<>());
-        when(productRepository.findProductByProductName((String) any())).thenReturn(new ArrayList<>());
-        when(productRepository.findAll()).thenReturn(new ArrayList<>());
-        assertTrue(productServiceImp.allProducts("Name", 123L).isEmpty());
-        verify(categoryRepository).findAllById((Iterable<Long>) any());
-        verify(productRepository).findProductByCategoryId((Long) any());
-        verify(productRepository).findProductByProductName((String) any());
-        verify(productRepository).findAll();
+    public void testGetAllProducts() throws ItemNotFoundException {
+
+         Product product1 = new Product(1L, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+         Product product2 = new Product(2L, "Pepsi", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+
+         List<Product> productList = new ArrayList<>();
+         productList.add(product1);
+         productList.add(product2);
+
+         when(productRepository.findAll()).thenReturn(productList);
+
+         User user = new User();
+         user.setUserId(1L);
+         user.setEmail("admin@gmail.com");
+         user.setUsername("admin");
+
+         when(restTemplate.getForObject("http://user-service:8082/api/v1/1", User.class)).thenReturn(user);
+
+         Category category1 = new Category(1L, "Pet Care", "pet accessories");
+         List<Category> categoryList = new ArrayList<>();
+         categoryList.add(category1);
+
+         Set<Long> idSet = new HashSet<>();
+         idSet.add(1L);
+
+         when(categoryRepository.findAllById(idSet)).thenReturn(categoryList);
+
+         ProductResponse productResponse = new ProductResponse();
+         productResponse.setProductId(1L);
+         productResponse.setProductName("Coca Cola");
+         productResponse.setQty(5);
+         productResponse.setPrice(10.0);
+         productResponse.setImageUrl("https://coke.jpg");
+         productResponse.setItemCost(8.0);
+         productResponse.setDescription("Energy Drink");
+         productResponse.setVerified(false);
+         productResponse.setCategory(category1);
+         productResponse.setUser(user);
+
+         when(productMapper.fromCreateProductResponseToDomain(any(Product.class))).thenReturn(productResponse);
+         when(productMapper.fromGetAllProductResponseToDomain(productResponse)).thenReturn(productResponse);
+
+        List<ProductResponse> productResponseList = productServiceImp.allProducts(null, null);
+        assertThat(productResponseList.get(0).getProductId()).isEqualTo(productResponse.getProductId());
+    }
+
+    @Test
+    public void testGetAllProductsWithSpecificNameAndCategory() throws ItemNotFoundException {
+
+        Product product1 = new Product(1L, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+        Product product2 = new Product(2L, "Pepsi", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+
+        List<Product> productList = new ArrayList<>();
+        productList.add(product1);
+        productList.add(product2);
+
+        Category category1 = new Category(1L, "Pet Care", "pet accessories");
+        List<Category> categoryList = new ArrayList<>();
+        categoryList.add(category1);
+
+        Set<Long> idSet = new HashSet<>();
+        idSet.add(1L);
+
+        List<Product> productListResult = new ArrayList<>();
+        productListResult.add(product1);
+
+        when(productRepository.findAll()).thenReturn(productList);
+        when(productRepository.findProductByProductName("Coca Cola")).thenReturn(productListResult);
+        when(productRepository.findProductByCategoryId(1L)).thenReturn(productListResult);
+
+        User user = new User();
+        user.setUserId(1L);
+        user.setEmail("admin@gmail.com");
+        user.setUsername("admin");
+
+        when(restTemplate.getForObject("http://user-service:8082/api/v1/1", User.class)).thenReturn(user);
+
+        when(categoryRepository.findAllById(idSet)).thenReturn(categoryList);
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setProductId(1L);
+        productResponse.setProductName("Coca Cola");
+        productResponse.setQty(5);
+        productResponse.setPrice(10.0);
+        productResponse.setImageUrl("https://coke.jpg");
+        productResponse.setItemCost(8.0);
+        productResponse.setDescription("Energy Drink");
+        productResponse.setVerified(false);
+        productResponse.setCategory(category1);
+        productResponse.setUser(user);
+
+        when(productMapper.fromCreateProductResponseToDomain(any(Product.class))).thenReturn(productResponse);
+        when(productMapper.fromGetAllProductResponseToDomain(productResponse)).thenReturn(productResponse);
+
+        List<ProductResponse> productResponseList = productServiceImp.allProducts("Coca Cola", 1L);
+        assertThat(productResponseList.get(0).getProductId()).isEqualTo(productResponse.getProductId());
     }
 
 
@@ -329,26 +430,8 @@ class ProductServiceImpTest {
      * Method under test: {@link ProductServiceImp#getAllProductWithSpecificIDList(Set)}
      */
     @Test
-    void testGetAllProductWithSpecificIDList() {
-        when(productRepository.findAll()).thenReturn(new ArrayList<>());
-        assertTrue(productServiceImp.getAllProductWithSpecificIDList(new HashSet<>()).isEmpty());
-        verify(productRepository).findAll();
-    }
+    public void testGetAllProductWithSpecificIdList() throws ItemNotFoundException {
 
-    @Test
-    public void testGetAllProductWithSpecificIdList() {
-
-//        List<Product> products = productRepository.findAll();
-//        List<ListProductResponseSpecificID> list = new ArrayList<>();
-//
-//        for (Product product : products) {
-//            Long productId = product.getProductId();
-//            if (productIdSet.contains(productId)) {
-//                list.add(productMapper.fromDomainToListProductResponseSpecificID(product));
-//            }
-//        }
-//
-//        return list;
 
         Product product1 = new Product(1L, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
         Product product2 = new Product(2L, "Pepsi", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
@@ -359,14 +442,23 @@ class ProductServiceImpTest {
         productList.add(product2);
         productList.add(product3);
 
-        Set<Long> productIdSet = Collections.emptySet();
+        Set<Long> productIdSet = new HashSet<>();
         productIdSet.add(1L);
-        productIdSet.add(2L);
-        productIdSet.add(3L);
 
+        List<ListProductResponseSpecificID> expectedList = new ArrayList<>();
+        ListProductResponseSpecificID listProductResponseSpecificID1 = new ListProductResponseSpecificID(2L, 25.0, 20.0);
+        ListProductResponseSpecificID listProductResponseSpecificID2 = new ListProductResponseSpecificID(4L, 25.0, 40.0);
+        expectedList.add(listProductResponseSpecificID1);
+        expectedList.add(listProductResponseSpecificID2);
 
+        when(productRepository.findAll()).thenReturn(productList);
+
+        ListProductResponseSpecificID listProductResponseSpecificID = new ListProductResponseSpecificID(1L, 10.0, 8.0);
+        when(productMapper.fromDomainToListProductResponseSpecificID(product1)).thenReturn(listProductResponseSpecificID);
+
+        productServiceImp.getAllProductWithSpecificIDList(productIdSet);
+        verify(productMapper, times(1)).fromDomainToListProductResponseSpecificID(product1);
     }
-
 
     @Test
     public void testDeleteProductById() {
