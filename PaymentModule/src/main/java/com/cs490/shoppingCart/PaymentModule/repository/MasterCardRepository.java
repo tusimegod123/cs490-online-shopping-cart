@@ -15,4 +15,6 @@ public interface MasterCardRepository extends JpaRepository<MasterCard,Long>  {
             String CCV,
             LocalDate cardExpiry
     );
+
+    MasterCard getMasterCardByCardNumber(String cardNumber);
 }

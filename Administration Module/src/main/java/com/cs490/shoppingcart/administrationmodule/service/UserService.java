@@ -95,7 +95,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
         user.setRoles(roles);
-        userRepository.save(user);
+        User newUser = userRepository.save(user);
         return user;
     }
     private void sendPasswordToUser(User vendor, String username, String password) {
@@ -195,7 +195,7 @@ public ResponseEntity<?> findUser(Long id){
 
     private void sendNotification(NotificationRequest request) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8080/onlineshopping/notification/email";
+        String url = "http://notification-service:8088/notification-service/email";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
     @Value("${USER_SERVICE_URL:user-service:8082}")
     private String userServiceUrl;
 
-    @Value("${PAYMENT_SERVICE_URL:user-service:8082}")
+    @Value("${PAYMENT_SERVICE_URL:payment-service:8086}")
     private String paymentServiceUrl;
 
 
@@ -54,7 +54,8 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder (OrderRequestDTO orderRequestDTO) {
 
         Order pendingOrder = createOrderLine(orderRequestDTO.getShoppingCart());
-        UserDTO userDTO = restTemplate.getForObject("http://"+userServiceUrl+"/api/v1/users/1", UserDTO.class);
+        UserDTO userDTO = restTemplate.getForObject("http://"+userServiceUrl+"/api/v1/users/" + orderRequestDTO.getShoppingCart().getUserId(), UserDTO.class);
+        System.out.println(userDTO);
         pendingOrder.setUserInfo(creteUserInfoString(userDTO));
         Order order=orderRepository.save(pendingOrder);
         PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(

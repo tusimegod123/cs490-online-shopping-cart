@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: profit-deployment
+  name: user-service
   labels:
-    app: profit
+    app: user-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: profit
+      app: user-service
   template:
     metadata:
       labels:
-        app: profit
+        app: user-service
     spec:
       containers:
-      - name: profit
-        image: syilma/profitservice:v1
+      - name: user-service
+        image: syilma/userservice:v1 # Replace with your image name and tag
         imagePullPolicy: Always
         ports:
-        - containerPort: 8087 # port to access the app in the container
+          - containerPort: 808
         env: # Setting Environmental Variables
           - name: DB_HOST # Setting Database host address
             value: ecommercedb
@@ -39,12 +39,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: profit-service
+  name: user-service
 spec:
   selector:
-    app: profit
-#  type: NodePort # LoadBalancer for or NodePort external service
+    app: user-service
   ports:
-    - protocol: TCP
-      port: 8087 # port to access the pod
-      targetPort: 8087 # must be the same as the containerPort
+   - port: 8082
+     targetPort: 8082
+     protocol: TCP

@@ -43,9 +43,9 @@ metadata:
 spec:
   selector:
     app: shoppingcart
-  type: LoadBalancer # LoadBalancer for or NodePort external service
+#  type: NodePort # LoadBalancer for or NodePort external service
   ports:
     - protocol: TCP
       port: 8084 # port to access the pod
       targetPort: 8084 # must be the same as the containerPort
-      nodePort: 30300 ## for external service port
+#      nodePort: 30300 ## for external service port
