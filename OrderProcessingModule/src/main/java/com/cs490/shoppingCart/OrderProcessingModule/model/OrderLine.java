@@ -17,6 +17,7 @@ public class OrderLine {
     private Long id;
     private Integer quantity;
     private Double price;
+    @Column(length = 65500)
     private String productInfo;
 
     public OrderLine(String productInfo, Integer quanitiy, Double price){

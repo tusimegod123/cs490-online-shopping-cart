@@ -166,11 +166,12 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     private void sendNotification(NotificationRequest request){
+        System.out.println(request);
 
         WebClient client = WebClient.create("http://notification-service:8088");
 
         Mono<String> response = client.post()
-                .uri("/onlineshopping/notification/email/transaction")
+                .uri("/notification-service/email/transaction")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .retrieve()
@@ -202,7 +203,7 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     private void verifyVendor(Long userId){
-        WebClient client = WebClient.create("http://user-servicet:8082");
+        WebClient client = WebClient.create("http://user-service:8082");
 
         Mono<String> response = client.put()
                 .uri("/api/v1/users/vendor/fullyVerify/" + userId)

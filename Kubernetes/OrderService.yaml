@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: order
-        image: hiwotret/orderservice:1.0
+        image: syilma/orderservice:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 8085 # port to access the app in the container
@@ -43,7 +43,7 @@ metadata:
 spec:
   selector:
     app: order
-  type: NodePort # LoadBalancer for or NodePort external service
+#  type: NodePort # LoadBalancer for or NodePort external service
   ports:
     - protocol: TCP
       port: 8085 # port to access the pod

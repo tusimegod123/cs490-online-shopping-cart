@@ -43,7 +43,7 @@ metadata:
 spec:
   selector:
     app: payment
-  type: NodePort # LoadBalancer for or NodePort external service
+#  type: NodePort # LoadBalancer for or NodePort external service
   ports:
     - protocol: TCP
       port: 8086 # port to access the pod 
