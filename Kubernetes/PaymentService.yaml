@@ -20,6 +20,21 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 8086 # port to access the app in the container
+        env: # Setting Environmental Variables
+          - name: DB_HOST # Setting Database host address
+            value: ecommercedb
+          - name: DB_NAME # Setting Database name
+            value: ecommerce
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: myvault
+                key: DB_USER_NAME
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: myvault
+                key: DB_PASSWORD
 ---
 apiVersion: v1
 kind: Service

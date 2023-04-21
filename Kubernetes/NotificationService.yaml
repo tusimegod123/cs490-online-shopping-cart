@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: shoppingcart-deployment
+  name: notification-deployment
   labels:
-    app: shoppingcart
+    app: notification
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: shoppingcart
+      app: notification
   template:
     metadata:
       labels:
-        app: shoppingcart
+        app: notification
     spec:
       containers:
-      - name: shoppingcart
-        image: syilma/cartservice:v1
+      - name: notification
+        image: syilma/notificationservice:v1
         imagePullPolicy: Always
         ports:
-        - containerPort: 8084 # port to access the app in the container
+        - containerPort: 8088 # port to access the app in the container
         env: # Setting Environmental Variables
           - name: DB_HOST # Setting Database host address
             value: ecommercedb
@@ -39,13 +39,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: shoppingcart-service
+  name: notification-service
 spec:
   selector:
-    app: shoppingcart
-  type: LoadBalancer # LoadBalancer for or NodePort external service
+    app: notification
+  type: NodePort # LoadBalancer for or NodePort external service
   ports:
     - protocol: TCP
-      port: 8084 # port to access the pod
-      targetPort: 8084 # must be the same as the containerPort
-      nodePort: 30300 ## for external service port
+      port: 8088 # port to access the pod
+      targetPort: 8088 # must be the same as the containerPort
+#      nodePort: 30300 ## for external service port

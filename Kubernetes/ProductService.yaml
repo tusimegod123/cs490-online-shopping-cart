@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
       - name: product
-        image: sophearyrin/productservice:v1
+        image: hiwotret/productservice:1.0
+        #----//sophearyrin/productservice:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 8083 # port to access the app in the container

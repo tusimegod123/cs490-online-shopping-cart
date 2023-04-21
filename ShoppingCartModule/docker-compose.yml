@@ -1,0 +1,29 @@
+version:  '2'
+services:
+  orderservice:
+    image: 'hiwotret/shoppingcartservicelocal:1.0'
+    ports:
+      - 8094:8094
+    build:
+      context: .
+    container_name: shoppingcartservicelocal
+    depends_on:
+      - shoppingcart-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://shoppingcart-db:3306/shoppingcartmodule?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - PRODUCT_SERVICE_URL=productservice
+  orders-db:
+    image: 'mysql:8.0'
+    container_name: shoppingcart-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=orders
+
+
+
+
+
