@@ -1,6 +1,7 @@
 package com.cs490.shoppingCart.NotificationModule.service;
 
 import com.cs490.shoppingCart.NotificationModule.integration.ShoppingCartApplicationRestClient;
+import com.cs490.shoppingCart.NotificationModule.util.AppInfo;
 import jakarta.mail.Address;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -18,12 +19,13 @@ import java.io.UnsupportedEncodingException;
 
 @Service
 public class EmailSenderService {
-
     private static final Logger LOG = LoggerFactory.getLogger(EmailSenderService.class);
     @Autowired
     private JavaMailSender mailSender;
 
-    private static String fromMail = "Team3@gmail.com";
+    @Autowired
+    private AppInfo appInfo;
+
     private static ShoppingCartApplicationRestClient restClient= new ShoppingCartApplicationRestClient();
 
     public void sendSimpleEmail(MimeMessage mime) {
@@ -35,9 +37,10 @@ public class EmailSenderService {
 
     public void formatAndSendEmail(TransactionDTO transaction, EmailDTO email) throws MessagingException, UnsupportedEncodingException {
 
+        System.out.println(appInfo.getUserUrl());
         MimeMessage mime =mailSender.createMimeMessage();
         MimeMessageHelper message=new MimeMessageHelper(mime);
-        message.setFrom(fromMail, "CS490MP-T3 Online Store");
+        message.setFrom(appInfo.getFromMail(), "CS490MP-T3 Online Store");
         StringBuilder body=new StringBuilder("<html><body><div><br><br>");
         Long userId = transaction!=null? transaction.getUserId(): email.getUserId();
 
@@ -49,7 +52,7 @@ public class EmailSenderService {
             message.setTo(user.getEmail());
             if(transaction.getTransactionType().equalsIgnoreCase("OrderPayment")){
                 message.setSubject("Order Confirmation: Thank you for your purchase!");
-                body.append("<H2 style='text-align:center;'>Dear "+ user.getFullname()+ "</H2>");
+                body.append("<H2 style='text-align:center;'>Dear "+ user.getName()+ "</H2>");
                 body.append("<H3 style='text-align:center;'>Thank you for your order! We hope you enjoyed shopping with us.</H3>");
                 body.append("<br><div style='text-align:center;'><button style='width:40%; background:black; color:white;' type='button' onclick='#'>Order Information</button></div>");
 
@@ -69,7 +72,7 @@ public class EmailSenderService {
             }else{
                 //RegistrationFee
                 message.setSubject("Payment Confirmation: We've received your payment!");
-                body.append("<H2 style='text-align:center;'>Dear "+ user.getFullname()+ "</H2>");
+                body.append("<H2 style='text-align:center;'>Dear "+ user.getName()+ "</H2>");
                 body.append("<H3 style='text-align:center;'>Thanks for your payment</H3>");
 
                 body.append("<br><br><p style='text-align:center;'>Your payment of $"+transaction.getTransactionValue()+" posted to us on "+transaction.getTransactionDate()+"<br><br><br>");
@@ -79,7 +82,7 @@ public class EmailSenderService {
 
         if(email != null){
             message.setTo(user.getEmail());
-            body.append("<H2 style='text-align:center;'>Dear "+ user.getFullname()+ "</H2>");
+            body.append("<H2 style='text-align:center;'>Dear "+ user.getName()+ "</H2>");
             if(email.getEmailType().equalsIgnoreCase("WelcomeEmail")){
                 message.setSubject("Welcome to our online store!");
                 body.append("<H3 style='text-align:center;'>Thank you for doing business with us.<br><br></H3>");

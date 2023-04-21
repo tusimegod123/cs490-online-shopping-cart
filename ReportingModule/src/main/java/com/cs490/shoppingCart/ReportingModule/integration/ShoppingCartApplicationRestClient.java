@@ -2,8 +2,10 @@ package com.cs490.shoppingCart.ReportingModule.integration;
 import com.cs490.shoppingCart.ReportingModule.service.OrderList;
 import com.cs490.shoppingCart.ReportingModule.service.ReportRequest;
 import com.cs490.shoppingCart.ReportingModule.service.UserDTO;
+import com.cs490.shoppingCart.ReportingModule.util.AppInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,14 +13,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ShoppingCartApplicationRestClient {
 
-    @Value("${order.management.url}")
-    private String orderUrl;
-
-    @Value("${user.management.url}")
-    private String userUrl;
-
-    @Value("${profit.sharing.management.url}")
-    private String profitSharingUrl;
+    @Autowired
+    private AppInfo appInfo;
 
     RestTemplate restTemplate = new RestTemplate();
     Logger logger= LoggerFactory.getLogger(ShoppingCartApplicationRestClient.class);
@@ -26,7 +22,7 @@ public class ShoppingCartApplicationRestClient {
     public OrderList getOrders(ReportRequest request) {
         OrderList orders=null;
         try{
-            orders =restTemplate.getForObject(orderUrl+"?vendorId={vendorId}?&fromDate={fromDate}?&toDate={toDate}", OrderList.class,request.getFromDate(),
+            orders =restTemplate.getForObject(appInfo.getOrderUrl()+"?vendorId={vendorId}?&fromDate={fromDate}?&toDate={toDate}", OrderList.class,request.getFromDate(),
                     request.getToDate(),request.getUserId());
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
@@ -38,7 +34,7 @@ public class ShoppingCartApplicationRestClient {
     public Double getAnnualProfit(ReportRequest request) {
         Double profitValue=null;
         try{
-            profitValue = restTemplate.postForObject(profitSharingUrl, request, Double.class);
+            profitValue = restTemplate.postForObject(appInfo.getProfitUrl(), request, Double.class);
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }
@@ -48,7 +44,7 @@ public class ShoppingCartApplicationRestClient {
     public Double getAnnualLoss(ReportRequest request) {
         Double lossValue=null;
         try{
-            lossValue = restTemplate.postForObject(profitSharingUrl, request, Double.class);
+            lossValue = restTemplate.postForObject(appInfo.getProfitUrl(), request, Double.class);
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }
@@ -58,7 +54,7 @@ public class ShoppingCartApplicationRestClient {
     public Double getAnnualRevenue(ReportRequest request) {
         Double revenueValue=null;
         try{
-            revenueValue = restTemplate.postForObject(profitSharingUrl, request, Double.class);
+            revenueValue = restTemplate.postForObject(appInfo.getProfitUrl(), request, Double.class);
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }
@@ -68,7 +64,7 @@ public class ShoppingCartApplicationRestClient {
     public UserDTO getUser(String userId) {
         UserDTO user=null;
         try{
-            user =restTemplate.getForObject(userUrl+ "/" + userId, UserDTO.class);
+            user =restTemplate.getForObject(appInfo.getUserUrl()+ "/" + userId, UserDTO.class);
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }
