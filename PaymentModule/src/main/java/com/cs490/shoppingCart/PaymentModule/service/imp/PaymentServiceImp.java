@@ -110,7 +110,7 @@ public class PaymentServiceImp implements PaymentService {
                     Transaction savedTransaction = transactionRepository.save(newTransaction);
 
                     sendNotification(savedTransaction.getNotificationRequest());
-                    verifyVendor(request);
+                    //verifyVendor(request);
 
                     return TransactionStatus.TS;
 
@@ -211,7 +211,7 @@ public class PaymentServiceImp implements PaymentService {
         WebClient client = WebClient.create("http://user-service:8082");
 
         Mono<String> response = client.put()
-                .uri("/api/v1/users/vendor/fullyVerify/", pathVariables)
+                .uri("/api/v1/users/vendor/fullyVerify/"+userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .retrieve()
