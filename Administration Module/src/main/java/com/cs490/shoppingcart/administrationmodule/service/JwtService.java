@@ -67,7 +67,6 @@ public class JwtService {
             claims.put("email", user.getEmail());
             claims.put("verified", user.getIsVerified());
             claims.put("fullyVerified", user.getIsFullyVerified());
-            claims.put("paymentCardNumber", user.getPaymentCardNumber());
             claims.put("verifiedBy", user.getVerifiedBy());
             claims.put("roles", user.getRoles().toString());
             return createToken(claims, username);
