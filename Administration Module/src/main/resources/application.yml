@@ -53,20 +53,20 @@ spring:
   #    password: helloworld
   #    driver-class-name: com.mysql.cj.jdbc.Driver
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}/${DB_NAME:shoppingCart}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
-    username: ${DB_USERNAME:ea}
-    password: ${DB_PASSWORD:cs544}
+    url: jdbc:mysql://${DB_HOST:localhost}/${DB_NAME:cs490-swe-2023-administrator}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:gold}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
   application:
-    name: administration-service
+    name: user-service
 #eureka:
 #  client:
 #    service-url:

@@ -2,25 +2,26 @@ package com.cs490.shoppingcart.administrationmodule;
 
 import com.cs490.shoppingcart.administrationmodule.model.Role;
 import com.cs490.shoppingcart.administrationmodule.repository.RoleRepository;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 //rCqX2JCo
 //        godwin@example.comand
 @SpringBootApplication
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 //@OpenAPIDefinition
 //@EnableSwagger2
 public class AdministrationModuleApplication implements CommandLineRunner {
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
+
+    public AdministrationModuleApplication(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     @Bean
     public ModelMapper modelMapper() {

@@ -25,7 +25,8 @@ public class EmailSenderService {
     @Autowired
     private AppInfo appInfo;
 
-    private static ShoppingCartApplicationRestClient restClient = new ShoppingCartApplicationRestClient();
+    @Autowired
+    private  ShoppingCartApplicationRestClient restClient;
 
     public void sendSimpleEmail(MimeMessage mime) {
         mailSender.send(mime);
@@ -94,7 +95,7 @@ public class EmailSenderService {
             body.append("<H2 style='text-align:center;'>Dear " + user.getName() + "</H2>");
             if (email.getEmailType().equalsIgnoreCase("WelcomeEmail")) {
                 message.setSubject("Welcome to our online store!");
-                body.append("<H3 style='text-align:center;'>Thank you for doing business with us.<br><br></H3>");
+                body.append("<H3 style='text-align:center;'>Congratulations, you have been successfully verified!<br><br></H3>");
                 body.append(
                         "<H4 style='text-align:center;'>Please take note of your login details below:<br>Username:" +
                                 user.getUsername() + "<br>Password:" + email.getPassword() + "</H4><br><br>");
