@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: order
-        image: syilma/orderservice:v1
+        image: syilma/orderservice:v2
         imagePullPolicy: Always
         ports:
         - containerPort: 8085 # port to access the app in the container

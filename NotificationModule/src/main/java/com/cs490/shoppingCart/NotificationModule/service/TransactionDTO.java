@@ -15,7 +15,7 @@ public class TransactionDTO {
   private Long orderId;
   private double transactionValue;
   private String transactionNumber;
-  private LocalDate transactionDate;
+  private Date transactionDate;
   private String paymentType;
   private String transactionType;
 }
