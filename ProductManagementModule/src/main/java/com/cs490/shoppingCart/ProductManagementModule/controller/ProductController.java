@@ -28,10 +28,6 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-//    public ProductController(ProductServiceImp productService) {
-//        this.productService = productService;
-//    }
-
     /**
      * To create a product
      * @param productRequest product Request as a request boby

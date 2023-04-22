@@ -10,7 +10,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.persistence.EntityNotFoundException;
 
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,32 +35,35 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
-    private static final Logger logger =
-            LoggerFactory.getLogger(UserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private final JwtService jwtService;
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, JwtService jwtService) {
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService,
+            JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
         this.jwtService = jwtService;
     }
 
-//    @Value("${SECRET}")
-//    public String SECRET;
+    // @Value("${SECRET}")
+    // public String SECRET;
 
-    public  final  String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
-
-
+    public final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
     public String generateRandomPassword(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         return RandomStringUtils.random(length, characters);
     }
+
     public String generateRandomUsername(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         return RandomStringUtils.random(length, characters);
     }
+
+    public String randomPassword = generateRandomPassword(8);
+    public String passwordBeforeEncoded = randomPassword;
 
     public User createUser(User userDto) throws IllegalArgumentException {
         User user = new User();
@@ -77,17 +79,16 @@ public class UserService {
         // set default username and password for vendors
         if (roles.stream().anyMatch(role -> "VENDOR".equals(role.getRoleName()))) {
             user.setIsVerified(false);
-        } else if (roles.stream().anyMatch(role -> "GUEST".equals(role.getRoleName()))){
+        } else if (roles.stream().anyMatch(role -> "GUEST".equals(role.getRoleName()))) {
             user.setIsVerified(false);
             user.setUsername(null);
-        } else if (roles.stream().anyMatch(role -> "REGISTERED_USER".equals(role.getRoleName()))){
+        } else if (roles.stream().anyMatch(role -> "REGISTERED_USER".equals(role.getRoleName()))) {
             user.setIsVerified(true);
             user.setUsername(userDto.getEmail());
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
             user.setIsFullyVerified(true);
             user.setVerifiedBy("Self registration, Customer");
-        }
-        else {
+        } else {
             user.setUsername(userDto.getEmail());
             user.setIsVerified(true);
             user.setIsFullyVerified(true);
@@ -95,60 +96,64 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
         user.setRoles(roles);
-        User newUser = userRepository.save(user);
+        userRepository.save(user);
         return user;
     }
-    private void sendPasswordToUser(User vendor, String username, String password) {
-        // code to send password to user via email or SMS
-        System.out.println("Hello " + vendor.getName() + " Your  username for logging in is " + username  + " and your password is " + password);
+
+    private String sendPasswordToUser(String password) {
+        return password;
     }
 
-public ResponseEntity<?> verifyVendor(User vendor, Long vendorId, @AuthenticationPrincipal User admin) {
-    User vendorToBeVerified = userRepository.findById(vendorId).orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + vendorId));
+    public String getPassword() {
+        return randomPassword;
+    }
 
-    String randomUsername = generateRandomUsername(6);
-    String randomPassword = generateRandomPassword(8);
+    public ResponseEntity<?> verifyVendor(User vendor, Long vendorId, @AuthenticationPrincipal User admin)
+            throws UserNotFoundException {
+        String randomUsername = generateRandomUsername(6);
+        String randomPassword = generateRandomPassword(8);
+        vendor.setUsername(randomUsername);
+        vendor.setPassword(randomPassword);
 
-    vendor.setUsername(randomUsername);
-    vendor.setPassword(randomPassword);
-    try {
-        if (admin == null) {
-            throw new UserNotFoundException("  you not authorised to verify this vendor, Kindly login as an Admin");
+        Optional<User> vendorToBeVerified = userRepository.findById(vendorId);
+        if (!vendorToBeVerified.isPresent()) {
+            throw new UserNotFoundException("Sorry, this user does not exist.");
         }
-        vendorToBeVerified.setVerifiedBy(admin.getName());
-        vendorToBeVerified.setIsVerified(true);
-        vendorToBeVerified.setUsername(vendor.getUsername());
-        vendorToBeVerified.setPassword(passwordEncoder.encode(randomPassword));
 
-        sendPasswordToUser(vendor, randomUsername, randomPassword);
-        // Send email to the vendor
-        sendNotification(vendorToBeVerified.getNotificationRequest());
+        if (admin == null) {
+            throw new UserNotFoundException("You are not authorized to verify this vendor. Please log in as an admin.");
+        }
 
-        System.out.println("Vendor verified by: " + admin.getName());
-        //return userRepository.save(vendorToBeVerified);
-        return  ResponseEntity.ok(userRepository.save(vendorToBeVerified));
-    } catch (UserNotFoundException e) {
-        String errorJson = "{\"Sorry\":\"" + e.getMessage() + "\"}";
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorJson);
+        vendorToBeVerified.get().setVerifiedBy(admin.getName());
+        vendorToBeVerified.get().setIsVerified(true);
+        vendorToBeVerified.get().setUsername(vendor.getUsername());
+        vendorToBeVerified.get().setPassword(passwordEncoder.encode(randomPassword));
+        userRepository.save(vendorToBeVerified.get());
+        sendPasswordToUser(randomPassword);
+        sendNotification(vendorToBeVerified.get().getNotificationRequest(randomPassword));
+
+        return ResponseEntity.ok(vendorToBeVerified.get());
     }
-}
 
     public User fullyVerifyVendor(Long vendorId) throws NotVerifiedException {
-        User vendorToBeVerified = userRepository.findById(vendorId).orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + vendorId));
+        User vendorToBeVerified = userRepository.findById(vendorId)
+                .orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + vendorId));
         if (vendorToBeVerified.getIsVerified() == false) {
-            throw new NotVerifiedException("Sorry " +vendorToBeVerified.getName() + "  is not yet verified, contact the admin");
+            throw new NotVerifiedException(
+                    "Sorry " + vendorToBeVerified.getName() + "  is not yet verified, contact the admin");
         } else {
             vendorToBeVerified.setIsFullyVerified(true);
             return userRepository.save(vendorToBeVerified);
         }
     }
 
-    public ResponseEntity<?> updateUserDetails(User user, Long id){
-        try{
-            User userTobeUpdated = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-            if (userTobeUpdated == null){
+    public ResponseEntity<?> updateUserDetails(User user, Long id) {
+        try {
+            User userTobeUpdated = userRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+            if (userTobeUpdated == null) {
                 throw new UserNotFoundException(" user does not exist");
-            }else {
+            } else {
                 userTobeUpdated.setPassword(user.getPassword());
                 userTobeUpdated.setEmail(user.getEmail());
                 userTobeUpdated.setTelephoneNumber(user.getTelephoneNumber());
@@ -156,7 +161,7 @@ public ResponseEntity<?> verifyVendor(User vendor, Long vendorId, @Authenticatio
                 userTobeUpdated.setEnabled(user.isEnabled());
                 userTobeUpdated.setAccountNonExpired(user.isAccountNonExpired());
                 userTobeUpdated.setAccountNonLocked(user.isAccountNonLocked());
-                return  ResponseEntity.ok(userRepository.save(userTobeUpdated));
+                return ResponseEntity.ok(userRepository.save(userTobeUpdated));
             }
         } catch (UserNotFoundException userNotFoundException) {
             String errorJson = "{\"Sorry\":\"" + userNotFoundException.getMessage() + "\"}";
@@ -164,20 +169,20 @@ public ResponseEntity<?> verifyVendor(User vendor, Long vendorId, @Authenticatio
         }
     }
 
-public ResponseEntity<?> findUser(Long id){
-    try {
-           Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()){
-            throw new UserNotFoundException("Sorry this does not exist in our system");
+    public ResponseEntity<?> findUser(Long id) {
+        try {
+            Optional<User> user = userRepository.findById(id);
+            if (user.isEmpty()) {
+                throw new UserNotFoundException("Sorry this does not exist in our system");
+            }
+            return ResponseEntity.ok(user);
+        } catch (UserNotFoundException e) {
+            String errorJson = "{\"Sorry\":\"" + e.getMessage() + "\"}";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorJson);
         }
-        return ResponseEntity.ok(user);
-    } catch (UserNotFoundException e) {
-        String errorJson = "{\"Sorry\":\"" + e.getMessage() + "\"}";
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorJson);
     }
-}
 
-    public List<User> allUsers(){
+    public List<User> allUsers() {
         return userRepository.findAll();
     }
 
@@ -189,13 +194,14 @@ public ResponseEntity<?> findUser(Long id){
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
     public void validateToken(String token) {
         jwtService.validateToken(token);
     }
 
     private void sendNotification(NotificationRequest request) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://notification-service:8088/notification-service/email";
+        String url = "http://localhost:8088/notification-service/email";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -205,17 +211,19 @@ public ResponseEntity<?> findUser(Long id){
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            String decryptedPassword = passwordEncoder.encode(request.getPassword());
+            // String decryptedPassword = passwordEncoder().decode(request.getPassword());
 
             logger.info("userId: " + request.getUserId());
             logger.info("emailType: " + request.getEmailType());
-            logger.info("password:  " + decryptedPassword);
-            logger.info("message: " + request.getMessage() );
+            // logger.info("password: " + request.setPassword(randomPassword));
+            request.setPassword(passwordBeforeEncoded);
+            System.out.println(passwordBeforeEncoded);
+            logger.info("password: " + request.getPassword());
+            logger.info("message: " + request.getMessage());
 
         } else {
             logger.error("Failed ");
         }
     }
-
 
 }

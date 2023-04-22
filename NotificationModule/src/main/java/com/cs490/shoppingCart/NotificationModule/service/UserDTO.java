@@ -1,6 +1,5 @@
 package com.cs490.shoppingCart.NotificationModule.service;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

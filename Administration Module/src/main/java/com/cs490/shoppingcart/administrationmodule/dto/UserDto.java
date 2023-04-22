@@ -1,5 +1,6 @@
 package com.cs490.shoppingcart.administrationmodule.dto;
 
+
 import com.cs490.shoppingcart.administrationmodule.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
