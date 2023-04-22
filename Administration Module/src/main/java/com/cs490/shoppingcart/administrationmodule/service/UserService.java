@@ -96,8 +96,9 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
         user.setRoles(roles);
-        userRepository.save(user);
-        return user;
+        User newUser = userRepository.save(user);
+        return newUser;
+
     }
 
     private String sendPasswordToUser(String password) {

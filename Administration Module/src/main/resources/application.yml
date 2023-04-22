@@ -56,6 +56,7 @@ spring:
     url: jdbc:mysql://${DB_HOST:localhost}/${DB_NAME:cs490-swe-2023-administrator}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:gold}
+
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect

@@ -169,10 +169,10 @@ public class PaymentServiceImp implements PaymentService {
 
     private void sendNotification(NotificationRequest request){
 
-        WebClient client = WebClient.create("http://notification-service:8088");
+        WebClient client = WebClient.create("http://localhost:8088");
 
         Mono<String> response = client.post()
-                .uri("/notification-service/email/transaction")
+                .uri("/notification-service/notification/email/transaction")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .retrieve()
@@ -186,7 +186,7 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     private void sendProfitCalculator(ProfitShareRequest request){
-        WebClient client = WebClient.create("http://profit-service:8087");
+        WebClient client = WebClient.create("http://localhost:8087");
 
         Mono<String> response = client.post()
                 .uri("/api/v1/profit/processProfit")
@@ -202,13 +202,13 @@ public class PaymentServiceImp implements PaymentService {
             logger.error("Failed to process profit for transaction : " + request.getTransactionNumber());
         });
     }
-
     private void verifyVendor(RegistrationPayment request){
         Long userId = request.getUserId();
         Map<String, Long> pathVariables = new HashMap<>();
         pathVariables.put("id", userId);
 
         WebClient client = WebClient.create("http://user-service:8082");
+
 
         Mono<String> response = client.put()
                 .uri("/api/v1/users/vendor/fullyVerify/"+userId)

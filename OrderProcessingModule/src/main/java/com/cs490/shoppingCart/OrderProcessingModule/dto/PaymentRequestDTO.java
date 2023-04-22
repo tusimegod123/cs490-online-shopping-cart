@@ -18,7 +18,7 @@ public class PaymentRequestDTO {
     private String cardNumber;
     private String nameOnCard;
     private String CCV;
-    private LocalDate cardExpiry;
+    private String cardExpiry;
 
 
 

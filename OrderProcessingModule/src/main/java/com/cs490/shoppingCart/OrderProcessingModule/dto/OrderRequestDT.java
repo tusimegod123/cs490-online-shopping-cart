@@ -5,15 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Role {
+@NoArgsConstructor
+public class OrderRequestDT {
 
-    private Integer roleId;
-    private String roleName;
-
-    public Role(Integer roleId) {
-        this.roleId = roleId;
-    }
+    private Long userId;
+    private PaymentInfoDTO paymentInfoDTO;
 
 }
