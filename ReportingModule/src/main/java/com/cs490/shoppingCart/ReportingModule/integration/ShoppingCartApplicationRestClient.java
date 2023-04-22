@@ -22,8 +22,13 @@ public class ShoppingCartApplicationRestClient {
     public OrderList getOrders(ReportRequest request) {
         OrderList orders=null;
         try{
-            orders =restTemplate.getForObject(appInfo.getOrderUrl()+"?vendorId={vendorId}?&fromDate={fromDate}?&toDate={toDate}", OrderList.class,request.getFromDate(),
-                    request.getToDate(),request.getUserId());
+            String requestParam = "?initalDate="+ request.getFromDate() + "&finalDate=" +request.getToDate() + "&vendorId=";
+
+            if(request.getUserId() != null){
+                requestParam += request.getUserId();
+            }
+
+            orders =restTemplate.getForObject(appInfo.getOrderUrl() + "/reports" + requestParam, OrderList.class);
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }
@@ -34,7 +39,7 @@ public class ShoppingCartApplicationRestClient {
     public Double getAnnualProfit(ReportRequest request) {
         Double profitValue=null;
         try{
-            profitValue = restTemplate.postForObject(appInfo.getProfitUrl(), request, Double.class);
+            profitValue = restTemplate.postForObject(appInfo.getProfitUrl() +"/getProfit", request, Double.class);
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }
@@ -54,7 +59,7 @@ public class ShoppingCartApplicationRestClient {
     public Double getAnnualRevenue(ReportRequest request) {
         Double revenueValue=null;
         try{
-            revenueValue = restTemplate.postForObject(appInfo.getProfitUrl(), request, Double.class);
+            revenueValue = restTemplate.postForObject(appInfo.getProfitUrl() +"/getRevenue", request, Double.class);
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }

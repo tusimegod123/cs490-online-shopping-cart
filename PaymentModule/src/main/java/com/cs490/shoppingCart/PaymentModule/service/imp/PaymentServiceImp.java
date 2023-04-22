@@ -18,7 +18,9 @@ import reactor.core.publisher.Mono;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PaymentServiceImp implements PaymentService {
@@ -108,7 +110,7 @@ public class PaymentServiceImp implements PaymentService {
                     Transaction savedTransaction = transactionRepository.save(newTransaction);
 
                     sendNotification(savedTransaction.getNotificationRequest());
-//                    verifyVendor(request.getUserId());
+                    verifyVendor(request);
 
                     return TransactionStatus.TS;
 
@@ -166,7 +168,6 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     private void sendNotification(NotificationRequest request){
-        System.out.println(request);
 
         WebClient client = WebClient.create("http://notification-service:8088");
 
@@ -202,13 +203,17 @@ public class PaymentServiceImp implements PaymentService {
         });
     }
 
-    private void verifyVendor(Long userId){
+    private void verifyVendor(RegistrationPayment request){
+        Long userId = request.getUserId();
+        Map<String, Long> pathVariables = new HashMap<>();
+        pathVariables.put("id", userId);
+
         WebClient client = WebClient.create("http://user-service:8082");
 
         Mono<String> response = client.put()
-                .uri("/api/v1/users/vendor/fullyVerify/" + userId)
+                .uri("/api/v1/users/vendor/fullyVerify/", pathVariables)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(null)
+                .bodyValue(request)
                 .retrieve()
                 .bodyToMono(String.class);
 
@@ -218,6 +223,7 @@ public class PaymentServiceImp implements PaymentService {
         }, error -> {
             logger.error("Failed to fully verify a vendor with id: " + userId);
         });
+
     }
 
 }
