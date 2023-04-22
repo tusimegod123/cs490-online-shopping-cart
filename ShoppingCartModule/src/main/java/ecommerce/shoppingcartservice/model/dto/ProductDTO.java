@@ -10,18 +10,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProductDTO {
 
-    private Integer id;
-    private String name;
+    private Integer productId;
+    private String productName;
     private String description;
     private Long userId;
     private Double price;
-    private String imgUrl;
+    private String imageUrl;
 
     public ProductDTO(String name, String description, Double price){
 
         this.price = price;
         this.description = description;
-        this.name =  name;
+        this.productName =  productName;
     }
 
 }
