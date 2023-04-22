@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -132,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDTO> getAllOrdersForReport(LocalDate initalDate, LocalDate finalDate, Long vendorId) {
         List<Order> orders = new ArrayList<>();
         //Set<Order> orderIds = new HashSet<>();
-        orders = orderRepository.findAllByOrderDateBetween(initalDate.atStartOfDay() ,finalDate.atStartOfDay());
+        orders = orderRepository.findAllByOrderDateBetween(initalDate.atStartOfDay() ,finalDate.atTime(LocalTime.of(23,59,59)));
         if(vendorId != null){
              return orders.stream().filter(
                     order -> order.getOrderLines().stream().anyMatch(
