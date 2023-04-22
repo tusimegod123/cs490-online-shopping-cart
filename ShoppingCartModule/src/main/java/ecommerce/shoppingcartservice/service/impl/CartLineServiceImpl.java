@@ -10,6 +10,8 @@ import ecommerce.shoppingcartservice.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CartLineServiceImpl implements CartLineService {
 
@@ -25,7 +27,15 @@ public class CartLineServiceImpl implements CartLineService {
 
     @Override
     public void removeCartLine(Long cartId) {
+        ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByCartLinesId(cartId).get();
+        CartLine cartLine = cartLineRepository.findById(cartId).get();
+        shoppingCart.setTotalPrice(shoppingCart.getTotalPrice() - cartLine.getPrice());
         cartLineRepository.deleteById(cartId);
+        if(shoppingCart.getCartLines().size() == 1 && shoppingCart.getCartLines().stream().findFirst().get().getId() == cartId)
+            shoppingCartRepository.deleteById(shoppingCart.getId());
+        else
+            shoppingCartRepository.save(shoppingCart);
+        //cartLineRepository.deleteById(cartId);
     }
 
     @Override

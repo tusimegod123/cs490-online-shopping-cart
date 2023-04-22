@@ -35,13 +35,13 @@ public class OrderServiceImpl2 implements OrderService2 {
     @Autowired
     private ModelMapper modelMapper;
 
-    @Value("${USER_SERVICE_URL:localhost:8082}")
+    @Value("${USER_SERVICE_URL:user-service:8082}")
     private String userServiceUrl;
 
-    @Value("${PAYMENT_SERVICE_URL:localhost:8086}")
+    @Value("${PAYMENT_SERVICE_URL:payment-service:8086}")
     private String paymentServiceUrl;
 
-    @Value("${SHOPPINGCART_SERVICE_URL:localhost:8084}")
+    @Value("${SHOPPINGCART_SERVICE_URL:shoppingcart-service:8084}")
     private String shoppingCartServiceUrl;
 
 
