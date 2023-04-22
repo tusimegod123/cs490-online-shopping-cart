@@ -75,6 +75,29 @@ public class ReportingModuleController {
 
     }
 
+    @GetMapping("/summary")
+    public ResponseEntity<?> getReport(
+            @RequestParam(value="fromDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate fromDate,
+            @RequestParam(value="toDate", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate toDate,
+            @RequestParam(value="vendorId", required = false) Long vendorId) {
+
+        CustomErrorType error=new CustomErrorType("No records found for loss calculations");
+        ReportRequest request = new ReportRequest(fromDate, toDate, vendorId);
+        Optional<SalesDTO> sales = reportingService.getSales(request);
+        Optional<SalesDTO> revenue = reportingService.getAnnualRevenue(request);
+        Optional<SalesDTO> profit = reportingService.getAnnulProfit(request);
+
+        SalesDTO result = new SalesDTO();
+
+        sales.ifPresent(salesDTO -> result.setNoOfSales(salesDTO.getNoOfSales()));
+        profit.ifPresent(salesDTO -> result.setAnnualProfit(salesDTO.getAnnualProfit()));
+        revenue.ifPresent(salesDTO -> result.setAnnualRevenue(salesDTO.getAnnualRevenue()));
+
+
+        return responseEntityForOptional(Optional.of(result),error);
+
+    }
+
 
     public ResponseEntity<?> responseEntityForOptional(Optional<SalesDTO> sales, CustomErrorType error){
         if(sales.isPresent()){

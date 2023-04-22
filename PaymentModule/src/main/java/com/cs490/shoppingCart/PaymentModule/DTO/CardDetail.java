@@ -14,8 +14,9 @@ import java.time.LocalDate;
 public class CardDetail {
     private String cardNumber;
     private String name;
-    private String CCV ;
+    private String CCV;
+    private String cardExpiry;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate cardExpiry;
+//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+//    private LocalDate cardExpiry;
 }
