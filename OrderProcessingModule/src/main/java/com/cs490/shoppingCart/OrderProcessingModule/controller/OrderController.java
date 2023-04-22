@@ -51,12 +51,12 @@ public class OrderController {
 
     }
     @GetMapping("/reports")
-    public ResponseEntity<OrderList> getAllOrdersForSpecificVendor(@RequestParam(value="initalDate")@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate initalDate,
-                                                                   @RequestParam(value = "finalDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate finalDate,
+    public ResponseEntity<OrderList> getAllOrdersForSpecificVendor(@RequestParam(value="initialDate",required = true)@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate initialDate,
+                                                                   @RequestParam(value = "finalDate",required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate finalDate,
                                                                    @RequestParam(value = "vendorId" ,required = false) Long vendorId) {
 
         OrderList orderList = new OrderList();
-        orderList.setOrders(orderService.getAllOrdersForReport(initalDate,finalDate,vendorId));
+        orderList.setOrders(orderService.getAllOrdersForReport(initialDate,finalDate,vendorId));
         return new ResponseEntity<>(orderList,HttpStatus.OK);
     }
 
