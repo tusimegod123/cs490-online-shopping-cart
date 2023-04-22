@@ -32,16 +32,17 @@ public class User implements UserDetails {
     private Boolean isVerified;
     private Boolean isFullyVerified;
     private String verifiedBy;
+    private String address;
 
 //    @OneToMany
-//    @JsonSerialize
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "userId")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "roleId")}
     )
+    @JsonSerialize
     private List<Role> roles;
 
     private String message;
