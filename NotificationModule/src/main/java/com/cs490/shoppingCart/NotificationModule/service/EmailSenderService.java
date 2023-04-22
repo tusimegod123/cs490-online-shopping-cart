@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.NotificationModule.service;
 
+import com.cs490.shoppingCart.NotificationModule.exception.EmailNotSentException;
 import com.cs490.shoppingCart.NotificationModule.integration.ShoppingCartApplicationRestClient;
 //import com.cs490.shoppingCart.NotificationModule.util.AppInfo;
 import com.cs490.shoppingCart.NotificationModule.util.AppInfo;
@@ -37,8 +38,8 @@ public class EmailSenderService {
 
     }
 
-    public void formatAndSendEmail(TransactionDTO transaction, EmailDTO email) throws MessagingException, UnsupportedEncodingException {
-
+    public void formatAndSendEmail(TransactionDTO transaction, EmailDTO email) throws MessagingException, UnsupportedEncodingException, EmailNotSentException {
+        try{
         System.out.println(appInfo.getUserUrl());
         MimeMessage mime =mailSender.createMimeMessage();
         MimeMessageHelper message=new MimeMessageHelper(mime);
@@ -107,6 +108,10 @@ public class EmailSenderService {
         message.setText(body.toString(), true);
 
         sendSimpleEmail(mime);
+
+        }catch(Exception e){
+            throw new EmailNotSentException(e.getMessage());
+        }
     }
 
 }

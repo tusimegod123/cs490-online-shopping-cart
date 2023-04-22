@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.ReportingModule.web;
 
+import com.cs490.shoppingCart.ReportingModule.exception.GenerateReportException;
 import com.cs490.shoppingCart.ReportingModule.service.ReportRequest;
 import com.cs490.shoppingCart.ReportingModule.service.ReportingService;
 import com.cs490.shoppingCart.ReportingModule.service.SalesDTO;
@@ -32,9 +33,12 @@ public class ReportingModuleController {
 
         CustomErrorType error=new CustomErrorType("No sales found for the given input.");
         ReportRequest request = new ReportRequest(fromDate, toDate, vendorId);
-        Optional<SalesDTO> sales = reportingService.getSales(request);
-        return responseEntityForOptional(sales,error);
-
+        try{
+            Optional<SalesDTO> sales = reportingService.getSales(request);
+            return responseEntityForOptional(sales,error);
+        }catch(Exception e){
+            return new ResponseEntity<>(new GenerateReportException(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/annual-profit")
@@ -45,8 +49,12 @@ public class ReportingModuleController {
 
         CustomErrorType error=new CustomErrorType("No records found for profit calculations");
         ReportRequest request = new ReportRequest(fromDate, toDate, vendorId);
-        Optional<SalesDTO> sales = reportingService.getAnnulProfit(request);
-        return responseEntityForOptional(sales,error);
+        try{
+            Optional<SalesDTO> sales = reportingService.getAnnulProfit(request);
+            return responseEntityForOptional(sales,error);
+        }catch(Exception e){
+            return new ResponseEntity<>(new GenerateReportException(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/annual-loss")
@@ -57,8 +65,12 @@ public class ReportingModuleController {
 
         CustomErrorType error=new CustomErrorType("No records found for loss calculations");
         ReportRequest request = new ReportRequest(fromDate, toDate, vendorId);
-        Optional<SalesDTO> sales = reportingService.getAnnualLoss(request);
-        return responseEntityForOptional(sales,error);
+        try{
+            Optional<SalesDTO> sales = reportingService.getAnnualLoss(request);
+            return responseEntityForOptional(sales,error);
+        }catch(Exception e){
+            return new ResponseEntity<>(new GenerateReportException(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
 
     }
 
@@ -70,8 +82,12 @@ public class ReportingModuleController {
 
         CustomErrorType error=new CustomErrorType("No records found for revenue calculations");
         ReportRequest request = new ReportRequest(fromDate, toDate, vendorId);
-        Optional<SalesDTO> sales = reportingService.getAnnualRevenue(request);
-        return responseEntityForOptional(sales,error);
+        try{
+            Optional<SalesDTO> sales = reportingService.getAnnualRevenue(request);
+            return responseEntityForOptional(sales,error);
+        }catch(Exception e){
+            return new ResponseEntity<>(new GenerateReportException(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
 
     }
 
@@ -83,18 +99,21 @@ public class ReportingModuleController {
 
         CustomErrorType error=new CustomErrorType("No records found for loss calculations");
         ReportRequest request = new ReportRequest(fromDate, toDate, vendorId);
-        Optional<SalesDTO> sales = reportingService.getSales(request);
-        Optional<SalesDTO> revenue = reportingService.getAnnualRevenue(request);
-        Optional<SalesDTO> profit = reportingService.getAnnulProfit(request);
+        try{
+            Optional<SalesDTO> sales = reportingService.getSales(request);
+            Optional<SalesDTO> revenue = reportingService.getAnnualRevenue(request);
+            Optional<SalesDTO> profit = reportingService.getAnnulProfit(request);
 
-        SalesDTO result = new SalesDTO();
+            SalesDTO result = new SalesDTO();
 
-        sales.ifPresent(salesDTO -> result.setNoOfSales(salesDTO.getNoOfSales()));
-        profit.ifPresent(salesDTO -> result.setAnnualProfit(salesDTO.getAnnualProfit()));
-        revenue.ifPresent(salesDTO -> result.setAnnualRevenue(salesDTO.getAnnualRevenue()));
+            sales.ifPresent(salesDTO -> result.setNoOfSales(salesDTO.getNoOfSales()));
+            profit.ifPresent(salesDTO -> result.setAnnualProfit(salesDTO.getAnnualProfit()));
+            revenue.ifPresent(salesDTO -> result.setAnnualRevenue(salesDTO.getAnnualRevenue()));
 
-
-        return responseEntityForOptional(Optional.of(result),error);
+            return responseEntityForOptional(Optional.of(result),error);
+        }catch(Exception e){
+            return new ResponseEntity<>(new GenerateReportException(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
 
     }
 
