@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: gateway-service
-          image: syilma/gatewayservice:v1
+          image: syilma/gatewayservice:v2
           imagePullPolicy: Always
           ports:
             - containerPort: 8081

@@ -1,6 +1,7 @@
 package com.cs490.shoppingCart.NotificationModule.service;
 
 import com.cs490.shoppingCart.NotificationModule.integration.ShoppingCartApplicationRestClient;
+//import com.cs490.shoppingCart.NotificationModule.util.AppInfo;
 import com.cs490.shoppingCart.NotificationModule.util.AppInfo;
 import jakarta.mail.Address;
 import jakarta.mail.MessagingException;
@@ -26,7 +27,8 @@ public class EmailSenderService {
     @Autowired
     private AppInfo appInfo;
 
-    private static ShoppingCartApplicationRestClient restClient= new ShoppingCartApplicationRestClient();
+    @Autowired
+    private ShoppingCartApplicationRestClient restClient;
 
     public void sendSimpleEmail(MimeMessage mime) {
         mailSender.send(mime);
@@ -45,7 +47,8 @@ public class EmailSenderService {
         Long userId = transaction!=null? transaction.getUserId(): email.getUserId();
 
         UserDTO user = restClient.getUser(userId);
-        AddressDTO address= user!=null? user.getUserAddress():null;
+        AddressDTO address= new AddressDTO("1", "1000 N St.", "Fairfield", "Iowa", "52557", "USA");
+//        AddressDTO address= user!=null? user.getUserAddress():null;
 
         if(transaction != null){
             //Order confirmation email
@@ -85,7 +88,7 @@ public class EmailSenderService {
             body.append("<H2 style='text-align:center;'>Dear "+ user.getName()+ "</H2>");
             if(email.getEmailType().equalsIgnoreCase("WelcomeEmail")){
                 message.setSubject("Welcome to our online store!");
-                body.append("<H3 style='text-align:center;'>Thank you for doing business with us.<br><br></H3>");
+                body.append("<H3 style='text-align:center;'>Congratulations, you have been successfully verified!<br><br></H3>");
                 body.append("<H4 style='text-align:center;'>Please take note of your login details below:<br>Username:"+
                         user.getUsername()+"<br>Password:"+email.getPassword()+"</H4><br><br>");
             }else{

@@ -15,11 +15,11 @@ public class MasterCardServiceImp implements MasterCardService {
 
     @Override
     public MasterCard getMasterDetail(CardDetail cardDetail) {
-        return masterCardRepository.getMasterCardByCardNumberAndNameAndCCVAndCardExpiry(
+        return masterCardRepository.getMasterCardByCardNumberAndNameAndCCV(
                 cardDetail.getCardNumber(),
                 cardDetail.getName(),
-                cardDetail.getCCV(),
-                cardDetail.getCardExpiry()
+                cardDetail.getCCV()
+                //cardDetail.getCardExpiry()
         );
     }
 }

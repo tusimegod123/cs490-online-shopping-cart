@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: profit
-        image: syilma/profitservice:v1
+        image: syilma/profitservice:v2
         imagePullPolicy: Always
         ports:
         - containerPort: 8087 # port to access the app in the container

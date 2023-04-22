@@ -3,6 +3,7 @@ package com.cs490.shoppingCart.NotificationModule.integration;
 import com.cs490.shoppingCart.NotificationModule.service.AddressDTO;
 import com.cs490.shoppingCart.NotificationModule.service.OrderDTO;
 import com.cs490.shoppingCart.NotificationModule.service.UserDTO;
+//import com.cs490.shoppingCart.NotificationModule.util.AppInfo;
 import com.cs490.shoppingCart.NotificationModule.util.AppInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

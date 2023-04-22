@@ -10,11 +10,11 @@ import java.util.Date;
 
 @Repository
 public interface VisaCardRepository extends JpaRepository<VisaCard, Long> {
-    VisaCard getVisaCardByCardNumberAndNameAndCCVAndCardExpiry(
+    VisaCard getVisaCardByCardNumberAndNameAndCCV(//AndCardExpiry
             String cardNumber,
             String name,
-            String CCV,
-            LocalDate cardExpiry
+            String CCV
+            //LocalDate cardExpiry
     );
 
     VisaCard getVisaCardByCardNumber(String cardNumber);

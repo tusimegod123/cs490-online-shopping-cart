@@ -15,11 +15,11 @@ public class VisaCardServiceImp implements VisaCardService {
 
     @Override
     public VisaCard getVisaDetail(CardDetail cardDetail) {
-        return  visaCardRepository.getVisaCardByCardNumberAndNameAndCCVAndCardExpiry(
+        return  visaCardRepository.getVisaCardByCardNumberAndNameAndCCV(
                 cardDetail.getCardNumber(),
                 cardDetail.getName(),
-                cardDetail.getCCV(),
-                cardDetail.getCardExpiry()
+                cardDetail.getCCV()
+                //cardDetail.getCardExpiry()
         );
     }
 }

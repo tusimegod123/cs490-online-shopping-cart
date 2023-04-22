@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: payment
-        image: syilma/paymentservice:v1
+        image: syilma/paymentservice:v2
         imagePullPolicy: Always
         ports:
         - containerPort: 8086 # port to access the app in the container
