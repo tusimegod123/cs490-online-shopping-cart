@@ -20,24 +20,24 @@ public class ShoppingCartApplicationRestClient {
     private AppInfo appInfo;
 
     RestTemplate restTemplate = new RestTemplate();
-    Logger logger= LoggerFactory.getLogger(ShoppingCartApplicationRestClient.class);
+    Logger logger = LoggerFactory.getLogger(ShoppingCartApplicationRestClient.class);
 
     public UserDTO getUser(Long userId) {
-        UserDTO user=null;
-        try{
-            user =restTemplate.getForObject(appInfo.getUserUrl()+ "/" + userId, UserDTO.class);
-        }catch(Exception e){
-            logger.error("Resquested operation failed, "+ e.getMessage());
+        UserDTO user = null;
+        try {
+            user = restTemplate.getForObject(appInfo.getUserUrl() + "/" + userId, UserDTO.class);
+        } catch (Exception e) {
+            logger.error("Resquested operation failed, " + e.getMessage());
         }
         return user;
     }
 
     public OrderDTO getOrder(String orderId) {
-        OrderDTO order=null;
-        try{
-            order =restTemplate.getForObject(appInfo.getOrderUrl()+ "/" + orderId, OrderDTO.class);
-        }catch(Exception e){
-            logger.error("Resquested operation failed, "+ e.getMessage());
+        OrderDTO order = null;
+        try {
+            order = restTemplate.getForObject(appInfo.getOrderUrl() + "/" + orderId, OrderDTO.class);
+        } catch (Exception e) {
+            logger.error("Resquested operation failed, " + e.getMessage());
         }
         return order;
     }

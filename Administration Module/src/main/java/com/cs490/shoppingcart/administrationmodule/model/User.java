@@ -31,8 +31,8 @@ public class User implements UserDetails {
     private String username;
     private Boolean isVerified;
     private Boolean isFullyVerified;
-    private String paymentCardNumber;
     private String verifiedBy;
+
 //    @OneToMany
 //    @JsonSerialize
 
@@ -94,7 +94,8 @@ public Collection<? extends GrantedAuthority> getAuthorities() {
     }
 
     @JsonIgnore
-    public NotificationRequest getNotificationRequest(){
-        return new NotificationRequest(this.userId, this.message,this. emailType= "WelcomeEmail", this.password);
+    public NotificationRequest getNotificationRequest(String password){
+        return new NotificationRequest(this.userId, this.message,this. emailType= "WelcomeEmail", password);
     }
+
 }
