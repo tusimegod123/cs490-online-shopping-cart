@@ -22,8 +22,15 @@ public class ShoppingCartApplicationRestClient {
     public OrderList getOrders(ReportRequest request) {
         OrderList orders=null;
         try{
-            orders =restTemplate.getForObject(appInfo.getOrderUrl()+"?initialDate={fromDate}&finalDate={toDate}&vendorId={vendorId}", OrderList.class,request.getFromDate(),
-                    request.getToDate(),request.getUserId());
+
+            String requestParam = "?initialDate="+ request.getFromDate() + "&finalDate=" +request.getToDate() + "&vendorId=";
+
+            if(request.getUserId() != null){
+                requestParam += request.getUserId();
+            }
+
+            orders =restTemplate.getForObject(appInfo.getOrderUrl() + "/reports" + requestParam, OrderList.class);
+
         }catch(Exception e){
             logger.error("Requested operation failed, "+ e.getMessage());
         }

@@ -7,6 +7,8 @@ import com.cs490.shoppingCart.PaymentModule.service.VisaCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
+
 @Service
 public class VisaCardServiceImp implements VisaCardService {
 
@@ -15,11 +17,20 @@ public class VisaCardServiceImp implements VisaCardService {
 
     @Override
     public VisaCard getVisaDetail(CardDetail cardDetail) {
-        return  visaCardRepository.getVisaCardByCardNumberAndNameAndCCV(
+
+        VisaCard card = visaCardRepository.getVisaCardByCardNumberAndNameAndCCV(
                 cardDetail.getCardNumber(),
                 cardDetail.getName(),
                 cardDetail.getCCV()
-                //cardDetail.getCardExpiry()
         );
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMyy");
+        String formattedDate = card.getCardExpiry().format(formatter);
+
+        if(cardDetail.getCardExpiry().equals(formattedDate)){
+            return card;
+        }
+
+        return card;
     }
 }
