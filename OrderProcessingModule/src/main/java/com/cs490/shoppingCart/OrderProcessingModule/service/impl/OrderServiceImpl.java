@@ -34,10 +34,10 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ModelMapper modelMapper;
 
-    @Value("${USER_SERVICE_URL:user-service:8082}")
+    @Value("${USER_SERVICE_URL:localhost:8082}")
     private String userServiceUrl;
 
-    @Value("${PAYMENT_SERVICE_URL:payment-service:8086}")
+    @Value("${PAYMENT_SERVICE_URL:localhost:8086}")
     private String paymentServiceUrl;
 
 
@@ -85,10 +85,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO createGuestOrder(GuestOrderRequest guestOrderRequest) {
 
-        Set<Role> roles = new HashSet<>();
-        Role role =  new Role("Guest");
-        roles.add(role);
-        UserDTO request =  new UserDTO(guestOrderRequest.getUserInfo().getName(),guestOrderRequest.getUserInfo().getEmail(), guestOrderRequest.getUserInfo().getTelephoneNumber(),roles);
+        List<Role> roles = new ArrayList<>();
+        Role role =  new Role("Guest");roles.add(role);
+        UserDTO request =  new UserDTO(guestOrderRequest.getUserInfo().getName(),guestOrderRequest.getUserInfo().getEmail(), guestOrderRequest.getUserInfo().getTelephoneNumber(),guestOrderRequest.getUserInfo().getRoles());
         UserDTO tempUser = restTemplate.postForObject("http://"+userServiceUrl+"/api/v1/users/register",request, UserDTO.class);
         //UserDTOx tempUser = new UserDTOx();
         ShoppingCartDTO shoppingCart =  guestOrderRequest.getShoppingCart();

@@ -96,7 +96,7 @@ public class UserService {
         }
         user.setRoles(roles);
         User newUser = userRepository.save(user);
-        return user;
+        return newUser;
     }
     private void sendPasswordToUser(User vendor, String username, String password) {
         // code to send password to user via email or SMS

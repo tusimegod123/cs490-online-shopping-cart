@@ -52,9 +52,9 @@ spring:
 #    password: helloworld
 #    driver-class-name: com.mysql.cj.jdbc.Driver
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}/${DB_NAME:shoppingCart}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
-    username: ${DB_USERNAME:ea}
-    password: ${DB_PASSWORD:cs544}
+#    url: jdbc:mysql://${DB_HOST:localhost}/${DB_NAME:shoppingCart}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+#    username: ${DB_USERNAME:root}
+#    password: ${DB_PASSWORD:Realkhiw@123}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect

@@ -17,8 +17,8 @@ public class ShoppingCartApplicationRestClient {
     @Value("${order.management.url}")
     private String orderUrl;
 
-    @Value("${user.management.url}")
-    private String userUrl;
+//    @Value("${user.management.url}")
+    private String userUrl="http://localhost:8082/api/v1/users";
 
     RestTemplate restTemplate = new RestTemplate();
     Logger logger= LoggerFactory.getLogger(ShoppingCartApplicationRestClient.class);
