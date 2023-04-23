@@ -18,5 +18,5 @@ public class ProfitRequest {
 
     private String transactionNumber;
 
-    private Date transactionDate;
+    private String transactionDate;
 }
