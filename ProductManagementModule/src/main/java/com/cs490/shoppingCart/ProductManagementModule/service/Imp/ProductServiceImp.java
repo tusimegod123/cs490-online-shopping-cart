@@ -46,7 +46,7 @@ public class ProductServiceImp implements ProductService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${userServiceUrl}")
+    @Value("${userServiceForLocalHost}")
     private String userEndpoint;
 
 //    @Value("${application.bucket.name}")
@@ -106,6 +106,7 @@ public class ProductServiceImp implements ProductService {
             for(Product p : products){
                 if(name.equalsIgnoreCase(p.getProductName())){
                     products = productRepository.findProductByProductName(name);
+                    break;
                 }
                 else {
                     throw new ItemNotFoundException("Product Name you are searching is not found.");
@@ -119,6 +120,7 @@ public class ProductServiceImp implements ProductService {
                 for(Product p: products){
                     if(categoryId == p.getCategoryId()){
                         products = productRepository.findProductByCategoryId(categoryId);
+                        break;
                     }else {
                         throw new ItemNotFoundException("Category ID you are searching is not found.");
                     }
@@ -130,6 +132,7 @@ public class ProductServiceImp implements ProductService {
             for(Product p: products){
                 if(userId == p.getUserId()){
                     products = productRepository.findProductByUserId(userId);
+                    break;
                 }else {
                     throw new ItemNotFoundException("User ID you are searching is not found.");
                 }

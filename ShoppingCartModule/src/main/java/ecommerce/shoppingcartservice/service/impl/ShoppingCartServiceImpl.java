@@ -44,13 +44,17 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartDTO addToCart(RequestModel requestModel) {
 
         if(checkCartExistForUserAndStatusFalse(requestModel.getUserId())){
-            ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(requestModel.getUserId());
+            ShoppingCart shoppingCart= shoppingCartRepository.findShoppingCartByUserIdEqualsAndCartStatusEquals(requestModel.getUserId(),false);
 
-            Optional<CartLine> cartLineEx = shoppingCart.getCartLines().stream().filter(cartLine -> cartLine.getProductId().compareTo(
-                     requestModel.getProductDTO().getId()) == 0 ).findAny();
+            //
+                    shoppingCart.getCartLines().stream().forEach(carrtline ->System.out.println(carrtline.getProductId().equals(requestModel.getProductDTO().getProductId())));
+            Optional<CartLine> cartLineEx = shoppingCart.getCartLines().stream().filter(cartLine -> cartLine.getProductId().equals(requestModel.getProductDTO().getProductId())).findAny();
+           // Optional<CartLine> cartLineEx = shoppingCart.getCartLines().stream().findAny(cartLine -> cartLine
+             //       requestModel.getProductDTO().getProductId()));
             if(cartLineEx.isPresent()){
                 CartLine cartLineExisting = cartLineEx.get();
                 cartLineExisting.setQuantity(cartLineExisting.getQuantity()+ requestModel.getQuantity());
+                cartLineExisting.setProductId(requestModel.getProductDTO().getProductId());
                 cartLineExisting.setPrice(requestModel.getProductDTO().getPrice() * cartLineExisting.getQuantity());
                 Set<CartLine> cartLineSet = new HashSet<>(shoppingCart.getCartLines());
                 cartLineSet.add(cartLineExisting);
@@ -63,7 +67,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
                 CartLine cartLine = new CartLine();
                 cartLine.setQuantity(requestModel.getQuantity());
-                cartLine.setProductId(requestModel.getProductDTO().getId());
+                cartLine.setProductId(requestModel.getProductDTO().getProductId());
 
                 try {
                     ObjectMapper ob = new ObjectMapper();
@@ -86,7 +90,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }else {
             ShoppingCart shoppingCart =  new ShoppingCart();
             CartLine cartLine = new CartLine();
-            cartLine.setProductId(requestModel.getProductDTO().getId());
+            cartLine.setProductId(requestModel.getProductDTO().getProductId());
             cartLine.setQuantity(requestModel.getQuantity());
             cartLine.setPrice(requestModel.getProductDTO().getPrice() * requestModel.getQuantity());
             try {

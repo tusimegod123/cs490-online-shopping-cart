@@ -7,6 +7,8 @@ import com.cs490.shoppingCart.PaymentModule.service.MasterCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
+
 @Service
 public class MasterCardServiceImp implements MasterCardService {
 
@@ -15,11 +17,19 @@ public class MasterCardServiceImp implements MasterCardService {
 
     @Override
     public MasterCard getMasterDetail(CardDetail cardDetail) {
-        return masterCardRepository.getMasterCardByCardNumberAndNameAndCCVAndCardExpiry(
+        MasterCard card = masterCardRepository.getMasterCardByCardNumberAndNameAndCCV(
                 cardDetail.getCardNumber(),
                 cardDetail.getName(),
-                cardDetail.getCCV(),
-                cardDetail.getCardExpiry()
+                cardDetail.getCCV()
         );
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMyy");
+        String formattedDate = card.getCardExpiry().format(formatter);
+
+        if(cardDetail.getCardExpiry().equals(formattedDate)){
+            return card;
+        }
+
+        return null;
     }
 }

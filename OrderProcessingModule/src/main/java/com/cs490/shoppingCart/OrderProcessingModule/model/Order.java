@@ -25,5 +25,7 @@ public class Order {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "shoppingcart_id")
     private Set<OrderLine> orderLines;
+
+    @Column(length = 65500)
     private String userInfo;
 }

@@ -12,8 +12,8 @@ public class Role {
     private Integer roleId;
     private String roleName;
 
-    public Role(String roleName) {
-        this.roleName = roleName;
+    public Role(Integer roleId) {
+        this.roleId = roleId;
     }
 
 }

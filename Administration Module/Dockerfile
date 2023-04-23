@@ -39,5 +39,5 @@ FROM openjdk:17
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} administration-module.jar
 ENTRYPOINT ["java","-jar","/administration-module.jar"]
-EXPOSE 9898
+EXPOSE 8082
 
