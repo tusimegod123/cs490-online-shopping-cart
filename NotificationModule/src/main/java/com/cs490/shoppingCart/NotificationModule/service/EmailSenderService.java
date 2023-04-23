@@ -91,7 +91,8 @@ public class EmailSenderService {
                 message.setSubject("Welcome to our online store!");
                 body.append("<H3 style='text-align:center;'>Congratulations, you have been successfully verified!<br><br></H3>");
                 body.append("<H4 style='text-align:center;'>Please take note of your login details below:<br>Username:"+
-                        user.getUsername()+"<br>Password:"+email.getPassword()+"</H4><br><br>");
+                        user.getUsername()+"<br>Password:"+email.getPassword()+"</H4>");
+                body.append("<p style='text-align:center;'>Click <a href='#'>here</a> to log in to your account now</p><br><br>");
             }else{
                 //OtherCommunication - products un/approved
                 String msg = email.getMessage() !=null && !email.getMessage().isEmpty()? email.getMessage():

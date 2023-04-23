@@ -101,14 +101,13 @@ public class ReportingModuleController {
         ReportRequest request = new ReportRequest(fromDate, toDate, vendorId);
         try{
             Optional<SalesDTO> sales = reportingService.getSales(request);
-            Optional<SalesDTO> revenue = reportingService.getAnnualRevenue(request);
-            Optional<SalesDTO> profit = reportingService.getAnnulProfit(request);
+            Optional<SalesDTO> summary = reportingService.getReportSummary(request);
 
             SalesDTO result = new SalesDTO();
 
             sales.ifPresent(salesDTO -> result.setNoOfSales(salesDTO.getNoOfSales()));
-            profit.ifPresent(salesDTO -> result.setAnnualProfit(salesDTO.getAnnualProfit()));
-            revenue.ifPresent(salesDTO -> result.setAnnualRevenue(salesDTO.getAnnualRevenue()));
+            result.setAnnualProfit(summary.get().getAnnualProfit());
+            result.setAnnualRevenue(summary.get().getAnnualRevenue());
 
             return responseEntityForOptional(Optional.of(result),error);
         }catch(Exception e){
