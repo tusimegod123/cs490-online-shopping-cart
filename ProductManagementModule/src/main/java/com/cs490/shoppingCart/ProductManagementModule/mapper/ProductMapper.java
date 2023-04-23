@@ -22,6 +22,4 @@ public interface ProductMapper {
 
     ListProductResponseSpecificID fromDomainToListProductResponseSpecificID(Product product);
 
-    ProductResponse fromCreateProductRequestToProductResponse(ProductRequest productRequest);
-
 }

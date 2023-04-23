@@ -12,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This Class represents Product Controller for Product Management Module
@@ -36,10 +34,9 @@ public class ProductController {
      */
     @PostMapping
 
-    public ResponseEntity<?> saveProduct(@RequestBody @Valid ProductRequest productRequest)
-            throws ItemNotFoundException {
+    public ResponseEntity<?> saveProduct(@RequestBody @Valid ProductRequest productRequest) {
 
-        ProductResponse productResponse = new ProductResponse();
+        ProductResponse productResponse;
         try {
             productResponse  = productService.createProduct(productRequest);
         }catch (Exception e){
@@ -205,7 +202,6 @@ public class ProductController {
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
         }
-        return new ResponseEntity<List<ListProductResponseSpecificID>>(productResponseSpecificIDS, HttpStatus.OK);
+        return new ResponseEntity<>(productResponseSpecificIDS, HttpStatus.OK);
     }
-
 }
