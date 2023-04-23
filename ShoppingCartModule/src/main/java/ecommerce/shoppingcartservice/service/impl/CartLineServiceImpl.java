@@ -31,7 +31,8 @@ public class CartLineServiceImpl implements CartLineService {
         CartLine cartLine = cartLineRepository.findById(cartId).get();
         shoppingCart.setTotalPrice(shoppingCart.getTotalPrice() - cartLine.getPrice());
         cartLineRepository.deleteById(cartId);
-        if(shoppingCart.getCartLines().size() == 1 && shoppingCart.getCartLines().stream().findFirst().get().getId() == cartId)
+        shoppingCart = shoppingCartRepository.findById(shoppingCart.getId()).get();
+        if(shoppingCart.getCartLines().size() == 0) //&& shoppingCart.getCartLines().stream().findFirst().get().getId() == cartId)
             shoppingCartRepository.deleteById(shoppingCart.getId());
         else
             shoppingCartRepository.save(shoppingCart);
