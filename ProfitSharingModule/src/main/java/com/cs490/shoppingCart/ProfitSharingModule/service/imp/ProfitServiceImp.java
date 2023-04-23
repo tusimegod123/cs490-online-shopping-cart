@@ -59,7 +59,7 @@ public class ProfitServiceImp implements ProfitService {
 
                 Profit vProfit = new Profit();
                 vProfit.setUserId(vendorId);
-                vProfit.setProductId(product.getProductID());
+                vProfit.setProductId(product.getProductId());
                 vProfit.setPercentage(80d);
                 vProfit.setAmount(vendorShare);
                 vProfit.setTransactionId(profitRequest.getTransactionId());
@@ -68,7 +68,7 @@ public class ProfitServiceImp implements ProfitService {
 
                 Profit sProfit = new Profit();
                 sProfit.setUserId(systemId);
-                sProfit.setProductId(product.getProductID());
+                sProfit.setProductId(product.getProductId());
                 sProfit.setPercentage(20d);
                 sProfit.setAmount(systemShare);
                 sProfit.setTransactionId(profitRequest.getTransactionId());
