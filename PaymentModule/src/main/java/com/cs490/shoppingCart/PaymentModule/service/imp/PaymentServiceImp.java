@@ -172,7 +172,7 @@ public class PaymentServiceImp implements PaymentService {
         WebClient client = WebClient.create("http://notification-service:8088");
 
         Mono<String> response = client.post()
-                .uri("/notification-service/notification/email/transaction")
+                .uri("/notification-service/email/transaction")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .retrieve()

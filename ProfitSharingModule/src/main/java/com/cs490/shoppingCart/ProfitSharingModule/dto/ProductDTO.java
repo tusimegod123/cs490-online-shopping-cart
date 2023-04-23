@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProductDTO {
 
-    private Long productID;
+    private Long productId;
     private Long userId; //conform with hiwi
-    private String name;
+    private String productName;
     private String description;
     private Double price;
     private String imageUrl;
