@@ -1,12 +1,10 @@
 package com.cs490.shoppingCart.OrderProcessingModule.controller;
 
-import com.cs490.shoppingCart.OrderProcessingModule.dto.OrderDTO;
-import com.cs490.shoppingCart.OrderProcessingModule.dto.OrderList;
-import com.cs490.shoppingCart.OrderProcessingModule.dto.OrderRequestDTO;
+import com.cs490.shoppingCart.OrderProcessingModule.dto.*;
 import com.cs490.shoppingCart.OrderProcessingModule.exception.OrderlineEmptyException;
 import com.cs490.shoppingCart.OrderProcessingModule.model.*;
-import com.cs490.shoppingCart.OrderProcessingModule.dto.GuestOrderRequest;
 import com.cs490.shoppingCart.OrderProcessingModule.service.OrderService;
+import com.cs490.shoppingCart.OrderProcessingModule.service.OrderService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -22,6 +20,9 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OrderService2 orderService2;
 
     @GetMapping("/{orderId}")
     public ResponseEntity<Order> getOrder(@PathVariable Long orderId){
@@ -60,15 +61,21 @@ public class OrderController {
         return new ResponseEntity<>(orderList,HttpStatus.OK);
     }
 
-    @PostMapping()
-    public ResponseEntity<?> createOrderRegisteredUser(@RequestBody OrderRequestDTO orderRequestDTO){
+//    @PostMapping()
+//    public ResponseEntity<?> createOrderRegisteredUser(@RequestBody OrderRequestDTO orderRequestDTO){
+//
+//        if(!orderRequestDTO.getShoppingCart().getCartLines().isEmpty()){
+//            Order order = orderService.createOrder(orderRequestDTO);
+//            return new ResponseEntity<>(order,HttpStatus.CREATED);
+//        }
+//        return new ResponseEntity<>(new OrderlineEmptyException("You don't have any item to order"),HttpStatus.NOT_FOUND);
+//    }
+@PostMapping()
+public ResponseEntity<?> createOrderRegisteredUser(@RequestBody OrderRequestDT orderRequestDTO){
+    Order order = orderService2.createOrder(orderRequestDTO);
+    return new ResponseEntity<>(order,HttpStatus.CREATED);
 
-        if(!orderRequestDTO.getShoppingCart().getCartLines().isEmpty()){
-            Order order = orderService.createOrder(orderRequestDTO);
-            return new ResponseEntity<>(order,HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>(new OrderlineEmptyException("You don't have any item to order"),HttpStatus.NOT_FOUND);
-    }
+}
 
 
     @PostMapping("/guestUser")

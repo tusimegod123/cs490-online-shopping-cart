@@ -235,7 +235,7 @@ public ResponseEntity<String> fullyVerifyVendor(Long vendorId) throws NotVerifie
     }
     private void sendNotification(NotificationRequest request) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8088/notification-service/email";
+        String url = "http://notification-service:8088/notification-service/email";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
