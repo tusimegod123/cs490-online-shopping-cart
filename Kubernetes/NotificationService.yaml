@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: notification
-        image: syilma/notificationservice:v1
+        image: syilma/notificationservice:v2
         imagePullPolicy: Always
         ports:
         - containerPort: 8088 # port to access the app in the container

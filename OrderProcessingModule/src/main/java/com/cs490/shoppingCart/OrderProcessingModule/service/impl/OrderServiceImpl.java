@@ -85,8 +85,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO createGuestOrder(GuestOrderRequest guestOrderRequest) {
 
-        Set<Role> roles = new HashSet<>();
-        Role role =  new Role("Guest");
+        List<Role> roles = new ArrayList<>();
+        Role role =  new Role(4);
         roles.add(role);
         UserDTO request =  new UserDTO(guestOrderRequest.getUserInfo().getName(),guestOrderRequest.getUserInfo().getEmail(), guestOrderRequest.getUserInfo().getTelephoneNumber(),roles);
         UserDTO tempUser = restTemplate.postForObject("http://"+userServiceUrl+"/api/v1/users/register",request, UserDTO.class);

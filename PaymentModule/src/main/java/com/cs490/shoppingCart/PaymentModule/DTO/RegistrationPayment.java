@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Data
@@ -21,8 +22,9 @@ public class RegistrationPayment {
     private String cardNumber;
     private String nameOnCard;
     private String CCV ;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate cardExpiry;
+//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+//    private LocalDate cardExpiry;
+    private String cardExpiry;
 
     @JsonIgnore
     public CardDetail getCardDetail(){

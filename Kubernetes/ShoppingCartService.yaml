@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: shoppingcart
-        image: syilma/cartservice:v1
+        image: syilma/cartservice:v2
         imagePullPolicy: Always
         ports:
         - containerPort: 8084 # port to access the app in the container
