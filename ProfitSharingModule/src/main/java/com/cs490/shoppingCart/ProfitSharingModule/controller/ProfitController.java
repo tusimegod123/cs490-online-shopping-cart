@@ -32,7 +32,7 @@ public class ProfitController {
         return ResponseEntity.ok().body(revenue);
     }
 
-    @GetMapping("/summary")
+    @PostMapping("/summary")
     public ResponseEntity<?> getReport(@RequestBody ReportRequest request) {
 
         try{
