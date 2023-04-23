@@ -5,7 +5,6 @@ import com.cs490.shoppingCart.ProfitSharingModule.repository.ProfitRepository;
 import com.cs490.shoppingCart.ProfitSharingModule.service.ProfitService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,18 +31,16 @@ public class ProfitServiceImp implements ProfitService {
             LoggerFactory.getLogger(ProfitService.class);
 
     @Override
-    @Transactional
     public Boolean processProfit(ProfitRequest profitRequest) {
         System.out.println(profitRequest);
 
-        SimpleDateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
-
-        Date date = null;
-        try {
-            date = inputFormat.parse(profitRequest.getTransactionDate());
-        } catch (ParseException e) {
-            throw new RuntimeException("Error: parsing transaction date!");
-        }
+//        SimpleDateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
+//        Date date = null;
+//        try {
+//            date = inputFormat.parse(profitRequest.getTransactionDate());
+//        } catch (ParseException e) {
+//            throw new RuntimeException("Error: parsing transaction date!");
+//        }
 
         Long vendorId = -1l;
         Long systemId = 0l;
@@ -64,21 +59,21 @@ public class ProfitServiceImp implements ProfitService {
 
                 Profit vProfit = new Profit();
                 vProfit.setUserId(vendorId);
-                vProfit.setProductId(product.getProductID());
+                vProfit.setProductId(product.getProductId());
                 vProfit.setPercentage(80d);
                 vProfit.setAmount(vendorShare);
                 vProfit.setTransactionId(profitRequest.getTransactionId());
                 vProfit.setTransactionNumber(profitRequest.getTransactionNumber());
-                vProfit.setTransactionDate(date);
+                vProfit.setTransactionDate(profitRequest.getTransactionDate());
 
                 Profit sProfit = new Profit();
                 sProfit.setUserId(systemId);
-                sProfit.setProductId(product.getProductID());
+                sProfit.setProductId(product.getProductId());
                 sProfit.setPercentage(20d);
                 sProfit.setAmount(systemShare);
                 sProfit.setTransactionId(profitRequest.getTransactionId());
                 sProfit.setTransactionNumber(profitRequest.getTransactionNumber());
-                sProfit.setTransactionDate(date);
+                sProfit.setTransactionDate(profitRequest.getTransactionDate());
 
                 profitRepository.save(sProfit);
                 profitRepository.save(vProfit);

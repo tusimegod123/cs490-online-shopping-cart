@@ -1,4 +1,12 @@
 .idea
 .env
 .DS_Store
-/target
+./PaymentModule/target
+./ProductManagementModule/target
+./ProfitSharingModule/target
+./OrderProcessingModule/target
+./ShoppingCartModule/target
+./shopping-cart-api-gateway/target
+./ReportingModule/target
+./NotificationModule/target
+./Administration Module/target

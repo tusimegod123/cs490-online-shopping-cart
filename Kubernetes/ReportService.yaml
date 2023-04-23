@@ -17,7 +17,6 @@ spec:
       containers:
       - name: report
         image: syilma/reportservice:v2
-#        hiwotret/reportservice:1.0
         imagePullPolicy: Always
         ports:
         - containerPort: 8089 # port to access the app in the container

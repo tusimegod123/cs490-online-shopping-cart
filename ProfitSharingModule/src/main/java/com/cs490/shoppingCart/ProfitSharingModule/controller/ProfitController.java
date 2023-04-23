@@ -7,9 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
-
-
 @RestController
 @RequestMapping("api/v1/profit")
 public class ProfitController {
@@ -18,7 +15,7 @@ public class ProfitController {
     private ProfitService profitService;
 
     @PostMapping("/processProfit")
-    public ResponseEntity<?> processProfit(@RequestBody ProfitRequest request) throws ParseException {
+    public ResponseEntity<?> processProfit(@RequestBody ProfitRequest request) {
         profitService.processProfit(request);
         return ResponseEntity.ok().body("Profit share is divided successfully!");
     }

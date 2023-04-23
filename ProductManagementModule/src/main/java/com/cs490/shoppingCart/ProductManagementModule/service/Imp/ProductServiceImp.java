@@ -129,15 +129,15 @@ public class ProductServiceImp implements ProductService {
 
         //Search Product by userId
         if(userId!=null){
-            for(Product p: products){
-                if(userId == p.getUserId()){
+//            for(Product p: products){
+//                if(userId == p.getUserId()){
                     products = productRepository.findProductByUserId(userId);
-                    break;
-                }else {
-                    throw new ItemNotFoundException("User ID you are searching is not found.");
-                }
+//                    break;
+//                }else {
+//                    throw new ItemNotFoundException("User ID you are searching is not found.");
+//                }
             }
-        }
+//        }
 
         if(products.size()==0){
             throw new ItemNotFoundException("Products list is empty");
