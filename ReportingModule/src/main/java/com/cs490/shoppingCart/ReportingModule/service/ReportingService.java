@@ -15,7 +15,9 @@ public class ReportingService {
     public  Optional<SalesDTO> getSales(ReportRequest request){
         OrderList orders = client.getOrders(request);
         SalesDTO sales=new SalesDTO();
-        sales.setNoOfSales(orders.getOrders().size());
+        if(orders != null){
+            sales.setNoOfSales(orders.getOrders().size());
+        }
         return Optional.of(sales);
     }
 
