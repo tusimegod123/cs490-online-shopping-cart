@@ -80,7 +80,7 @@ public class ProductServiceImp implements ProductService {
 
         // Get id category from DB
         CategoryResponse categoryResponse = categoryService.getCategoryById(categoryId);
-        Category category = categoryMapper.fromCategoryResponseToCategory(categoryResponse);
+        Category category = categoryMapper.convertResponseToCategory(categoryResponse);
 
         // Save product into DB
         Product productToAdd = productRepository.save(product);

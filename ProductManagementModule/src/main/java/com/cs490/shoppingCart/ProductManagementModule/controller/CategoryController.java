@@ -1,11 +1,14 @@
 package com.cs490.shoppingCart.ProductManagementModule.controller;
 
+import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
 import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,20 +23,20 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping
-    public Category addCategory(@RequestBody Category category) {
+    public CategoryResponse addCategory(@RequestBody @Valid CategoryRequest categoryRequest) {
 
-        return categoryService.createCategory(category);
+        return categoryService.createCategory(categoryRequest);
     }
 
     @GetMapping()
-    public List<Category> getAllCategories() throws ItemNotFoundException {
+    public List<CategoryResponse> getAllCategories() throws ItemNotFoundException {
 
-        List<Category> categoryList = categoryService.getAllCategories();
+        List<CategoryResponse> categoryList = categoryService.getAllCategories();
         return categoryList;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getCategoryById(@PathVariable Long id) throws ItemNotFoundException {
+    public ResponseEntity<Object> getCategoryById(@PathVariable Long id) {
 
         CategoryResponse categoryResponse;
 
@@ -47,7 +50,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCategoryById(@PathVariable Long id, @RequestBody Category category) throws IdNotMatchException, ItemNotFoundException {
+    public ResponseEntity<Object> updateCategoryById(@PathVariable Long id, @RequestBody CategoryRequest category) {
 
         CategoryResponse categoryResponse;
         try {
