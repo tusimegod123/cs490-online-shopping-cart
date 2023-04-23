@@ -38,6 +38,13 @@ public class CategoryServiceTest {
     @Test
     public void testGetAllCategories() throws ItemNotFoundException {
 
+//        List<Category> categoryList = categoryRepository.findAll();
+//
+//        if (categoryList.isEmpty()) {
+//            throw new ItemNotFoundException("No category found in database");
+//        }
+//        return categoryList;
+
         Category category = new Category();
         List<Category> categoryList = new ArrayList<>();
         categoryList.add(category);

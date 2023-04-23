@@ -73,7 +73,7 @@ public class ProductServiceImp implements ProductService {
 
         //Get User object from userService
         User user = restTemplate.getForObject(userEndpoint + "/users/{id}",
-                User.class, productRequest.getUserId());
+                        User.class, productRequest.getUserId());
 
         // Get id from input
         Long categoryId = productRequest.getCategoryId();
@@ -97,10 +97,10 @@ public class ProductServiceImp implements ProductService {
      * @return List of Product Response
      * @throws ItemNotFoundException
      */
-    public List<ProductResponse> allProducts(String name, Long categoryId) throws ItemNotFoundException {
+    public List<ProductResponse> allProducts(String name, Long categoryId, Long userId) throws ItemNotFoundException {
 
         List<Product> products = productRepository.findAll();
-        System.out.println("name" + name);
+
         //Search Product by ProductName
         if(name!=null){
             for(Product p : products){
@@ -125,9 +125,23 @@ public class ProductServiceImp implements ProductService {
                 }
         }
 
+        //Search Product by userId
+        if(userId!=null){
+            for(Product p: products){
+                if(userId == p.getUserId()){
+                    products = productRepository.findProductByUserId(userId);
+                }else {
+                    throw new ItemNotFoundException("User ID you are searching is not found.");
+                }
+            }
+        }
+
+        if(products.size()==0){
+            throw new ItemNotFoundException("Products list is empty");
+        }
+
         List<ProductResponse> productResponses = new ArrayList<>();
         Set<Long> categoryIds = products.stream().map(p -> p.getCategoryId()).collect(Collectors.toSet());
-
 
         HashMap<Long, Category> categoryHashMap = getCategoryMap(categoryIds);
 
@@ -233,8 +247,13 @@ public class ProductServiceImp implements ProductService {
             throw new IdNotMatchException("Not match id from url with input id");
         }
 
+        User user = restTemplate.getForObject(userEndpoint + "/users/{id}",
+                User.class, product.getUserId());
+
         Product productResult = productRepository.save(product);
+        productResult.setUserId(user.getUserId());
         ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productResult);
+        productResponse.setUser(user);
 
         return productResponse;
     }
@@ -244,7 +263,7 @@ public class ProductServiceImp implements ProductService {
      * To get all approval products
      * @return list of product
      */
-    public List<Product> verifiedProducts(){
+    public List<Product> verifiedProducts() {
         List<Product> products = productRepository.findAllByVerified(true);
         return products;
     }
@@ -253,8 +272,11 @@ public class ProductServiceImp implements ProductService {
      * To get all un approval products
      * @return list of product
      */
-    public List<Product> unverifiedProducts(){
+    public List<Product> unverifiedProducts() throws ItemNotFoundException {
         List<Product> products = productRepository.findAllByVerified(false);
+        if(products.size()==0){
+            throw new ItemNotFoundException("All the products are approved already.");
+        }
         return products;
     }
 
@@ -263,17 +285,23 @@ public class ProductServiceImp implements ProductService {
      * @param productId : product Id
      * @return true or false boolean
      */
-    public void approveProducts(Long productId) {
+    public void approveProducts(Long productId) throws ItemNotFoundException {
 
         if (productId == null) {  //approve all unapproved products
             List<Product> products = productRepository.findAllByVerified(false);
             for (Product product: products) {
+                product.setVerified(true);
                 productRepository.save(product);
             }
         } else {   //approve single product
-            Product product = productRepository.findById(productId).get();
-            product.setVerified(true);
-            productRepository.save(product);
+            try{
+                Product product = productRepository.findById(productId).get();
+                product.setVerified(true);
+                productRepository.save(product);
+            } catch (Exception e){
+                throw new ItemNotFoundException("Product ID to approve is not found!");
+            }
+
         }
     }
     /**
@@ -321,16 +349,22 @@ public class ProductServiceImp implements ProductService {
 //    }
 
     @Override
-    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(Set<Long> productIdSet) {
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(Set<Long> productIdSet) throws ItemNotFoundException{
 
         List<Product> products = productRepository.findAll();
         List<ListProductResponseSpecificID> list = new ArrayList<>();
 
+        boolean check = false;
         for (Product product : products) {
             Long productId = product.getProductId();
             if (productIdSet.contains(productId)) {
                 list.add(productMapper.fromDomainToListProductResponseSpecificID(product));
+                check = true;
             }
+        }
+
+        if(check == false){
+            throw new ItemNotFoundException("Product ID you input is not found, Check it again!");
         }
 
         return list;

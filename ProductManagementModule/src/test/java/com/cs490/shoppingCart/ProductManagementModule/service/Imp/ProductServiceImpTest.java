@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
 import com.cs490.shoppingCart.ProductManagementModule.mapper.CategoryMapper;
 import com.cs490.shoppingCart.ProductManagementModule.mapper.ProductMapper;
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
@@ -55,7 +56,7 @@ class ProductServiceImpTest {
      * Method under test: {@link ProductServiceImp#getAllProductWithSpecificIDList(Set)}
      */
     @Test
-    void testGetAllProductWithSpecificIDList() {
+    void testGetAllProductWithSpecificIDList() throws ItemNotFoundException {
         when(productRepository.findAll()).thenReturn(new ArrayList<>());
         assertTrue(productServiceImp.getAllProductWithSpecificIDList(new HashSet<>()).isEmpty());
         verify(productRepository).findAll();
@@ -65,7 +66,7 @@ class ProductServiceImpTest {
      * Method under test: {@link ProductServiceImp#getAllProductWithSpecificIDList(Set)}
      */
     @Test
-    void testGetAllProductWithSpecificIDList2() {
+    void testGetAllProductWithSpecificIDList2() throws ItemNotFoundException {
         ArrayList<Product> productList = new ArrayList<>();
         productList.add(new Product());
         when(productRepository.findAll()).thenReturn(productList);
@@ -89,7 +90,7 @@ class ProductServiceImpTest {
      */
     @Test
     @Disabled("TODO: Complete this test")
-    void testGetAllProductWithSpecificIDList4() {
+    void testGetAllProductWithSpecificIDList4() throws ItemNotFoundException {
         // TODO: Complete this test.
         //   Reason: R013 No inputs found that don't throw a trivial exception.
         //   Diffblue Cover tried to run the arrange/act section, but the method under
@@ -112,7 +113,7 @@ class ProductServiceImpTest {
      * Method under test: {@link ProductServiceImp#getAllProductWithSpecificIDList(Set)}
      */
     @Test
-    void testGetAllProductWithSpecificIDList5() {
+    void testGetAllProductWithSpecificIDList5() throws ItemNotFoundException {
         when(productRepository.findAll()).thenReturn(new ArrayList<>());
         assertTrue(productServiceImp.getAllProductWithSpecificIDList(new HashSet<>()).isEmpty());
         verify(productRepository).findAll();
@@ -122,7 +123,7 @@ class ProductServiceImpTest {
      * Method under test: {@link ProductServiceImp#getAllProductWithSpecificIDList(Set)}
      */
     @Test
-    void testGetAllProductWithSpecificIDList6() {
+    void testGetAllProductWithSpecificIDList6() throws ItemNotFoundException {
         ArrayList<Product> productList = new ArrayList<>();
         productList.add(new Product());
         when(productRepository.findAll()).thenReturn(productList);
@@ -146,7 +147,7 @@ class ProductServiceImpTest {
      */
     @Test
     @Disabled("TODO: Complete this test")
-    void testGetAllProductWithSpecificIDList8() {
+    void testGetAllProductWithSpecificIDList8() throws ItemNotFoundException {
         // TODO: Complete this test.
         //   Reason: R013 No inputs found that don't throw a trivial exception.
         //   Diffblue Cover tried to run the arrange/act section, but the method under

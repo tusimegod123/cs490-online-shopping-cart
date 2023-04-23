@@ -1,5 +1,4 @@
 package com.cs490.shoppingCart.ProductManagementModule.controller;
-
 import com.cs490.shoppingCart.ProductManagementModule.dto.ListProductResponseSpecificID;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
@@ -13,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,10 +28,6 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-//    public ProductController(ProductServiceImp productService) {
-//        this.productService = productService;
-//    }
-
     /**
      * To create a product
      * @param productRequest product Request as a request boby
@@ -39,11 +35,21 @@ public class ProductController {
      * @throws ItemNotFoundException
      */
     @PostMapping
-    public ProductResponse saveProduct(@RequestBody @Valid ProductRequest productRequest) throws ItemNotFoundException {
 
-        ProductResponse productResponse  = productService.createProduct(productRequest);
+    public ResponseEntity<?> saveProduct(@RequestBody @Valid ProductRequest productRequest)
+            throws ItemNotFoundException {
 
-        return productResponse;
+        ProductResponse productResponse = new ProductResponse();
+        try {
+            productResponse  = productService.createProduct(productRequest);
+        }catch (Exception e){
+            String errorMessage = e.getMessage();
+            if (e.getMessage() == errorMessage) {
+                return new ResponseEntity<>(" Sorry ID not found, please check your userID or CategoryID again!" ,HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 
     /**
@@ -54,17 +60,17 @@ public class ProductController {
      * @throws ItemNotFoundException
      */
     @GetMapping
-    public ResponseEntity<Object> getAllProduct(@RequestParam(required = false) String name, @RequestParam(required = false) Long categoryId) throws ItemNotFoundException {
+    public ResponseEntity<Object> getAllProduct(@RequestParam(required = false) String name,
+                                                @RequestParam(required = false) Long categoryId,
+                                                @RequestParam(required = false) Long userId) throws ItemNotFoundException {
 
         List<ProductResponse> products;
-
         try {
-            products = productService.allProducts(name, categoryId);
+            products = productService.allProducts(name, categoryId, userId);
+            return new ResponseEntity<>(products,HttpStatus.OK);
         }catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }
-
-        return new ResponseEntity<>(products,HttpStatus.OK);
     }
 
     /**
@@ -97,7 +103,7 @@ public class ProductController {
         if (isDelete) {
             return new ResponseEntity<>("Product with id: " + id + " is deleted", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Product with id: " + id + " cannot be deleted", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Product with id: " + id + " cannot be deleted", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -132,15 +138,30 @@ public class ProductController {
      */
 
     @PutMapping("/approve")
-    public ResponseEntity<?> approveProducts(@RequestParam(value="productId", required = false) Long productId) {
+    public ResponseEntity<?> approveProducts(
+            @RequestParam(value="productId", required = false) Long productId)
+            throws ItemNotFoundException{
 
-        productService.approveProducts(productId);
+        try{
+            productService.approveProducts(productId);
+        } catch (ItemNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>("Products approved.", HttpStatus.OK);
     }
 
+
     @GetMapping("/unverified")
-    public List<Product> unverifiedProductList(){
-        return productService.unverifiedProducts();
+    public ResponseEntity<?> unverifiedProductList() throws ItemNotFoundException {
+        List<Product> products = new ArrayList<>();
+        try {
+            products = productService.unverifiedProducts();
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/verified")
@@ -177,8 +198,14 @@ public class ProductController {
 //    }
 
     @GetMapping("/productDetail")
-    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam(required = true) Set<Long> productId){
-        return productService.getAllProductWithSpecificIDList(productId);
+    public ResponseEntity<?> getAllProductWithSpecificIDList(@RequestParam(required = true) Set<Long> productId) throws ItemNotFoundException {
+        List<ListProductResponseSpecificID> productResponseSpecificIDS = new ArrayList<>();
+        try{
+            productResponseSpecificIDS = productService.getAllProductWithSpecificIDList(productId);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+        }
+        return new ResponseEntity<List<ListProductResponseSpecificID>>(productResponseSpecificIDS, HttpStatus.OK);
     }
 
 }
