@@ -80,7 +80,7 @@ public class ProductServiceImp implements ProductService {
 
         // Get id category from DB
         CategoryResponse categoryResponse = categoryService.getCategoryById(categoryId);
-        Category category = categoryMapper.fromCategoryResponseToCategory(categoryResponse);
+        Category category = categoryMapper.convertResponseToCategory(categoryResponse);
 
         // Save product into DB
         Product productToAdd = productRepository.save(product);
@@ -102,42 +102,48 @@ public class ProductServiceImp implements ProductService {
         List<Product> products = productRepository.findAll();
 
         //Search Product by ProductName
+        boolean checkName = false;
         if(name!=null){
             for(Product p : products){
                 if(name.equalsIgnoreCase(p.getProductName())){
                     products = productRepository.findProductByProductName(name);
-                    break;
+                    checkName = true;
                 }
-                else {
-                    throw new ItemNotFoundException("Product Name you are searching is not found.");
-                }
+            }
+            if(!checkName){
+                throw new ItemNotFoundException("Product Name you are searching is not found.");
             }
 
         }
 
+        Boolean isFound = false;
         //Search Product by categoryId
-        if(categoryId!=null){
+        if(categoryId != null){
                 for(Product p: products){
                     if(categoryId == p.getCategoryId()){
+                        isFound = true;
                         products = productRepository.findProductByCategoryId(categoryId);
-                        break;
-                    }else {
-                        throw new ItemNotFoundException("Category ID you are searching is not found.");
                     }
+                }
+                if (!isFound) {
+                    throw new ItemNotFoundException("Not found");
                 }
         }
 
         //Search Product by userId
+        boolean checkUser = false;
         if(userId!=null){
-//            for(Product p: products){
-//                if(userId == p.getUserId()){
+            for(Product p: products){
+                if(userId == p.getUserId()){
                     products = productRepository.findProductByUserId(userId);
-//                    break;
-//                }else {
-//                    throw new ItemNotFoundException("User ID you are searching is not found.");
-//                }
+                    checkUser = true;
+                }
             }
-//        }
+
+            if(!checkUser){
+                throw new ItemNotFoundException("User ID you are searching is not found.");
+            }
+        }
 
         if(products.size()==0){
             throw new ItemNotFoundException("Products list is empty");
