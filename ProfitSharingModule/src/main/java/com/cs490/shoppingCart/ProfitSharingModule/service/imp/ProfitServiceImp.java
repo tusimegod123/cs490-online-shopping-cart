@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,6 +38,15 @@ public class ProfitServiceImp implements ProfitService {
     public Boolean processProfit(ProfitRequest profitRequest) {
         System.out.println(profitRequest);
 
+        SimpleDateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
+
+        Date date = null;
+        try {
+            date = inputFormat.parse(profitRequest.getTransactionDate());
+        } catch (ParseException e) {
+            throw new RuntimeException("Error: parsing transaction date!");
+        }
+
         Long vendorId = -1l;
         Long systemId = 0l;
 
@@ -53,21 +64,21 @@ public class ProfitServiceImp implements ProfitService {
 
                 Profit vProfit = new Profit();
                 vProfit.setUserId(vendorId);
-                vProfit.setProductId(product.getId());
+                vProfit.setProductId(product.getProductID());
                 vProfit.setPercentage(80d);
                 vProfit.setAmount(vendorShare);
                 vProfit.setTransactionId(profitRequest.getTransactionId());
                 vProfit.setTransactionNumber(profitRequest.getTransactionNumber());
-                vProfit.setTransactionDate(profitRequest.getTransactionDate());
+                vProfit.setTransactionDate(date);
 
                 Profit sProfit = new Profit();
                 sProfit.setUserId(systemId);
-                sProfit.setProductId(product.getId());
+                sProfit.setProductId(product.getProductID());
                 sProfit.setPercentage(20d);
                 sProfit.setAmount(systemShare);
                 sProfit.setTransactionId(profitRequest.getTransactionId());
                 sProfit.setTransactionNumber(profitRequest.getTransactionNumber());
-                sProfit.setTransactionDate(profitRequest.getTransactionDate());
+                sProfit.setTransactionDate(date);
 
                 profitRepository.save(sProfit);
                 profitRepository.save(vProfit);

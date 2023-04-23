@@ -52,17 +52,28 @@ public class MasterCardDataInit implements CommandLineRunner {
         VisaCard vCardFive = new VisaCard(null,"4567567867897895", "Barra", "545", 8000.0, 9000.0, expiryDate, true);
 
 
+        saveMCard(mCardOne);
+        saveMCard(mCardTwo);
+        saveMCard(mCardThr);
+        saveMCard(mCardFou);
+        saveMCard(mCardFiv);
 
-//        masterCardRepository.save(mCardOne);
-//        masterCardRepository.save(mCardTwo);
-//        masterCardRepository.save(mCardThr);
-//        masterCardRepository.save(mCardFou);
-//        masterCardRepository.save(mCardFiv);
-//
-//        visaCardRepository.save(vCardOne);
-//        visaCardRepository.save(vCardTwo);
-//        visaCardRepository.save(vCardThr);
-//        visaCardRepository.save(vCardFour);
-//        visaCardRepository.save(vCardFive);
+        saveVCard(vCardOne);
+        saveVCard(vCardTwo);
+        saveVCard(vCardThr);
+        saveVCard(vCardFour);
+        saveVCard(vCardFive);
+    }
+
+    private void saveVCard(VisaCard card){
+       if(visaCardRepository.getVisaCardByCardNumber(card.getCardNumber()) == null){
+           visaCardRepository.save(card);
+       }
+    }
+
+    private void saveMCard(MasterCard card){
+        if(masterCardRepository.getMasterCardByCardNumber(card.getCardNumber()) == null){
+            masterCardRepository.save(card);
+        }
     }
 }

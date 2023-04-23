@@ -22,14 +22,6 @@ public class RoleService {
 
     public Role findRole(Integer roleId) {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new EntityNotFoundException("Vendor not found with id: " + roleId));
-        try {
-            if (roleId != role.getRoleId()) {
-                throw new UserNotFoundException("Role Does not match");
-            }
-            return role;
-        } catch (UserNotFoundException e) {
-            String errorJson = "{\"Sorry\":\"" + e.getMessage() + "\"}";
-            return  null;
-        }
+      return role;
     }
 }

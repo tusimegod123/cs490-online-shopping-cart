@@ -56,24 +56,7 @@ public class JwtService {
                 .getBody();
     }
     public String generateToken(String username) {
-        try {
-            User user = userRepository.findByUsername(username).
-                    orElseThrow(() -> new UserNotFoundException("Sorry this user is not yet registered to login, Sign up first then try again"));
-            Map<String, Object> claims = new HashMap<>();
-//            claims.put("userId", user.getUserId());
-            claims.put("name", user.getName());
-            claims.put("telephoneNumber", user.getTelephoneNumber());
-            claims.put("username", user.getUsername());
-            claims.put("email", user.getEmail());
-            claims.put("verified", user.getIsVerified());
-            claims.put("fullyVerified", user.getIsFullyVerified());
-            claims.put("paymentCardNumber", user.getPaymentCardNumber());
-            claims.put("verifiedBy", user.getVerifiedBy());
-            claims.put("roles", user.getRoles().toString());
-            return createToken(claims, username);
-        } catch (UserNotFoundException userNotFoundException) {
-            return userNotFoundException.getMessage();
-        }
+        return getToken(username);
     }
     private String createToken(Map<String, Object> claims, String userEmail) {
         return Jwts.builder()
@@ -84,30 +67,34 @@ public class JwtService {
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
-//    public String generateToken(String username) {
-//        try{
-//            User user = userRepository.findByUsername(username).get();
-//            if (user == null){
-//                throw new UserNotFoundException("Sorry this user is not yet registered to login, Sign up first then try again");
-//            }
-//            Map<String, Object> claims = new HashMap<>();
-//            claims.put("name", user.getName());
-//            claims.put("roles", user.getRoles().toString());
-//            return createToken(claims, username);
-//        } catch (UserNotFoundException userNotFoundException) {
-//            return userNotFoundException.getMessage();
-//        }
-//
-//    }
-//
-//private String createToken(Map<String, Object> claims, String userEmail) {
-//    return Jwts.builder()
-//            .setClaims(claims)
-//            .setSubject(userEmail)
-//            .setIssuedAt(new Date(System.currentTimeMillis()))
-//            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
-//            .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
-//}
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(SECRET).build().parseClaimsJws(token).getBody();
+    }
+
+    public String refreshToken(String username) {
+        return getToken(username);
+    }
+
+    private String getToken(String username) {
+        try {
+            User user = userRepository.findByUsername(username).
+                    orElseThrow(() -> new UserNotFoundException("Sorry this user is not yet registered to login, Sign up first then try again"));
+            Map<String, Object> claims = new HashMap<>();
+//            claims.put("userId", user.getUserId());
+            claims.put("name", user.getName());
+            claims.put("userId", user.getUserId());
+            claims.put("telephoneNumber", user.getTelephoneNumber());
+            claims.put("username", user.getUsername());
+            claims.put("email", user.getEmail());
+            claims.put("verified", user.getIsVerified());
+            claims.put("fullyVerified", user.getIsFullyVerified());
+            claims.put("verifiedBy", user.getVerifiedBy());
+            claims.put("role", user.getRoles().toString());
+            return createToken(claims, username);
+        } catch (UserNotFoundException userNotFoundException) {
+            return userNotFoundException.getMessage();
+        }
+    }
 
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);

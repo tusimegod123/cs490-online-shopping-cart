@@ -31,17 +31,18 @@ public class User implements UserDetails {
     private String username;
     private Boolean isVerified;
     private Boolean isFullyVerified;
-    private String paymentCardNumber;
     private String verifiedBy;
-//    @OneToMany
-//    @JsonSerialize
+    private String address;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @OneToMany
+
+    @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "userId")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "roleId")}
     )
+    @JsonSerialize
     private List<Role> roles;
 
     private String message;
@@ -94,7 +95,8 @@ public Collection<? extends GrantedAuthority> getAuthorities() {
     }
 
     @JsonIgnore
-    public NotificationRequest getNotificationRequest(){
-        return new NotificationRequest(this.userId, this.message,this. emailType= "WelcomeEmail", this.password);
+    public NotificationRequest getNotificationRequest(String password){
+        return new NotificationRequest(this.userId, this.message,this. emailType= "WelcomeEmail", password);
     }
+
 }

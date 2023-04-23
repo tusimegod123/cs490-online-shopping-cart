@@ -1,0 +1,65 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: shopping-cart-api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - "http://localhost:3000"
+            allowed-methods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
+              - PATCH
+            allowed-headers:
+              - "*"
+            allow-credentials: true
+      routes:
+        - id: cart-service
+          uri: http://shoppingcart-service:8084/
+          predicates:
+            - Path=/api/v1/cart/**
+
+        - id: user-service
+          uri: http://user-service:8082/
+          predicates:
+            - Path=/api/v1/users/**
+
+        - id: product-service
+          uri: http://product-service:8083/
+          predicates:
+            - Path=/api/v1/products/**
+
+        - id: category-service
+          uri: http://product-service:8083/
+          predicates:
+            - Path=/api/v1/categories/**
+
+        - id: order-service
+          uri: http://order-service:8085/
+          predicates:
+            - Path=/api/v1/orders**
+
+        - id: payment-service
+          uri: http://payment-service:8086/
+          predicates:
+            - Path=/api/v1/payments/**
+
+        - id: notification-service
+          uri: http://notification-service:8088/
+          predicates:
+            - Path=/notification-service/**
+
+        - id: report-service
+          uri: http://report-service:8089/
+          predicates:
+              - Path=/report-service/**
+
+
+

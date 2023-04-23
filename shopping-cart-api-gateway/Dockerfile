@@ -2,7 +2,7 @@ FROM openjdk:17
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} shopping-cart-api-gateway.jar
 ENTRYPOINT ["java","-jar","/shopping-cart-api-gateway.jar"]
-EXPOSE 9191
+EXPOSE 8081
 
 #FROM openjdk:17 as build
 #

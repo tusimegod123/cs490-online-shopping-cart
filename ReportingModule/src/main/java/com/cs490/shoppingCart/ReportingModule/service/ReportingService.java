@@ -41,4 +41,9 @@ public class ReportingService {
         return Optional.of(sales);
     }
 
+    public Optional<SalesDTO> getReportSummary(ReportRequest request) {
+        SalesDTO report = client.getSummary(request);
+        return Optional.of(report);
+    }
+
 }

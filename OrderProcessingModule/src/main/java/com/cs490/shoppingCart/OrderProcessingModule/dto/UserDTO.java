@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 @Data
 @NoArgsConstructor
@@ -19,8 +20,8 @@ public class UserDTO {
         private Boolean isVerified;
         private Boolean isFullyVerified;
         private String verifiedBy;
-        private Set<Role> roles;
-        public UserDTO(String name, String email,String telephoneNumber,Set<Role> roles){
+        private List<Role> roles;
+        public UserDTO(String name, String email,String telephoneNumber,List<Role> roles){
                 this.email = email;
                 this.telephoneNumber = telephoneNumber;
                 this.name =  name;

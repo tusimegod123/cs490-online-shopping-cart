@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
     @Value("${USER_SERVICE_URL:user-service:8082}")
     private String userServiceUrl;
 
-    @Value("${PAYMENT_SERVICE_URL:user-service:8082}")
+    @Value("${PAYMENT_SERVICE_URL:payment-service:8086}")
     private String paymentServiceUrl;
 
 
@@ -54,7 +55,8 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder (OrderRequestDTO orderRequestDTO) {
 
         Order pendingOrder = createOrderLine(orderRequestDTO.getShoppingCart());
-        UserDTO userDTO = restTemplate.getForObject("http://"+userServiceUrl+"/api/v1/users/1", UserDTO.class);
+        UserDTO userDTO = restTemplate.getForObject("http://"+userServiceUrl+"/api/v1/users/" + orderRequestDTO.getShoppingCart().getUserId(), UserDTO.class);
+        System.out.println(userDTO);
         pendingOrder.setUserInfo(creteUserInfoString(userDTO));
         Order order=orderRepository.save(pendingOrder);
         PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(
@@ -84,8 +86,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO createGuestOrder(GuestOrderRequest guestOrderRequest) {
 
-        Set<Role> roles = new HashSet<>();
-        Role role =  new Role("Guest");
+        List<Role> roles = new ArrayList<>();
+        Role role =  new Role(4);
         roles.add(role);
         UserDTO request =  new UserDTO(guestOrderRequest.getUserInfo().getName(),guestOrderRequest.getUserInfo().getEmail(), guestOrderRequest.getUserInfo().getTelephoneNumber(),roles);
         UserDTO tempUser = restTemplate.postForObject("http://"+userServiceUrl+"/api/v1/users/register",request, UserDTO.class);
@@ -131,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDTO> getAllOrdersForReport(LocalDate initalDate, LocalDate finalDate, Long vendorId) {
         List<Order> orders = new ArrayList<>();
         //Set<Order> orderIds = new HashSet<>();
-        orders = orderRepository.findAllByOrderDateBetween(initalDate.atStartOfDay() ,finalDate.atStartOfDay());
+        orders = orderRepository.findAllByOrderDateBetween(initalDate.atStartOfDay() ,finalDate.atTime(LocalTime.of(23,59,59)));
         if(vendorId != null){
              return orders.stream().filter(
                     order -> order.getOrderLines().stream().anyMatch(
