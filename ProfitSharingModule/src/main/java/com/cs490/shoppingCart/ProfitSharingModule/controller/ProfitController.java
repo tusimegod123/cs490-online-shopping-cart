@@ -18,7 +18,7 @@ public class ProfitController {
     private ProfitService profitService;
 
     @PostMapping("/processProfit")
-    public ResponseEntity<?> processProfit(@RequestBody ProfitRequest request) throws ParseException {
+    public ResponseEntity<?> processProfit(@RequestBody ProfitRequest request) {
         profitService.processProfit(request);
         return ResponseEntity.ok().body("Profit share is divided successfully!");
     }
