@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: user-service
-        image: syilma/userservice:v2 # Replace with your image name and tag
+        image: hiwotret/userservice:2.0 # Replace with your image name and tag
         imagePullPolicy: Always
         ports:
           - containerPort: 808
