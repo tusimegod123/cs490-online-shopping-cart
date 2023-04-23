@@ -4,6 +4,7 @@ shopping-cart-api-gateway/target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 !**/target/
+/target
 
 ### STS ###
 .apt_generated
