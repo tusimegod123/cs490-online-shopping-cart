@@ -1,6 +1,7 @@
 package com.cs490.shoppingCart.ReportingModule.integration;
 import com.cs490.shoppingCart.ReportingModule.service.OrderList;
 import com.cs490.shoppingCart.ReportingModule.service.ReportRequest;
+import com.cs490.shoppingCart.ReportingModule.service.SalesDTO;
 import com.cs490.shoppingCart.ReportingModule.service.UserDTO;
 import com.cs490.shoppingCart.ReportingModule.util.AppInfo;
 import org.slf4j.Logger;
@@ -66,6 +67,16 @@ public class ShoppingCartApplicationRestClient {
             logger.error("Requested operation failed, "+ e.getMessage());
         }
         return revenueValue;
+    }
+
+    public SalesDTO getSummary(ReportRequest request) {
+        SalesDTO report=null;
+        try{
+            report = restTemplate.postForObject(appInfo.getProfitUrl()+"/summary", request, SalesDTO.class);
+        }catch(Exception e){
+            logger.error("Requested operation failed, "+ e.getMessage());
+        }
+        return report;
     }
 
     public UserDTO getUser(String userId) {
