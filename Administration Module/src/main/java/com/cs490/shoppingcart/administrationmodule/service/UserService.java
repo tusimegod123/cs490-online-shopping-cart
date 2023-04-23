@@ -165,11 +165,11 @@ public ResponseEntity<String> fullyVerifyVendor(Long vendorId) throws NotVerifie
     userRepository.save(vendor);
     logger.info(vendor.getName() + " has  been is now fully verified");
     String refreshedToken = jwtService.refreshToken(vendor.getUsername());
-    HttpHeaders headers = new HttpHeaders();
-    headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + refreshedToken);
+//    HttpHeaders headers = new HttpHeaders();
+//    headers.add(HttpHeaders.AUTHORIZATION,  refreshedToken);
 
     String successMessage = "Vendor " + vendor.getName() + " has been fully verified";
-    return ResponseEntity.ok().headers(headers).body(successMessage);
+    return ResponseEntity.status(HttpStatus.OK).body(refreshedToken);
 }
 
 
