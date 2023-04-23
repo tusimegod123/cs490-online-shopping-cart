@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost:3306}/${DB_NAME:cs490-swe-2023-administrator}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:gold}
+#    url: jdbc:mysql://${DB_HOST:localhost:3306}/${DB_NAME:cs490-swe-2023-administrator}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+#    username: ${DB_USERNAME:root}
+#    password: ${DB_PASSWORD:gold}
 
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
