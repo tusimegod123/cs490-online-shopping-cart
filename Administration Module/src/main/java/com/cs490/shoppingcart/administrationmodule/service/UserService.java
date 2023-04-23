@@ -137,7 +137,7 @@ public ResponseEntity<?> createUser(User userDto) {
         vendor.setPassword(randomPassword);
 
         Optional<User> vendorToBeVerified = userRepository.findById(vendorId);
-        if (!vendorToBeVerified.isPresent()) {
+        if (vendorToBeVerified.isEmpty()) {
             throw new UserNotFoundException("Sorry, this user does not exist.");
         }
         if (admin == null) {
@@ -230,26 +230,20 @@ public ResponseEntity<String> fullyVerifyVendor(Long vendorId) throws NotVerifie
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
     public void validateToken(String token) {
         jwtService.validateToken(token);
     }
-
     private void sendNotification(NotificationRequest request) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://localhost:8088/notification-service/email";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         HttpEntity<NotificationRequest> entity = new HttpEntity<>(request, headers);
-
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-
         if (response.getStatusCode() == HttpStatus.OK) {
             logger.info("userId: " + request.getUserId());
             logger.info("emailType: " + request.getEmailType());
-            // logger.info("password: " + request.setPassword(randomPassword));
             request.setPassword(passwordBeforeEncoded);
             System.out.println(passwordBeforeEncoded);
             logger.info("password: " + request.getPassword());

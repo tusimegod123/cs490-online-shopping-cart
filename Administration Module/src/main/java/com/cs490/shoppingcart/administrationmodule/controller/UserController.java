@@ -6,7 +6,6 @@ import com.cs490.shoppingcart.administrationmodule.dto.UserDto;
 import com.cs490.shoppingcart.administrationmodule.exception.InvalidCredentialsException;
 import com.cs490.shoppingcart.administrationmodule.exception.UserNotFoundException;
 import com.cs490.shoppingcart.administrationmodule.model.User;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,11 +13,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.cs490.shoppingcart.administrationmodule.service.UserService;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,15 +23,13 @@ import java.util.List;
 @RequestMapping("api/v1/users")
 public class UserController {
     private final UserService userService;
-    private final  PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final ModelMapper modelMapper;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, ModelMapper modelMapper) {
+    private final AuthenticationManager authenticationManager;
+
+
+    public UserController(UserService userService, AuthenticationManager authenticationManager) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
-        this.modelMapper = modelMapper;
     }
 
     @PostMapping("/register")
@@ -66,7 +61,7 @@ public class UserController {
 
 @PutMapping("/{userId}")
 public ResponseEntity<?> updateUserById(@PathVariable Long userId, @RequestBody User updatedUser)  {
-    ResponseEntity<User> response = null;
+    ResponseEntity<User> response;
     try {
         response = userService.updateUserById(userId, updatedUser);
     } catch (UserNotFoundException e) {
@@ -87,7 +82,6 @@ public ResponseEntity<?> verifyVendor(@RequestBody User vendor, @PathVariable Lo
 
 @PutMapping(value = "/vendor/fullyVerify/{id}")
 public ResponseEntity<String> fullyVerifyVendor(@PathVariable Long id) {
-
     try {
         return  userService.fullyVerifyVendor(id);
     } catch (Exception e) {
@@ -117,7 +111,6 @@ public ResponseEntity<List<UserDto>>getUsers() {
 
     @DeleteMapping("/{userId}")
 public ResponseEntity<?> deleteUser(@PathVariable Long userId){
-
       return ResponseEntity.ok(userService.deleteUser(userId)).getBody();
 }
 
