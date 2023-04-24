@@ -1,82 +1,121 @@
 package com.cs490.shoppingCart.PaymentModule.service;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.cs490.shoppingCart.PaymentModule.DTO.*;
+import com.cs490.shoppingCart.PaymentModule.DTO.PaymentRequest;
+import com.cs490.shoppingCart.PaymentModule.DTO.RegistrationPayment;
+import com.cs490.shoppingCart.PaymentModule.model.Transaction;
 import com.cs490.shoppingCart.PaymentModule.repository.TransactionRepository;
-import com.cs490.shoppingCart.PaymentModule.service.imp.BankServiceImp;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cs490.shoppingCart.PaymentModule.service.imp.PaymentServiceImp;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ContextConfiguration(classes = {PaymentServiceImp.class})
+@ExtendWith(SpringExtension.class)
 class PaymentServiceTest {
+    @MockBean
+    private BankService bankService;
 
-    @InjectMocks
-    private BankServiceImp bankService;
-
-    @Mock
-    private TransactionRepository transactionRepository;
-
-    @Mock
-    private RestTemplate restTemplate;
-
-    @InjectMocks
+    @Autowired
     private PaymentServiceImp paymentServiceImp;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+    @MockBean
+    private RestTemplate restTemplate;
 
-//    @Test
-//    void testProcessOrderPaymentSuccessful() throws Exception {
-//        PaymentRequest paymentRequest = new PaymentRequest();
-//        paymentRequest.setUserId(1L);
-//        paymentRequest.setOrderId(1L);
-//        paymentRequest.setAmount(100.0);
-//        paymentRequest.setCardNumber("4111111111111111");
-//        CardDetail cardDetail = new CardDetail();
-//        cardDetail.setCardNumber(paymentRequest.getCardNumber());
-//        when(bankService.processCard(cardDetail)).thenReturn(new BankResponse(PaymentType.MASTER, 1000.0));
-//        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
-//        TransactionStatus result = paymentServiceImp.processOrderPayment(paymentRequest);
-//        assertEquals(TransactionStatus.TS, result);
-//    }
-//
-//    @Test
-//    void testProcessOrderPaymentInsufficientBalance() throws Exception {
-//        PaymentRequest paymentRequest = new PaymentRequest();
-//        paymentRequest.setUserId(1L);
-//        paymentRequest.setOrderId(1L);
-//        paymentRequest.setAmount(100.0);
-//        paymentRequest.setCardNumber("4111111111111111");
-//        CardDetail cardDetail = new CardDetail();
-//        cardDetail.setCardNumber(paymentRequest.getCardNumber());
-//        when(bankService.processCard(cardDetail)).thenReturn(new BankResponse(PaymentType.MASTER, 50.0));
-//        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
-//        try {
-//            paymentServiceImp.processOrderPayment(paymentRequest);
-//        } catch (Exception e) {
-//            assertEquals("Transaction failed, the card doesn't have enough balance to perform the transaction.", e.getMessage());
-//        }
-//    }
+    @MockBean
+    private TransactionRepository transactionRepository;
 
+
+    /**
+     * Method under test: {@link PaymentServiceImp#processOrderPayment(PaymentRequest)}
+     */
     @Test
-    void testProcessOrderPaymentInvalidCardNumber() throws Exception {
+    void testProcessOrderPayment() throws Exception {
+        // Arrange
         PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setUserId(1L);
-        paymentRequest.setOrderId(1L);
-        paymentRequest.setAmount(100.0);
-        paymentRequest.setCardNumber("123");
-        try {
-            paymentServiceImp.processOrderPayment(paymentRequest);
-        } catch (Exception e) {
-            assertEquals("The system only support 16 digit card number and MASTER/VISA card type only.", e.getMessage());
-        }
+        paymentRequest.setCardNumber("42");
+
+        // Act and Assert
+        assertThrows(Exception.class, () -> paymentServiceImp.processOrderPayment(paymentRequest));
     }
 
+    /**
+     * Method under test: {@link PaymentServiceImp#processRegistrationPayment(RegistrationPayment)}
+     */
+    @Test
+    void testProcessRegistrationPayment() throws Exception {
+        // Arrange
+        RegistrationPayment registrationPayment = new RegistrationPayment();
+        registrationPayment.setCardNumber("42");
+
+        // Act and Assert
+        assertThrows(Exception.class, () -> paymentServiceImp.processRegistrationPayment(registrationPayment));
+    }
+
+
+    /**
+     * Method under test: {@link PaymentServiceImp#getAll()}
+     */
+    @Test
+    void testGetAll() {
+        // Arrange
+        ArrayList<Transaction> transactionList = new ArrayList<>();
+        when(transactionRepository.findAll()).thenReturn(transactionList);
+
+        // Act
+        List<Transaction> actualAll = paymentServiceImp.getAll();
+
+        // Assert
+        assertSame(transactionList, actualAll);
+        assertTrue(actualAll.isEmpty());
+        verify(transactionRepository).findAll();
+    }
+
+    /**
+     * Method under test: {@link PaymentServiceImp#findByUserId(Long)}
+     */
+    @Test
+    void testFindByUserId() {
+        // Arrange
+        ArrayList<Transaction> transactionList = new ArrayList<>();
+        when(transactionRepository.findTransactionsByUserId((Long) any())).thenReturn(transactionList);
+
+        // Act
+        List<Transaction> actualFindByUserIdResult = paymentServiceImp.findByUserId(123L);
+
+        // Assert
+        assertSame(transactionList, actualFindByUserIdResult);
+        assertTrue(actualFindByUserIdResult.isEmpty());
+        verify(transactionRepository).findTransactionsByUserId((Long) any());
+    }
+
+    /**
+     * Method under test: {@link PaymentServiceImp#findByOrderId(Long)}
+     */
+    @Test
+    void testFindByOrderId() {
+        // Arrange
+        Transaction transaction = new Transaction();
+        when(transactionRepository.findTransactionByOrderId((Long) any())).thenReturn(transaction);
+
+        // Act and Assert
+        assertSame(transaction, paymentServiceImp.findByOrderId(123L));
+        verify(transactionRepository).findTransactionByOrderId((Long) any());
+    }
 }
+
