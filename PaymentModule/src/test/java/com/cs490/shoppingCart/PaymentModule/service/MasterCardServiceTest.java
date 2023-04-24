@@ -1,9 +1,9 @@
 package com.cs490.shoppingCart.PaymentModule.service;
 
 import com.cs490.shoppingCart.PaymentModule.DTO.CardDetail;
-import com.cs490.shoppingCart.PaymentModule.model.VisaCard;
-import com.cs490.shoppingCart.PaymentModule.repository.VisaCardRepository;
-import com.cs490.shoppingCart.PaymentModule.service.imp.VisaCardServiceImp;
+import com.cs490.shoppingCart.PaymentModule.model.MasterCard;
+import com.cs490.shoppingCart.PaymentModule.repository.MasterCardRepository;
+import com.cs490.shoppingCart.PaymentModule.service.imp.MasterCardServiceImp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -14,54 +14,56 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class VisaCardServiceTest {
+public class MasterCardServiceTest {
 
     @Mock
-    private VisaCardRepository visaCardRepository;
+    private MasterCardRepository masterCardRepository;
 
     @InjectMocks
-    private VisaCardServiceImp visaCardService;
+    private MasterCardServiceImp masterCardService;
 
     @Test
-    public void testGetVisaDetail() {
+    public void testGetMasterDetail() {
         CardDetail cardDetail = new CardDetail();
-        cardDetail.setCardNumber("4111111111111111");
+        cardDetail.setCardNumber("5567567867897891");
         cardDetail.setName("Selam");
         cardDetail.setCCV("302");
         cardDetail.setCardExpiry("1222");
 
-        VisaCard visaCard = new VisaCard();
-        visaCard.setCardNumber(cardDetail.getCardNumber());
-        visaCard.setName(cardDetail.getName());
-        visaCard.setCCV(cardDetail.getCCV());
-        visaCard.setCardExpiry(LocalDate.of(2022, 12, 31));
-        visaCard.setCardValue(100.0);
+        MasterCard masterCard = new MasterCard();
+        masterCard.setCardNumber(cardDetail.getCardNumber());
+        masterCard.setName(cardDetail.getName());
+        masterCard.setCCV(cardDetail.getCCV());
+        masterCard.setCardExpiry(LocalDate.of(2022, 12, 31));
+        masterCard.setCardValue(100.0);
 
-        when(visaCardRepository.getVisaCardByCardNumberAndNameAndCCV(
+        when(masterCardRepository.getMasterCardByCardNumberAndNameAndCCV(
                 ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString()
-        )).thenReturn(visaCard);
+        )).thenReturn(masterCard);
 
-        VisaCard result = visaCardService.getVisaDetail(cardDetail);
+        MasterCard result = masterCardService.getMasterDetail(cardDetail);
 
         assertNotNull(result);
-        assertEquals(visaCard, result);
+        assertEquals(masterCard, result);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMyy");
-        String formattedDate = visaCard.getCardExpiry().format(formatter);
+        String formattedDate = masterCard.getCardExpiry().format(formatter);
 
-        assertEquals(visaCard.getCardValue(), result.getCardValue());
+        assertEquals(masterCard.getCardValue(), result.getCardValue());
         assertEquals(formattedDate, cardDetail.getCardExpiry());
 
-        verify(visaCardRepository, times(1)).getVisaCardByCardNumberAndNameAndCCV(
+        verify(masterCardRepository, times(1)).getMasterCardByCardNumberAndNameAndCCV(
                 cardDetail.getCardNumber(),
                 cardDetail.getName(),
                 cardDetail.getCCV()
         );
+
     }
 }
