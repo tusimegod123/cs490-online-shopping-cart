@@ -13,6 +13,7 @@ public class ProductConfiguration {
     }
 
     @Value("${userServiceForLocalHost}")
+//    @Value("${userServiceUrl}")
     private String userServiceUrl;
 
     @Bean

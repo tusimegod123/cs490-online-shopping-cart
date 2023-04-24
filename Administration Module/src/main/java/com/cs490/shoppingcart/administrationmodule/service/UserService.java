@@ -9,13 +9,11 @@ import com.cs490.shoppingcart.administrationmodule.model.Role;
 import com.cs490.shoppingcart.administrationmodule.model.User;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import com.cs490.shoppingcart.administrationmodule.repository.UserRepository;
@@ -64,10 +62,6 @@ public class UserService {
 
 public ResponseEntity<?> createUser(User userDto) {
     try {
-        // Check if user with this email already exists
-        if (userRepository.existsByEmail(userDto.getEmail())) {
-            throw new EmailExistsException("A user with this email already exists");
-        }
 
         // Create new user
         User user = new User();
@@ -82,6 +76,11 @@ public ResponseEntity<?> createUser(User userDto) {
             return role;
         }).collect(Collectors.toList());
         user.setRoles(roles);
+
+        // Check if user with this email already exists, but not for guest users
+        if (roles.stream().noneMatch(role -> "GUEST".equals(role.getRoleName())) && userRepository.existsByEmail(userDto.getEmail())) {
+            throw new EmailExistsException("A user with this email already exists");
+        }
 
         // Set username, password, and verification status based on roles
         if (roles.stream().anyMatch(role -> "VENDOR".equals(role.getRoleName()))) {
@@ -120,9 +119,7 @@ public ResponseEntity<?> createUser(User userDto) {
     }
 }
 
-
-    private String sendPasswordToUser(String password) {
-        return password;
+    private void sendPasswordToUser(String password) {
     }
 
     public String getPassword() {

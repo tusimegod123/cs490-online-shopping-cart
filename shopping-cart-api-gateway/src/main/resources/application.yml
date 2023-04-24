@@ -26,7 +26,7 @@ spring:
           predicates:
             - Path=/api/v1/cart/**
 
-        - id: cart-service
+        - id: cart-line-service
           uri: http://shoppingcart-service:8084/
           predicates:
             - Path=/api/v1/cartLine/**
