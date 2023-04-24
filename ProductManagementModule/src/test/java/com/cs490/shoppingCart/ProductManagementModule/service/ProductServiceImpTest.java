@@ -242,25 +242,10 @@ class ProductServiceImpTest {
     @Test
     public void testGetAllProductsWithCategoryIdNotFound() {
 
-        // Arrange
-        Long categoryId = 1L;
-
-//        // Act
-//        Boolean isFound = false;
-//        for (Product p : productRepository.findAll()) {
-//            if (categoryId == p.getCategoryId()) {
-//                isFound = true;
-//                productRepository.findProductByCategoryId(categoryId);
-//            }
-//        }
-//
-//        // Assert
-//        assertThat(isFound).isFalse();
-
         try {
             productServiceImp.allProducts(null, 10L, null);
         } catch (ItemNotFoundException e) {
-            assertThat(e.getMessage()).isEqualTo("Category Id Not found");
+            assertThat(e.getMessage()).isEqualTo("Category ID Not found");
         }
     }
 
@@ -270,60 +255,15 @@ class ProductServiceImpTest {
         // Arrange
         String name = "zxy";
 
-        // Act
-//        Boolean isFound = false;
-//        for (Product p : productRepository.findProductByProductName(name)) {
-//            if (name.equalsIgnoreCase(p.getProductName())) {
-//                isFound = true;
-//                productRepository.findProductByProductName(name);
-//            }
-//        }
-
-        // Assert
-//        assertThat(isFound).isFalse();
-
         try {
             productServiceImp.allProducts(name, 10L, null);
         } catch (ItemNotFoundException e) {
-            assertThat(e.getMessage()).isEqualTo("Product name you are searching is not found.");
+            assertThat(e.getMessage()).isEqualTo("Product Name you are searching is not found.");
         }
     }
 
 
-    @Test
-    public void testGetProductWithSpecificName() throws ItemNotFoundException {
 
-
-        // Arrange
-        String name = "zxy";
-
-        Product product1 = new Product(1L, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
-        Product product2 = new Product(2L, "Cakey", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
-        Product product3 = new Product(3L, "Coconut", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
-
-        List<Product> productList = new ArrayList<>();
-        productList.add(product1);
-        productList.add(product2);
-        productList.add(product3);
-
-        when(productRepository.findProductByProductName(name)).thenReturn(productList);
-
-        // Act
-        Boolean isFound = false;
-        for (Product p : productRepository.findProductByProductName(name)) {
-            if (name.equalsIgnoreCase(p.getProductName())) {
-                isFound = true;
-                productRepository.findProductByProductName(name);
-            }
-        }
-
-//         Assert
-        assertThat(isFound).isFalse();
-
-        productServiceImp.allProducts(name, 10L, null);
-
-        verify(productMapper, times(1)).fromDomainToListProductResponseSpecificID(product1);
-    }
 
 //    @Test
 //    public void testGetAllProductsWithSpecificNameAndCategory() throws ItemNotFoundException {
@@ -435,7 +375,7 @@ class ProductServiceImpTest {
     }
 
     @Test
-    public void getProductByIdWithItemNotFound() throws ItemNotFoundException {
+    public void getProductByIdWithItemNotFound() {
 
         Long id = 1L;
 
@@ -535,16 +475,6 @@ class ProductServiceImpTest {
 //        verify(productRepository, times(3)).save(any(Product.class));
 //    }
 
-    @Test
-    public void testApproveProductsWithAllUnapprovedProducts() {
-
-
-
-        Long id = 1L;
-
-
-    }
-
     /**
      * Method under test: {@link ProductServiceImp#getAllProductWithSpecificIDList(Set)}
      */
@@ -577,6 +507,99 @@ class ProductServiceImpTest {
 
         productServiceImp.getAllProductWithSpecificIDList(productIdSet);
         verify(productMapper, times(1)).fromDomainToListProductResponseSpecificID(product1);
+    }
+
+    @Test
+    public void getAllProductWithSpecificIDListNotFound() {
+
+        Long id1 = 1L;
+        Long id2 = 2L;
+        Long id3 = 3L;
+
+        Set<Long> idSet = new HashSet<>();
+        idSet.add(id1);
+        idSet.add(id2);
+        idSet.add(id3);
+
+        try {
+            productServiceImp.getAllProductWithSpecificIDList(idSet);
+        } catch (ItemNotFoundException e) {
+            assertThat(e.getMessage()).isEqualTo("Product ID you input is not found, Check it again!");
+        }
+    }
+
+    @Test
+    public void testGetAllUnverifiedProduct() throws ItemNotFoundException {
+
+        Product product = new Product(1L, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+
+        List<Product> productList = new ArrayList<>();
+        productList.add(product);
+
+        when(productRepository.findAllByVerified(false)).thenReturn(productList);
+        List<Product> productListResult = productServiceImp.unverifiedProducts();
+        assertThat(productListResult).isEqualTo(productList);
+    }
+
+    @Test
+    public void testGetAllUnverifiedProductWithEmptyResult() {
+
+        List<Product> productListEmpty = new ArrayList<>();
+
+        when(productRepository.findAllByVerified(false)).thenReturn(productListEmpty);
+
+        try {
+            productServiceImp.unverifiedProducts();
+        } catch (ItemNotFoundException e) {
+            assertThat(e.getMessage()).isEqualTo("All the products are approved already.");
+        }
+    }
+
+    @Test
+    public void testApproveAllUnApprovedProducts() throws ItemNotFoundException {
+
+        Product product1 = new Product(1L, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+        Product product2 = new Product(2L, "Pepsi", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+        Product product3 = new Product(3L, "Fanta", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+
+        List<Product> unapprovedProductList = new ArrayList<>();
+        unapprovedProductList.add(product1);
+        unapprovedProductList.add(product2);
+        unapprovedProductList.add(product3);
+
+        when(productRepository.findAllByVerified(false)).thenReturn(unapprovedProductList);
+
+        productServiceImp.approveProducts(null);
+
+        verify(productRepository, times(1)).save(product1);
+        verify(productRepository, times(1)).save(product2);
+        verify(productRepository, times(1)).save(product3);
+    }
+
+    @Test
+    public void testApproveSingleProduct() throws ItemNotFoundException {
+
+        Long id = 1L;
+
+        Product product = new Product(id, "Coca Cola", 10.0, 5, 8.0, "Energy Drink", "https://coke.jpg", false, 1L, 1L);
+
+        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+        productServiceImp.approveProducts(id);
+        verify(productRepository).save(product);
+    }
+
+    @Test
+    public void testApproveSingleProductNotFound() throws ItemNotFoundException {
+
+        Long id = 1L;
+
+        when(productRepository.findById(id)).thenReturn(Optional.empty());
+
+        try {
+            productServiceImp.approveProducts(id);
+        } catch ( ItemNotFoundException e) {
+            assertThat(e.getMessage()).isEqualTo("Product ID to approve is not found!");
+        }
     }
 
     @Test
@@ -618,23 +641,58 @@ class ProductServiceImpTest {
         verify(productRepository, times(1)).deleteById(id);
     }
 
-//    @Test
-//    public void testUpdateProductById() throws ItemNotFoundException, IdNotMatchException {
-//
-//        Long id = 1L;
-//        Product product = new Product();
-//        product.setProductId(id);
-//
-//        ProductResponse productResponse = new ProductResponse();
-//        productResponse.setProductId(id);
-//
-//        when(productRepository.findById(id)).thenReturn(Optional.of(product));
-//        when(productMapper.fromCreateProductResponseToDomain(product)).thenReturn(productResponse);
-//
-//        productServiceImp.updateProduct(product, id);
-//
-//        verify(productRepository).save(product);
-//    }
+    @Test
+    public void testUpdateProductById() throws ItemNotFoundException, IdNotMatchException {
+
+        Long id = 1L;
+        Long categoryId = 2L;
+        Product product = new Product();
+        product.setProductId(id);
+        product.setProductName("iPhone 14");
+        product.setPrice(10.0);
+        product.setQty(8);
+        product.setVerified(false);
+        product.setImageUrl("https://water.jpg");
+        product.setItemCost(8.0);
+        product.setDescription("A latest model from Apple product");
+        product.setCategoryId(categoryId);
+        product.setUserId(id);
+
+        User user = new User();
+        user.setEmail("jane.doe@example.org");
+        user.setIsFullyVerified(true);
+        user.setIsVerified(true);
+        user.setName("Name");
+        user.setPassword("password");
+        user.setRoles(new HashSet<>());
+        user.setTelephoneNumber("4105551212");
+        user.setUserId(123L);
+        user.setUsername("janedoe");
+        user.setVerifiedBy("Verified By");
+
+        CategoryResponse categoryResponse = new CategoryResponse();
+        categoryResponse.setCategoryId(categoryId);
+        categoryResponse.setName("Purified Water");
+        categoryResponse.setDescription("Just water");
+
+        Category category = new Category();
+        category.setCategoryId(id);
+        category.setName("Purified Water");
+        category.setDescription("Just water");
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setProductId(id);
+
+        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+        when(productMapper.fromCreateProductResponseToDomain(product)).thenReturn(productResponse);
+        when(restTemplate.getForObject((String) any(), (Class<User>) any(), (Object[]) any())).thenReturn(user);
+        when(productRepository.save(product)).thenReturn(product);
+
+        when(productMapper.fromCreateProductResponseToDomain(product)).thenReturn(productResponse);
+        categoryService.getCategoryById(categoryId);
+        productServiceImp.updateProduct(product, id);
+        verify(productRepository).save(product);
+    }
 
     @Test
     public void testUpdateProductByIdNotFound() {

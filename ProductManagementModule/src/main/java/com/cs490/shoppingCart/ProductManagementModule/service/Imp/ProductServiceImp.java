@@ -29,30 +29,21 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductServiceImp implements ProductService {
 
-    private final ProductRepository productRepository;
-
-    private final ProductMapper productMapper;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private ProductMapper productMapper;
 
     @Autowired
     private CategoryMapper categoryMapper;
-
     @Autowired
     private CategoryService categoryService;
-
     @Autowired
     private CategoryRepository categoryRepository;
-
     @Autowired
     private RestTemplate restTemplate;
-
     @Value("${userServiceForLocalHost}")
     private String userEndpoint;
-
-    public ProductServiceImp(ProductRepository productRepository,
-                          ProductMapper productMapper) {
-        this.productRepository = productRepository;
-        this.productMapper = productMapper;
-    }
 
     /**
      * To crate a product
@@ -95,7 +86,7 @@ public class ProductServiceImp implements ProductService {
         List<Product> products = productRepository.findAll();
 
         //Search Product by ProductName
-        if(name!=null){
+        if(name != null){
             products = productRepository.findProductByProductName(name);
             if (products.isEmpty()) {
                 throw new ItemNotFoundException("Product Name you are searching is not found.");
@@ -108,18 +99,17 @@ public class ProductServiceImp implements ProductService {
             if (products.isEmpty()) {
                 throw new ItemNotFoundException("Category ID Not found");
             }
-
         }
 
         //Search Product by userId
-        if(userId!=null){
+        if(userId != null){
             products = productRepository.findProductByUserId(userId);
             if(products.isEmpty()){
                 throw new ItemNotFoundException("User ID you are searching is not found.");
             }
         }
 
-        if(products.size()==0){
+        if(products.isEmpty()){
             throw new ItemNotFoundException("Products list is empty");
         }
 
@@ -257,7 +247,9 @@ public class ProductServiceImp implements ProductService {
      * @return list of product
      */
     public List<Product> unverifiedProducts() throws ItemNotFoundException {
+
         List<Product> products = productRepository.findAllByVerified(false);
+
         if(products.size()==0){
             throw new ItemNotFoundException("All the products are approved already.");
         }
@@ -271,6 +263,8 @@ public class ProductServiceImp implements ProductService {
      */
     public void approveProducts(Long productId) throws ItemNotFoundException {
 
+        Product singleProduct;
+
         if (productId == null) {  //approve all unapproved products
             List<Product> products = productRepository.findAllByVerified(false);
             for (Product product: products) {
@@ -279,13 +273,12 @@ public class ProductServiceImp implements ProductService {
             }
         } else {   //approve single product
             try{
-                Product product = productRepository.findById(productId).get();
-                product.setVerified(true);
-                productRepository.save(product);
+                singleProduct = productRepository.findById(productId).get();
             } catch (Exception e){
                 throw new ItemNotFoundException("Product ID to approve is not found!");
             }
-
+            singleProduct.setVerified(true);
+            productRepository.save(singleProduct);
         }
     }
 
@@ -304,7 +297,7 @@ public class ProductServiceImp implements ProductService {
             }
         }
 
-        if(check == false){
+        if(check == false) {
             throw new ItemNotFoundException("Product ID you input is not found, Check it again!");
         }
 
