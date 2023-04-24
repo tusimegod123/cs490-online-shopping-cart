@@ -29,16 +29,7 @@ public interface ProductService {
 
     public List<Product> unverifiedProducts() throws ItemNotFoundException;
 
-
     public void approveProducts(Long productId) throws ItemNotFoundException;
-
-//    public String uploadFile(MultipartFile file);
-//
-//
-//    public byte[] downloadFile(String fileName);
-//
-//
-//    public String deleteFile(String fileName);
 
     public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam Set<Long> productId)throws ItemNotFoundException;
 
