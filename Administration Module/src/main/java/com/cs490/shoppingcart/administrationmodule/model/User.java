@@ -70,6 +70,7 @@ public class User implements UserDetails {
         this.telephoneNumber = telephoneNumber;
         this.username = username;
         this.roles = roles;
+
     }
 
     @Override

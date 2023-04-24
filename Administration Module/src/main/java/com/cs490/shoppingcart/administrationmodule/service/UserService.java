@@ -9,13 +9,11 @@ import com.cs490.shoppingcart.administrationmodule.model.Role;
 import com.cs490.shoppingcart.administrationmodule.model.User;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import com.cs490.shoppingcart.administrationmodule.repository.UserRepository;
@@ -62,12 +60,68 @@ public class UserService {
     public String randomPassword = generateRandomPassword(8);
     public String passwordBeforeEncoded = randomPassword;
 
+//    public ResponseEntity<?> createUser(User userDto) {
+//        try {
+//            // Check if user with this email already exists, but not for guest users
+//            if (!userDto.getIsGuest() && userRepository.existsByEmail(userDto.getEmail())) {
+//                throw new EmailExistsException("A user with this email already exists");
+//            }
+//
+//            // Create new user
+//            User user = new User();
+//            user.setEmail(userDto.getEmail());
+//            user.setName(userDto.getName());
+//            user.setTelephoneNumber(userDto.getTelephoneNumber());
+//
+//            // Set roles
+//            List<Role> roles = userDto.getRoles().stream().map(roleDto -> {
+//                Role role = roleService.findRole(roleDto.getRoleId());
+//                role.setRoleId(roleDto.getRoleId());
+//                return role;
+//            }).collect(Collectors.toList());
+//            user.setRoles(roles);
+//
+//            // Set username, password, and verification status based on roles
+//            if (roles.stream().anyMatch(role -> "VENDOR".equals(role.getRoleName()))) {
+//                user.setIsVerified(false);
+//                user.setUsername(null);
+//                logger.info(user.getName() + " has  successfully registered as a VENDOR PENDING verification ");
+//            } else if (userDto.getIsGuest()) {
+//                user.setIsVerified(false);
+//                user.setUsername(null);
+//                logger.info(user.getName() + " placed an order as a GUEST user");
+//            } else if (roles.stream().anyMatch(role -> "REGISTERED_USER".equals(role.getRoleName()))) {
+//                user.setIsVerified(true);
+//                user.setUsername(userDto.getEmail());
+//                user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+//                user.setIsFullyVerified(true);
+//                user.setVerifiedBy("Self-registration, Customer");
+//                logger.info(user.getName() + " has  successfully registered as a REGISTERED_USER ");
+//            } else {
+//                user.setUsername(userDto.getEmail());
+//                user.setIsVerified(true);
+//                user.setIsFullyVerified(true);
+//                user.setVerifiedBy("Self-registration, Admin");
+//                user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+//            }
+//
+//            // Save user to database
+//            userRepository.save(user);
+//
+//            // Return success response
+//            return ResponseEntity.status(HttpStatus.OK).body(user);
+//        } catch (EmailExistsException e) {
+//            // Return error response with custom message
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+//        } catch (Exception e) {
+//            // Return error response with generic message
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while creating the user");
+//        }
+//    }
+
+
 public ResponseEntity<?> createUser(User userDto) {
     try {
-        // Check if user with this email already exists
-        if (userRepository.existsByEmail(userDto.getEmail())) {
-            throw new EmailExistsException("A user with this email already exists");
-        }
 
         // Create new user
         User user = new User();
@@ -82,6 +136,11 @@ public ResponseEntity<?> createUser(User userDto) {
             return role;
         }).collect(Collectors.toList());
         user.setRoles(roles);
+
+        // Check if user with this email already exists, but not for guest users
+        if (roles.stream().noneMatch(role -> "GUEST".equals(role.getRoleName())) && userRepository.existsByEmail(userDto.getEmail())) {
+            throw new EmailExistsException("A user with this email already exists");
+        }
 
         // Set username, password, and verification status based on roles
         if (roles.stream().anyMatch(role -> "VENDOR".equals(role.getRoleName()))) {
@@ -120,9 +179,7 @@ public ResponseEntity<?> createUser(User userDto) {
     }
 }
 
-
-    private String sendPasswordToUser(String password) {
-        return password;
+    private void sendPasswordToUser(String password) {
     }
 
     public String getPassword() {

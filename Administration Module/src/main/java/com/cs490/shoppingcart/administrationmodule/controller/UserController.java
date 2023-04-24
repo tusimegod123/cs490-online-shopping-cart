@@ -34,13 +34,20 @@ public class UserController {
         this.authenticationManager = authenticationManager;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
-            User user = new User(userDto.getName(), userDto.getEmail(), userDto.getPassword(),
-                    userDto.getTelephoneNumber(), userDto.getUsername(), userDto.getRoles());
-            return ResponseEntity.ok(userService.createUser(user)).getBody();
-    }
-     @PostMapping("/login")
+//    @PostMapping("/register")
+//    public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
+//            User user = new User(userDto.getName(), userDto.getEmail(), userDto.getPassword(),
+//                    userDto.getTelephoneNumber(), userDto.getUsername(), userDto.getRoles(), userDto.getIsGuest());
+//            return ResponseEntity.ok(userService.createUser(user)).getBody();
+//    }
+@PostMapping("/register")
+public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
+    User user = new User(userDto.getName(), userDto.getEmail(), userDto.getPassword(),
+            userDto.getTelephoneNumber(), userDto.getUsername(), userDto.getRoles());
+    return ResponseEntity.ok(userService.createUser(user)).getBody();
+}
+
+    @PostMapping("/login")
         public ResponseEntity<?> getToken(@RequestBody AuthRequest authRequest) {
             try {
                 Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
