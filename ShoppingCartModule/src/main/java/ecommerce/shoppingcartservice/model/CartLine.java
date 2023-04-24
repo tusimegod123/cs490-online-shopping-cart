@@ -15,17 +15,17 @@ import java.util.Objects;
 public class CartLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @OneToOne(cascade = CascadeType.ALL)
-    private Product product;
+    private Long id;
     private Integer quantity;
     private Double price;
-
+    private Integer productId;
+    @Column(length = 65500 )
+    private String productInfo;
     @Override
     public boolean equals(Object obj){
         if(obj instanceof CartLine){
             CartLine cartLine = (CartLine) obj;
-            return cartLine.product.getId().equals(id);
+            return cartLine.productId.equals(id);
         }
         return false;
     }

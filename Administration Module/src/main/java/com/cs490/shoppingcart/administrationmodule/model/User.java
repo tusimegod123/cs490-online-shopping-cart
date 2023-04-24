@@ -1,5 +1,8 @@
 package com.cs490.shoppingcart.administrationmodule.model;
 
+import com.cs490.shoppingcart.administrationmodule.dto.EmailType;
+import com.cs490.shoppingcart.administrationmodule.dto.NotificationRequest;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,11 +31,22 @@ public class User implements UserDetails {
     private String username;
     private Boolean isVerified;
     private Boolean isFullyVerified;
-    private String paymentCardNumber;
     private String verifiedBy;
-    @OneToMany(cascade = CascadeType.ALL)
+    private String address;
+
+//    @OneToMany
+
+    @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "userId")},
+            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "roleId")}
+    )
     @JsonSerialize
-    private Set<Role> roles;
+    private List<Role> roles;
+
+    private String message;
+    private String emailType;
 
     // Data fields needed for implementing methods of UserDetails interface
     private boolean accountNonExpired;
@@ -46,12 +60,22 @@ public class User implements UserDetails {
         this.credentialsNonExpired = true;
         this.enabled = true;
         this.isFullyVerified=false;
-        this.roles = new HashSet<>();
+        this.roles = new ArrayList<>();
     }
 
-@Override
+    public User(String name, String email, String password, String telephoneNumber, String username, List<Role> roles) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.telephoneNumber = telephoneNumber;
+        this.username = username;
+        this.roles = roles;
+
+    }
+
+    @Override
 public Collection<? extends GrantedAuthority> getAuthorities() {
-    Set<Role> roles = getRoles();
+    List<Role> roles = getRoles();
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
     for (Role role : roles) {
@@ -70,4 +94,10 @@ public Collection<? extends GrantedAuthority> getAuthorities() {
     public void addRole(Role role) {
         this.roles.add(role);
     }
+
+    @JsonIgnore
+    public NotificationRequest getNotificationRequest(String password){
+        return new NotificationRequest(this.userId, this.message,this. emailType= "WelcomeEmail", password);
+    }
+
 }

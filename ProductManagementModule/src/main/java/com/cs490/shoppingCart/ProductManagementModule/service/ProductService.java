@@ -1,37 +1,34 @@
 package com.cs490.shoppingCart.ProductManagementModule.service;
 
+import com.cs490.shoppingCart.ProductManagementModule.dto.ListProductResponseSpecificID;
+import com.cs490.shoppingCart.ProductManagementModule.dto.ProductRequest;
+import com.cs490.shoppingCart.ProductManagementModule.dto.ProductResponse;
+import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
+import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
-import com.cs490.shoppingCart.ProductManagementModule.repository.ProductRepository;
-import org.springframework.stereotype.Service;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import java.util.*;
 
-@Service
-public class ProductService {
-    private final ProductRepository productRepository;
+public interface ProductService {
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    public ProductResponse createProduct(@RequestBody ProductRequest productRequest) throws ItemNotFoundException;
 
-    public Product createProduct(Product product){
-        product.setVerified(false);
-        return productRepository.save(product);
-    }
-    public Product modifyProduct(Product product, Long productId){
-        Product productToBeModified = productRepository.findById(productId).get();
-        return productRepository.save(productToBeModified);
-    }
-    public List<Product> allProducts(){
-        return productRepository.findAll();
-    }
-    public List<Product> verifiedProducts(){
-        List<Product> products = productRepository.findAll();
-        for (Product product: allProducts()) {
-            if (product.getVerified()== true){
-                products.add(product);
-            }
-        }
-        return products;
-    }
+    public List<ProductResponse> allProducts(String name, Long categoryId, Long userId) throws ItemNotFoundException;
+
+    public ProductResponse getProductById(Long id) throws ItemNotFoundException;
+
+    public Boolean deleteProductById(Long id);
+
+    public ProductResponse updateProduct(Product product, Long productId) throws ItemNotFoundException, IdNotMatchException;
+
+    public List<Product> verifiedProducts();
+
+    public List<Product> unverifiedProducts() throws ItemNotFoundException;
+
+    public void approveProducts(Long productId) throws ItemNotFoundException;
+
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam Set<Long> productId)throws ItemNotFoundException;
+
 }

@@ -4,9 +4,13 @@ import ecommerce.shoppingcartservice.model.ShoppingCart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface ShoppingCartRepository extends JpaRepository<ShoppingCart,Integer> {
+import java.util.Optional;
 
-    ShoppingCart findShoppingCartByUserIdEqualsAndCartStatusEquals(Integer id, boolean status);
-    ShoppingCart findShoppingCartByUserId(Integer id);
+@Repository
+public interface ShoppingCartRepository extends JpaRepository<ShoppingCart,Long> {
+
+    ShoppingCart findShoppingCartByUserIdEqualsAndCartStatusEquals(Long id, boolean status);
+    ShoppingCart findShoppingCartByUserId(Long id);
+
+    Optional<ShoppingCart> findShoppingCartByCartLinesId(Long id);
 }

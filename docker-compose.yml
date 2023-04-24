@@ -1,0 +1,51 @@
+version: '3'
+services:
+  eureka-server:
+    image: shopping-cart-service-registry
+    ports:
+      - "8762:8761"
+    networks:
+      - shopping-cart-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  shopping-cart-api-gateway:
+    image: shopping-cart-api-gateway
+    ports:
+      - "9191:9191"
+    depends_on:
+      - eureka-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_PROFILES_ACTIVE=docker
+
+  administration-service:
+    image: tusimegodwin256/administration-module
+    ports:
+      - "9898:9898"
+    depends_on:
+      - eureka-server
+    environment:
+      - DB_HOST=mysql
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - shopping-cart-network
+  mysql:
+    image: mysql:8.0.27
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=cs490-swe-2023-administrator
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - shopping-cart-network
+
+networks:
+  shopping-cart-network:
+    driver: bridge
+
+volumes:
+  db-data:

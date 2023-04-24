@@ -1,18 +1,20 @@
 package ecommerce.shoppingcartservice.service;
 
-import ecommerce.shoppingcartservice.model.RequestModel;
-import ecommerce.shoppingcartservice.model.ShoppingCart;
+import ecommerce.shoppingcartservice.model.dto.RequestModel;
+import ecommerce.shoppingcartservice.model.dto.ShoppingCartDTO;
 
 public interface ShoppingCartService {
 
-    ShoppingCart getCartItems(int id);
+    ShoppingCartDTO getCartItems(Long id);
 
-     ShoppingCart addToCart(RequestModel requestModel);
+     ShoppingCartDTO addToCart(RequestModel requestModel);
 
 
     void deleteCart();
 
-    boolean checkCartExistForUser(Integer id);
+    boolean checkCartExistForUser(Long id);
 
-    void checkOut(int id);
+    ShoppingCartDTO checkOut(Long id);
+
+    boolean checkCartExistance(Long cartId);
 }

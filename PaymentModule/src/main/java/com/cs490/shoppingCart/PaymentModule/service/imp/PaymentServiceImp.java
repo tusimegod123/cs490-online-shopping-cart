@@ -7,12 +7,20 @@ import com.cs490.shoppingCart.PaymentModule.model.TransactionType;
 import com.cs490.shoppingCart.PaymentModule.repository.TransactionRepository;
 import com.cs490.shoppingCart.PaymentModule.service.BankService;
 import com.cs490.shoppingCart.PaymentModule.service.PaymentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PaymentServiceImp implements PaymentService {
@@ -21,6 +29,12 @@ public class PaymentServiceImp implements PaymentService {
 
     @Autowired
     TransactionRepository transactionRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(PaymentServiceImp.class);
 
     @Override
     public TransactionStatus processOrderPayment(PaymentRequest request) throws Exception {
@@ -47,45 +61,33 @@ public class PaymentServiceImp implements PaymentService {
                 newTransaction.setTransactionType(TransactionType.OrderPayment);
 
                 if(response.getCurrentBalance() >= request.getAmount()){
-                    //add transaction with TS - Done
-
-                    //rest call notification service
-                    //rest call profit sharing service
-
-                    NotificationRequest notificationRequest = new NotificationRequest();
-                    notificationRequest.setFromSystemType(0);
-                    notificationRequest.setOrderId(request.getOrderId());
-
-                    //String response = restTemplate.postForObject("http://notification-service:8084/", notificationRequest, String.class);
-                    // what response should I expect?
-
+                    //order payment here
                     newTransaction.setTransactionStatus(TransactionStatus.TS);
                     newTransaction.setCardBalance(response.getCurrentBalance() - request.getAmount());
-                    transactionRepository.save(newTransaction);
-                    return TransactionStatus.TS;
+                    Transaction savedTransaction = transactionRepository.save(newTransaction);
 
+                    sendNotification(savedTransaction.getNotificationRequest());
+                    sendProfitCalculator(savedTransaction.getProfitSharingRequest());
+
+                    return TransactionStatus.TS;
                 } else {
                     //add transaction with TF - Done
                     newTransaction.setTransactionStatus(TransactionStatus.TF);
                     transactionRepository.save(newTransaction);
-                    return TransactionStatus.TF;
+                    throw new Exception("Transaction failed, the card doesn't have enough balance to perform the transaction.");
                 }
             }
 
-            throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only!");
+            throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only.");
 
         }
 
-        throw new Exception("Payment information is not provided!");
+        throw new Exception("Payment information is not provided.");
     }
 
     @Override
     public TransactionStatus processRegistrationPayment(RegistrationPayment request) throws Exception {
         if(!request.getCardNumber().isEmpty()){
-
-            //check if user exists
-            //call user service
-            //Boolean userExist = restTemplate.getForObject("http://user-service:9091/users/getById/" + request.getUserId(), Boolean.class);
 
             char cardStartWith = request.getCardNumber().charAt(0);
 
@@ -103,33 +105,27 @@ public class PaymentServiceImp implements PaymentService {
                 newTransaction.setTransactionType(TransactionType.RegistrationFee);
 
                 if(response.getCurrentBalance() >= request.getAmount()){
-                    //call notification service
-                    //call user service - update user status
-
-                    NotificationRequest notificationRequest = new NotificationRequest();
-                    notificationRequest.setFromSystemType(0);
-                    notificationRequest.setOrderId(request.getUserId());
-
-                    //String response = restTemplate.postForObject("http://notification-service:8084/", notificationRequest, String.class);
-                    // what response should I expect?
-
                     newTransaction.setTransactionStatus(TransactionStatus.TS);
                     newTransaction.setCardBalance(response.getCurrentBalance() - request.getAmount());
-                    transactionRepository.save(newTransaction);
+                    Transaction savedTransaction = transactionRepository.save(newTransaction);
+
+                    sendNotification(savedTransaction.getNotificationRequest());
+                    //verifyVendor(request);
+
                     return TransactionStatus.TS;
 
                 } else {
 
                     newTransaction.setTransactionStatus(TransactionStatus.TF);
                     transactionRepository.save(newTransaction);
-                    return TransactionStatus.TF;
+                    throw new Exception("Transaction failed, the card doesn't have enough balance to perform the transaction.");
                 }
             }
 
-            throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only!");
+            throw new Exception("The system only support 16 digit card number and MASTER/VISA card type only.");
         }
 
-        throw new Exception("Payment information is not provided!");
+        throw new Exception("Payment information is not provided.");
 
     }
 
@@ -143,14 +139,12 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     private BankResponse getLastTransaction(CardDetail cardDetail) throws Exception {
-        BankResponse response = new BankResponse();
+        BankResponse response = bankService.processCard(cardDetail);
         System.out.println(cardDetail.getCardNumber());
 
-        Transaction lastTransaction = transactionRepository.findFirstByCardNumberOrderByIdDesc(cardDetail.getCardNumber());
+        Transaction lastTransaction = transactionRepository.findFirstByCardNumberAndAndTransactionStatusOrderByIdDesc(cardDetail.getCardNumber(), TransactionStatus.TS);
 
-        if(lastTransaction == null){
-            response = bankService.processCard(cardDetail);
-        } else {
+        if(lastTransaction != null){
             response.setCurrentBalance(lastTransaction.getCardBalance());
             response.setPaymentType(lastTransaction.getPaymentType());
         }
@@ -164,13 +158,72 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     @Override
-    public List<Transaction> findByUserId(Integer id) {
+    public List<Transaction> findByUserId(Long id) {
         return transactionRepository.findTransactionsByUserId(id);
     }
 
     @Override
-    public Transaction findByOrderId(Integer id) {
+    public Transaction findByOrderId(Long id) {
         return transactionRepository.findTransactionByOrderId(id);
+    }
+
+    private void sendNotification(NotificationRequest request){
+
+        WebClient client = WebClient.create("http://notification-service:8088");
+
+        Mono<String> response = client.post()
+                .uri("/notification-service/email/transaction")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(String.class);
+
+        response.subscribe(result -> {
+            logger.info("Confirmation email is sent for transaction : " + request.getTransactionNumber());
+        }, error -> {
+            logger.error("Failed to send confirmation email for transaction : " + request.getTransactionNumber());
+        });
+    }
+
+    private void sendProfitCalculator(ProfitShareRequest request){
+        WebClient client = WebClient.create("http://profit-service:8087");
+
+        Mono<String> response = client.post()
+                .uri("/api/v1/profit/processProfit")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(String.class);
+
+        response.subscribe(result -> {
+            //2. call user service - update user status
+            logger.info("Profit sharing process is done for transaction" + request.getTransactionNumber());
+        }, error -> {
+            logger.error("Failed to process profit for transaction : " + request.getTransactionNumber());
+        });
+    }
+    private void verifyVendor(RegistrationPayment request){
+        Long userId = request.getUserId();
+        Map<String, Long> pathVariables = new HashMap<>();
+        pathVariables.put("id", userId);
+
+        WebClient client = WebClient.create("http://user-service:8082");
+
+
+        Mono<String> response = client.put()
+                .uri("/api/v1/users/vendor/fullyVerify/"+userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(String.class);
+
+        response.subscribe(result -> {
+            //2. call user service - update user status
+            logger.info("Vendor with id " + userId + " is fully verified!");
+        }, error -> {
+            logger.error("Failed to fully verify a vendor with id: " + userId);
+        });
+
     }
 
 }

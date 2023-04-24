@@ -8,11 +8,13 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @Repository
-public interface MasterCardRepository extends JpaRepository<MasterCard,Integer>  {
-    MasterCard getMasterCardByCardNumberAndNameAndCCVAndCardExpiry(
+public interface MasterCardRepository extends JpaRepository<MasterCard,Long>  {
+    MasterCard getMasterCardByCardNumberAndNameAndCCV( //AndCardExpiry
             String cardNumber,
             String name,
-            String CCV,
-            LocalDate cardExpiry
+            String CCV
+           // LocalDate cardExpiry
     );
+
+    MasterCard getMasterCardByCardNumber(String cardNumber);
 }

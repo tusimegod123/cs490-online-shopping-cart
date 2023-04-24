@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: report-deployment
+  labels:
+    app: report
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: report
+  template:
+    metadata:
+      labels:
+        app: report
+    spec:
+      containers:
+      - name: report
+        image: syilma/reportservice:v2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8089 # port to access the app in the container
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: report-service
+spec:
+  selector:
+    app: report
+#  type: NodePort # LoadBalancer for or NodePort external service
+  ports:
+    - protocol: TCP
+      port: 8089 # port to access the pod
+      targetPort: 8089 # must be the same as the containerPort
+#      nodePort: 30300 ## for external service port
