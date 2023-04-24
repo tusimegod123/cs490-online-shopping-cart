@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductServiceImp implements ProductService {
 
-
     private final ProductRepository productRepository;
 
     private final ProductMapper productMapper;
@@ -103,49 +102,48 @@ public class ProductServiceImp implements ProductService {
 
         //Search Product by ProductName
         boolean checkName = false;
-        if(name!=null){
-            for(Product p : products){
-                if(name.equalsIgnoreCase(p.getProductName())){
+        if (name != null) {
+            for (Product p : products) {
+                if (name.equalsIgnoreCase(p.getProductName())) {
                     products = productRepository.findProductByProductName(name);
                     checkName = true;
                 }
             }
-            if(!checkName){
-                throw new ItemNotFoundException("Product Name you are searching is not found.");
+            if (!checkName) {
+                throw new ItemNotFoundException("Product name you are searching is not found.");
             }
-
         }
 
         Boolean isFound = false;
         //Search Product by categoryId
-        if(categoryId != null){
-                for(Product p: products){
-                    if(categoryId == p.getCategoryId()){
-                        isFound = true;
-                        products = productRepository.findProductByCategoryId(categoryId);
-                    }
+        if (categoryId != null) {
+            for (Product p : products) {
+                if (categoryId == p.getCategoryId()) {
+                    isFound = true;
+                    products = productRepository.findProductByCategoryId(categoryId);
                 }
-                if (!isFound) {
-                    throw new ItemNotFoundException("Not found");
-                }
+            }
+            if (!isFound) {
+                throw new ItemNotFoundException("Category Id Not found");
+            }
         }
 
         //Search Product by userId
         boolean checkUser = false;
-        if(userId!=null){
-            for(Product p: products){
-                if(userId == p.getUserId()){
+        if (userId != null) {
+            for (Product p : products) {
+                if (userId == p.getUserId()) {
                     products = productRepository.findProductByUserId(userId);
                     checkUser = true;
                 }
             }
 
-            if(!checkUser){
+            if (!checkUser) {
                 throw new ItemNotFoundException("User ID you are searching is not found.");
             }
         }
 
-        if(products.size()==0){
+        if (products.size() == 0) {
             throw new ItemNotFoundException("Products list is empty");
         }
 
