@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductServiceImp implements ProductService {
 
-
     private final ProductRepository productRepository;
 
     private final ProductMapper productMapper;
@@ -47,13 +46,8 @@ public class ProductServiceImp implements ProductService {
     private RestTemplate restTemplate;
 
     @Value("${userServiceForLocalHost}")
+//    @Value("userServiceUrl")
     private String userEndpoint;
-
-//    @Value("${application.bucket.name}")
-//    private String bucketName;
-
-//    @Autowired
-//    private AmazonS3 s3Client;
 
     public ProductServiceImp(ProductRepository productRepository,
                           ProductMapper productMapper) {
@@ -104,43 +98,25 @@ public class ProductServiceImp implements ProductService {
         //Search Product by ProductName
         boolean checkName = false;
         if(name!=null){
-            for(Product p : products){
-                if(name.equalsIgnoreCase(p.getProductName())){
-                    products = productRepository.findProductByProductName(name);
-                    checkName = true;
-                }
-            }
-            if(!checkName){
+            products = productRepository.findProductByProductName(name);
+            if (products.isEmpty()) {
                 throw new ItemNotFoundException("Product Name you are searching is not found.");
             }
-
         }
 
-        Boolean isFound = false;
         //Search Product by categoryId
         if(categoryId != null){
-                for(Product p: products){
-                    if(categoryId == p.getCategoryId()){
-                        isFound = true;
-                        products = productRepository.findProductByCategoryId(categoryId);
-                    }
-                }
-                if (!isFound) {
-                    throw new ItemNotFoundException("Not found");
-                }
+            products = productRepository.findProductByCategoryId(categoryId);
+            if (products.isEmpty()) {
+                throw new ItemNotFoundException("Category ID Not found");
+            }
+
         }
 
         //Search Product by userId
-        boolean checkUser = false;
         if(userId!=null){
-            for(Product p: products){
-                if(userId == p.getUserId()){
-                    products = productRepository.findProductByUserId(userId);
-                    checkUser = true;
-                }
-            }
-
-            if(!checkUser){
+            products = productRepository.findProductByUserId(userId);
+            if(products.isEmpty()){
                 throw new ItemNotFoundException("User ID you are searching is not found.");
             }
         }
@@ -261,9 +237,10 @@ public class ProductServiceImp implements ProductService {
 
         Product productResult = productRepository.save(product);
         productResult.setUserId(user.getUserId());
+        CategoryResponse category = categoryService.getCategoryById(product.getCategoryId());
         ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productResult);
         productResponse.setUser(user);
-
+        productResponse.setCategory(categoryMapper.convertResponseToCategory(category));
         return productResponse;
     }
 
@@ -313,49 +290,6 @@ public class ProductServiceImp implements ProductService {
 
         }
     }
-    /**
-     * This is optional code
-     * Upload image when create a product
-     */
-
-
-//    public String uploadFile(MultipartFile file) {
-//        File fileObj = convertMultiPartFileToFile(file);
-//        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-//        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-//        fileObj.delete();
-//        return "File uploaded : " + fileName;
-//    }
-//
-//
-//    public byte[] downloadFile(String fileName) {
-//        S3Object s3Object = s3Client.getObject(bucketName, fileName);
-//        S3ObjectInputStream inputStream = s3Object.getObjectContent();
-//        try {
-//            byte[] content = IOUtils.toByteArray(inputStream);
-//            return content;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-//
-//
-//    public String deleteFile(String fileName) {
-//        s3Client.deleteObject(bucketName, fileName);
-//        return fileName + " removed ...";
-//    }
-//
-//
-//    private File convertMultiPartFileToFile(MultipartFile file) {
-//        File convertedFile = new File(file.getOriginalFilename());
-//        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-//            fos.write(file.getBytes());
-//        } catch (IOException e) {
-//            log.error("Error converting multipartFile to file", e);
-//        }
-//        return convertedFile;
-//    }
 
     @Override
     public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(Set<Long> productIdSet) throws ItemNotFoundException{
