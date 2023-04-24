@@ -46,6 +46,7 @@ public class ProductServiceImp implements ProductService {
     private RestTemplate restTemplate;
 
     @Value("${userServiceForLocalHost}")
+//    @Value("userServiceUrl")
     private String userEndpoint;
 
     public ProductServiceImp(ProductRepository productRepository,
