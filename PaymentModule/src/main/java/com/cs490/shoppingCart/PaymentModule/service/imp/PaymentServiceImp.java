@@ -169,10 +169,10 @@ public class PaymentServiceImp implements PaymentService {
 
     private void sendNotification(NotificationRequest request){
 
-        WebClient client = WebClient.create("http://localhost:8088");
+        WebClient client = WebClient.create("http://notification-service:8088");
 
         Mono<String> response = client.post()
-                .uri("/notification-service/notification/email/transaction")
+                .uri("/notification-service/email/transaction")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .retrieve()
@@ -186,7 +186,7 @@ public class PaymentServiceImp implements PaymentService {
     }
 
     private void sendProfitCalculator(ProfitShareRequest request){
-        WebClient client = WebClient.create("http://localhost:8087");
+        WebClient client = WebClient.create("http://profit-service:8087");
 
         Mono<String> response = client.post()
                 .uri("/api/v1/profit/processProfit")

@@ -12,7 +12,7 @@ public class ProductConfiguration {
         return new RestTemplate();
     }
 
-    @Value("${userServiceUrl}")
+    @Value("${userServiceForLocalHost}")
     private String userServiceUrl;
 
     @Bean

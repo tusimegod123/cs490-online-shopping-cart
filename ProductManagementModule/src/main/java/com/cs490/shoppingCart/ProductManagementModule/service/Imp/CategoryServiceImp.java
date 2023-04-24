@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.ProductManagementModule.service.Imp;
 
+import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,35 +26,45 @@ public class CategoryServiceImp implements CategoryService {
     private CategoryMapper categoryMapper;
 
 
-    public Category createCategory(Category category){
+    public CategoryResponse createCategory(CategoryRequest categoryRequest){
 
-        return categoryRepository.save(category);
+        Category category = categoryMapper.convertRequestToCategory(categoryRequest);
+        category = categoryRepository.save(category);
+        CategoryResponse categoryResponse = categoryMapper.convertCategoryToResponse(category);
+
+        return categoryResponse;
     }
-    public CategoryResponse updateCategory(Category category, Long categoryId) throws ItemNotFoundException, IdNotMatchException {
+    public CategoryResponse updateCategory(CategoryRequest categoryRequest, Long categoryId) throws ItemNotFoundException, IdNotMatchException {
 
         Optional<Category> categoryToBeModified = categoryRepository.findById(categoryId);
+
+        if (!categoryId.equals(categoryRequest.getId())) {
+            throw new IdNotMatchException("Not match id from url with input id");
+        }
 
         if (categoryToBeModified.isEmpty()) {
             throw new ItemNotFoundException("Not found for id: " + categoryId );
         }
 
-        if (categoryId != category.getCategoryId()) {
-            throw new IdNotMatchException("Not match id from url with input id");
-        }
-
+        Category category = categoryMapper.convertRequestToCategory(categoryRequest);
+        category.setCategoryId(categoryRequest.getId());
         Category categoryUpdated = categoryRepository.save(category);
-        CategoryResponse categoryResponse = categoryMapper.fromCategoryResponseToDomain(categoryUpdated);
+        CategoryResponse categoryResponse = categoryMapper.convertCategoryToResponse(categoryUpdated);
 
         return categoryResponse;
     }
-    public List<Category> getAllCategories() throws ItemNotFoundException {
+
+    public List<CategoryResponse> getAllCategories() throws ItemNotFoundException {
 
         List<Category> categoryList = categoryRepository.findAll();
+        List<CategoryResponse> categoryResponses = new ArrayList<>();
 
-        if (categoryList.isEmpty()) {
-            throw new ItemNotFoundException("No category found in database");
+        for (Category category : categoryList) {
+            CategoryResponse categoryResponse = categoryMapper.convertCategoryToResponse(category);
+            categoryResponses.add(categoryResponse);
         }
-        return categoryList;
+
+        return categoryResponses;
     }
 
     public CategoryResponse getCategoryById(Long id) throws ItemNotFoundException {
@@ -61,7 +73,7 @@ public class CategoryServiceImp implements CategoryService {
 
         if (category.isPresent()) {
             Category categoryResult = category.get();
-            CategoryResponse categoryResponse = categoryMapper.fromCategoryResponseToDomain(categoryResult);
+            CategoryResponse categoryResponse = categoryMapper.convertCategoryToResponse(categoryResult);
             return categoryResponse;
         } else {
             throw new ItemNotFoundException("No category found with id: " +id);

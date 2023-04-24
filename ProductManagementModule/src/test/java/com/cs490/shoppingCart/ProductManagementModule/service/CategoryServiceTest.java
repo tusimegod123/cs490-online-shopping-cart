@@ -1,5 +1,6 @@
 package com.cs490.shoppingCart.ProductManagementModule.service;
 
+import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
@@ -38,13 +39,40 @@ public class CategoryServiceTest {
     @Test
     public void testGetAllCategories() throws ItemNotFoundException {
 
-        Category category = new Category();
+        // Arrange
+        Category category1 = new Category();
+        category1.setCategoryId(1L);
+        category1.setName("Category 1");
+
+        Category category2 = new Category();
+        category2.setCategoryId(2L);
+        category2.setName("Category 2");
+
         List<Category> categoryList = new ArrayList<>();
-        categoryList.add(category);
+        categoryList.add(category1);
+        categoryList.add(category2);
+
+        CategoryResponse categoryResponse1 = new CategoryResponse();
+        categoryResponse1.setCategoryId(1L);
+        categoryResponse1.setName("Category 1");
+
+        CategoryResponse categoryResponse2 = new CategoryResponse();
+        categoryResponse2.setCategoryId(2L);
+        categoryResponse2.setName("Category 2");
+
+        List<CategoryResponse> expectedCategoryResponses = new ArrayList<>();
+        expectedCategoryResponses.add(categoryResponse1);
+        expectedCategoryResponses.add(categoryResponse2);
 
         when(categoryRepository.findAll()).thenReturn(categoryList);
-        List<Category> categoryListResult = categoryServiceImp.getAllCategories();
-        assertThat(categoryListResult).isEqualTo(categoryList);
+        when(categoryMapper.convertCategoryToResponse(category1)).thenReturn(categoryResponse1);
+        when(categoryMapper.convertCategoryToResponse(category2)).thenReturn(categoryResponse2);
+
+        // Act
+        List<CategoryResponse> actualCategoryResponses = categoryServiceImp.getAllCategories();
+
+        // Assert
+        assertThat(expectedCategoryResponses).isEqualTo(actualCategoryResponses);
 
     }
 
@@ -64,12 +92,28 @@ public class CategoryServiceTest {
     @Test
     public void testCreateCategory() {
 
+        // Arrange
+        CategoryRequest categoryRequest = new CategoryRequest();
+        categoryRequest.setName("Electronics");
+        categoryRequest.setDescription("includes products such as smartphones, laptops, TVs, cameras, and other electronic devices");
+
         Category category = new Category();
         category.setCategoryId(1L);
         category.setName("Electronics");
         category.setDescription("includes products such as smartphones, laptops, TVs, cameras, and other electronic devices");
 
-        categoryServiceImp.createCategory(category);
+        CategoryResponse expectedCategoryResponse = new CategoryResponse();
+        expectedCategoryResponse.setCategoryId(1L);
+        expectedCategoryResponse.setName("Electronics");
+
+        when(categoryMapper.convertRequestToCategory(categoryRequest)).thenReturn(category);
+        when(categoryRepository.save(category)).thenReturn(category);
+        when(categoryMapper.convertCategoryToResponse(category)).thenReturn(expectedCategoryResponse);
+
+        // Act
+        categoryServiceImp.createCategory(categoryRequest);
+
+        // Verify
         verify(categoryRepository).save(category);
     }
 
@@ -84,7 +128,7 @@ public class CategoryServiceTest {
         categoryResponse.setCategoryId(categoryId);
 
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
-        when(categoryMapper.fromCategoryResponseToDomain(category)).thenReturn(categoryResponse);
+        when(categoryMapper.convertCategoryToResponse(category)).thenReturn(categoryResponse);
 
         CategoryResponse result = categoryServiceImp.getCategoryById(categoryId);
 
@@ -148,15 +192,18 @@ public class CategoryServiceTest {
     @Test
     public void testUpdateCategoryByIdNotFound() throws ItemNotFoundException {
 
-        Long id = 1L;
-        Category category = new Category();
+        Long idRequest = 1L;
+        CategoryRequest categoryRequest = new CategoryRequest();
+        categoryRequest.setId(idRequest);
+        categoryRequest.setName("Electronics");
+        categoryRequest.setDescription("This category includes all electronic devices such as smartphones, laptops, televisions...");
 
-        when(categoryRepository.findById(id)).thenReturn(Optional.empty());
+        when(categoryRepository.findById(idRequest)).thenReturn(Optional.empty());
 
         try {
-            categoryServiceImp.updateCategory(category, id);
+            categoryServiceImp.updateCategory(categoryRequest, idRequest);
         } catch (ItemNotFoundException e) {
-            assertThat(e.getMessage()).isEqualTo("Not found for id: " + id);
+            assertThat(e.getMessage()).isEqualTo("Not found for id: " + idRequest);
         } catch (IdNotMatchException e) {
             throw new ItemNotFoundException("Not match id from url with input id");
         }
@@ -165,22 +212,35 @@ public class CategoryServiceTest {
     @Test
     public void testUpdateCategoryIdNotMatch() throws ItemNotFoundException {
 
-        Long id = 1L;
+        Long id = 2L;
         Category category = new Category();
         category.setCategoryId(id);
+        category.setName("Electronics");
+        category.setDescription("This category includes all electronic devices such as smartphones, laptops, televisions...");
 
-        Long unMatchedId = 2L;
+        Long unMatchedId = 3L;
         Category unMatchedCategory = new Category();
         unMatchedCategory.setCategoryId(unMatchedId);
+        unMatchedCategory.setName("Health & Care");
+        unMatchedCategory.setDescription("This category includes all supplement products");
 
-        when(categoryRepository.findById(id)).thenReturn(Optional.of(unMatchedCategory));
+        Long idRequest = 2L;
+        CategoryRequest categoryRequest = new CategoryRequest();
+        categoryRequest.setId(idRequest);
+        categoryRequest.setName("Electronics");
+        categoryRequest.setDescription("This category includes all electronic devices such as smartphones, laptops, televisions...");
+
+
+        when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
+
+        when(categoryMapper.convertRequestToCategory(categoryRequest)).thenReturn(category);
 
         try {
-            categoryServiceImp.updateCategory(unMatchedCategory, id);
+            categoryServiceImp.updateCategory(categoryRequest, unMatchedId);
         } catch (IdNotMatchException e) {
             assertThat(e.getMessage()).isEqualTo("Not match id from url with input id");
         } catch (ItemNotFoundException e) {
-            throw new ItemNotFoundException("Not found for id: " + id);
+            throw new ItemNotFoundException("Not found for id: " + unMatchedId);
         }
     }
 
@@ -190,17 +250,30 @@ public class CategoryServiceTest {
         Long id = 1L;
         Category category = new Category();
         category.setCategoryId(id);
+        category.setName("Electronics");
+        category.setDescription("This category includes all electronic devices such as smartphones, laptops, televisions...");
+
+        CategoryRequest categoryRequest = new CategoryRequest();
+        categoryRequest.setId(id);
+        categoryRequest.setName("Electronics");
+        categoryRequest.setDescription("This category includes all electronic devices such as smartphones, laptops, televisions...");
+
 
         Category categoryReturn = new Category();
-        category.setCategoryId(id);
+        categoryReturn.setCategoryId(id);
+        categoryReturn.setName("Electronics");
+        categoryReturn.setDescription("This category includes all electronic devices such as smartphones, laptops, televisions...");
+
 
         CategoryResponse categoryResponse = new CategoryResponse();
         categoryResponse.setCategoryId(id);
+        categoryResponse.setName("Electronics");
+        categoryResponse.setDescription("This category includes all electronic devices such as smartphones, laptops, televisions...");
 
         when(categoryRepository.findById(id)).thenReturn(Optional.of(categoryReturn));
-        when(categoryMapper.fromCategoryResponseToDomain(category)).thenReturn(categoryResponse);
-
-        categoryServiceImp.updateCategory(category, id);
+        when(categoryMapper.convertRequestToCategory(categoryRequest)).thenReturn(category);
+        when(categoryMapper.convertCategoryToResponse(category)).thenReturn(categoryResponse);
+        categoryServiceImp.updateCategory(categoryRequest, id);
 
         verify(categoryRepository).save(category);
     }

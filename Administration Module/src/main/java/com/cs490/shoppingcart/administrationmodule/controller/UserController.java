@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/users")
 //@CrossOrigin(origins = "*", allow= "*", allowedHeaders = "*")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
 
@@ -34,12 +34,6 @@ public class UserController {
         this.authenticationManager = authenticationManager;
     }
 
-//    @PostMapping("/register")
-//    public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
-//            User user = new User(userDto.getName(), userDto.getEmail(), userDto.getPassword(),
-//                    userDto.getTelephoneNumber(), userDto.getUsername(), userDto.getRoles(), userDto.getIsGuest());
-//            return ResponseEntity.ok(userService.createUser(user)).getBody();
-//    }
 @PostMapping("/register")
 public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
     User user = new User(userDto.getName(), userDto.getEmail(), userDto.getPassword(),

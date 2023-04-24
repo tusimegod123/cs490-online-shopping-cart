@@ -60,66 +60,6 @@ public class UserService {
     public String randomPassword = generateRandomPassword(8);
     public String passwordBeforeEncoded = randomPassword;
 
-//    public ResponseEntity<?> createUser(User userDto) {
-//        try {
-//            // Check if user with this email already exists, but not for guest users
-//            if (!userDto.getIsGuest() && userRepository.existsByEmail(userDto.getEmail())) {
-//                throw new EmailExistsException("A user with this email already exists");
-//            }
-//
-//            // Create new user
-//            User user = new User();
-//            user.setEmail(userDto.getEmail());
-//            user.setName(userDto.getName());
-//            user.setTelephoneNumber(userDto.getTelephoneNumber());
-//
-//            // Set roles
-//            List<Role> roles = userDto.getRoles().stream().map(roleDto -> {
-//                Role role = roleService.findRole(roleDto.getRoleId());
-//                role.setRoleId(roleDto.getRoleId());
-//                return role;
-//            }).collect(Collectors.toList());
-//            user.setRoles(roles);
-//
-//            // Set username, password, and verification status based on roles
-//            if (roles.stream().anyMatch(role -> "VENDOR".equals(role.getRoleName()))) {
-//                user.setIsVerified(false);
-//                user.setUsername(null);
-//                logger.info(user.getName() + " has  successfully registered as a VENDOR PENDING verification ");
-//            } else if (userDto.getIsGuest()) {
-//                user.setIsVerified(false);
-//                user.setUsername(null);
-//                logger.info(user.getName() + " placed an order as a GUEST user");
-//            } else if (roles.stream().anyMatch(role -> "REGISTERED_USER".equals(role.getRoleName()))) {
-//                user.setIsVerified(true);
-//                user.setUsername(userDto.getEmail());
-//                user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-//                user.setIsFullyVerified(true);
-//                user.setVerifiedBy("Self-registration, Customer");
-//                logger.info(user.getName() + " has  successfully registered as a REGISTERED_USER ");
-//            } else {
-//                user.setUsername(userDto.getEmail());
-//                user.setIsVerified(true);
-//                user.setIsFullyVerified(true);
-//                user.setVerifiedBy("Self-registration, Admin");
-//                user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-//            }
-//
-//            // Save user to database
-//            userRepository.save(user);
-//
-//            // Return success response
-//            return ResponseEntity.status(HttpStatus.OK).body(user);
-//        } catch (EmailExistsException e) {
-//            // Return error response with custom message
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-//        } catch (Exception e) {
-//            // Return error response with generic message
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while creating the user");
-//        }
-//    }
-
-
 public ResponseEntity<?> createUser(User userDto) {
     try {
 
@@ -292,7 +232,7 @@ public ResponseEntity<String> fullyVerifyVendor(Long vendorId) throws NotVerifie
     }
     private void sendNotification(NotificationRequest request) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8088/notification-service/email";
+        String url = "http://notification-service:8088/notification-service/email";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

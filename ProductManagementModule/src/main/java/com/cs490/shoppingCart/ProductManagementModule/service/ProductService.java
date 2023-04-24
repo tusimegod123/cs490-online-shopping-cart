@@ -17,7 +17,7 @@ public interface ProductService {
 
     public ProductResponse createProduct(@RequestBody ProductRequest productRequest) throws ItemNotFoundException;
 
-    public List<ProductResponse> allProducts(String name, Long categoryId) throws ItemNotFoundException;
+    public List<ProductResponse> allProducts(String name, Long categoryId, Long userId) throws ItemNotFoundException;
 
     public ProductResponse getProductById(Long id) throws ItemNotFoundException;
 
@@ -27,10 +27,10 @@ public interface ProductService {
 
     public List<Product> verifiedProducts();
 
-    public List<Product> unverifiedProducts();
+    public List<Product> unverifiedProducts() throws ItemNotFoundException;
 
 
-    public void approveProducts(Long productId);
+    public void approveProducts(Long productId) throws ItemNotFoundException;
 
 //    public String uploadFile(MultipartFile file);
 //
@@ -40,6 +40,6 @@ public interface ProductService {
 //
 //    public String deleteFile(String fileName);
 
-    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam Set<Long> productId);
+    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam Set<Long> productId)throws ItemNotFoundException;
 
 }
