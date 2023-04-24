@@ -13,6 +13,7 @@ public class ProductConfiguration {
     }
 
     @Value("${userServiceUrl}")
+
     private String userServiceUrl;
 
     @Bean

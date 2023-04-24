@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductServiceImp implements ProductService {
 
-
     private final ProductRepository productRepository;
 
     private final ProductMapper productMapper;
@@ -48,12 +47,6 @@ public class ProductServiceImp implements ProductService {
 
     @Value("${userServiceUrl}")
     private String userEndpoint;
-
-//    @Value("${application.bucket.name}")
-//    private String bucketName;
-
-//    @Autowired
-//    private AmazonS3 s3Client;
 
     public ProductServiceImp(ProductRepository productRepository,
                           ProductMapper productMapper) {
@@ -80,7 +73,7 @@ public class ProductServiceImp implements ProductService {
 
         // Get id category from DB
         CategoryResponse categoryResponse = categoryService.getCategoryById(categoryId);
-        Category category = categoryMapper.fromCategoryResponseToCategory(categoryResponse);
+        Category category = categoryMapper.convertResponseToCategory(categoryResponse);
 
         // Save product into DB
         Product productToAdd = productRepository.save(product);
@@ -102,42 +95,30 @@ public class ProductServiceImp implements ProductService {
         List<Product> products = productRepository.findAll();
 
         //Search Product by ProductName
+        boolean checkName = false;
         if(name!=null){
-            for(Product p : products){
-                if(name.equalsIgnoreCase(p.getProductName())){
-                    products = productRepository.findProductByProductName(name);
-                    break;
-                }
-                else {
-                    throw new ItemNotFoundException("Product Name you are searching is not found.");
-                }
+            products = productRepository.findProductByProductName(name);
+            if (products.isEmpty()) {
+                throw new ItemNotFoundException("Product Name you are searching is not found.");
             }
-
         }
 
         //Search Product by categoryId
-        if(categoryId!=null){
-                for(Product p: products){
-                    if(categoryId == p.getCategoryId()){
-                        products = productRepository.findProductByCategoryId(categoryId);
-                        break;
-                    }else {
-                        throw new ItemNotFoundException("Category ID you are searching is not found.");
-                    }
-                }
+        if(categoryId != null){
+            products = productRepository.findProductByCategoryId(categoryId);
+            if (products.isEmpty()) {
+                throw new ItemNotFoundException("Category ID Not found");
+            }
+
         }
 
         //Search Product by userId
         if(userId!=null){
-//            for(Product p: products){
-//                if(userId == p.getUserId()){
-                    products = productRepository.findProductByUserId(userId);
-//                    break;
-//                }else {
-//                    throw new ItemNotFoundException("User ID you are searching is not found.");
-//                }
+            products = productRepository.findProductByUserId(userId);
+            if(products.isEmpty()){
+                throw new ItemNotFoundException("User ID you are searching is not found.");
             }
-//        }
+        }
 
         if(products.size()==0){
             throw new ItemNotFoundException("Products list is empty");
@@ -255,9 +236,10 @@ public class ProductServiceImp implements ProductService {
 
         Product productResult = productRepository.save(product);
         productResult.setUserId(user.getUserId());
+        CategoryResponse category = categoryService.getCategoryById(product.getCategoryId());
         ProductResponse productResponse = productMapper.fromCreateProductResponseToDomain(productResult);
         productResponse.setUser(user);
-
+        productResponse.setCategory(categoryMapper.convertResponseToCategory(category));
         return productResponse;
     }
 
@@ -307,49 +289,6 @@ public class ProductServiceImp implements ProductService {
 
         }
     }
-    /**
-     * This is optional code
-     * Upload image when create a product
-     */
-
-
-//    public String uploadFile(MultipartFile file) {
-//        File fileObj = convertMultiPartFileToFile(file);
-//        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-//        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-//        fileObj.delete();
-//        return "File uploaded : " + fileName;
-//    }
-//
-//
-//    public byte[] downloadFile(String fileName) {
-//        S3Object s3Object = s3Client.getObject(bucketName, fileName);
-//        S3ObjectInputStream inputStream = s3Object.getObjectContent();
-//        try {
-//            byte[] content = IOUtils.toByteArray(inputStream);
-//            return content;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-//
-//
-//    public String deleteFile(String fileName) {
-//        s3Client.deleteObject(bucketName, fileName);
-//        return fileName + " removed ...";
-//    }
-//
-//
-//    private File convertMultiPartFileToFile(MultipartFile file) {
-//        File convertedFile = new File(file.getOriginalFilename());
-//        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-//            fos.write(file.getBytes());
-//        } catch (IOException e) {
-//            log.error("Error converting multipartFile to file", e);
-//        }
-//        return convertedFile;
-//    }
 
     @Override
     public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(Set<Long> productIdSet) throws ItemNotFoundException{
