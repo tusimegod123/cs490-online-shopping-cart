@@ -142,7 +142,7 @@ public class PaymentServiceImp implements PaymentService {
         BankResponse response = bankService.processCard(cardDetail);
         System.out.println(cardDetail.getCardNumber());
 
-        Transaction lastTransaction = transactionRepository.findFirstByCardNumberOrderByIdDesc(cardDetail.getCardNumber());
+        Transaction lastTransaction = transactionRepository.findFirstByCardNumberAndAndTransactionStatusOrderByIdDesc(cardDetail.getCardNumber(), TransactionStatus.TS);
 
         if(lastTransaction != null){
             response.setCurrentBalance(lastTransaction.getCardBalance());
