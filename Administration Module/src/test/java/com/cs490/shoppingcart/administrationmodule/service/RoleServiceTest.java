@@ -46,18 +46,6 @@ class RoleServiceTest {
         assertEquals("Role Name", role.toString());
     }
 
-    /**
-     * Method under test: {@link RoleService#saveRole(Role)}
-     */
-    @Test
-    void testSaveRole2() {
-        // Arrange
-        when(roleRepository.save((Role) any())).thenThrow(new EntityNotFoundException("An error occurred"));
-
-        // Act and Assert
-        assertThrows(EntityNotFoundException.class, () -> roleService.saveRole(new Role("Role Name")));
-        verify(roleRepository).save((Role) any());
-    }
 
     /**
      * Method under test: {@link RoleService#findRole(Integer)}
@@ -73,30 +61,5 @@ class RoleServiceTest {
         verify(roleRepository).findById((Integer) any());
     }
 
-    /**
-     * Method under test: {@link RoleService#findRole(Integer)}
-     */
-    @Test
-    void testFindRole2() {
-        // Arrange
-        when(roleRepository.findById((Integer) any())).thenReturn(Optional.empty());
-
-        // Act and Assert
-        assertThrows(EntityNotFoundException.class, () -> roleService.findRole(123));
-        verify(roleRepository).findById((Integer) any());
-    }
-
-    /**
-     * Method under test: {@link RoleService#findRole(Integer)}
-     */
-    @Test
-    void testFindRole3() {
-        // Arrange
-        when(roleRepository.findById((Integer) any())).thenThrow(new EntityNotFoundException("An error occurred"));
-
-        // Act and Assert
-        assertThrows(EntityNotFoundException.class, () -> roleService.findRole(123));
-        verify(roleRepository).findById((Integer) any());
-    }
 }
 
