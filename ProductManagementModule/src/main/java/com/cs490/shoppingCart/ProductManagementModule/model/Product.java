@@ -36,7 +36,8 @@ public class Product {
 
     @NotBlank(message = "Image URL is required")
 
-    @Column(columnDefinition="TEXT")
+//    @Column(columnDefinition="TEXT")
+    @Column(length = 65500 )
     private String imageUrl;
 
     private Boolean verified;

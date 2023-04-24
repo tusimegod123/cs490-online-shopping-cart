@@ -54,7 +54,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     // If an unexpected error occurs, set the response status to 500 and return an error message
                     exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
                     exchange.getResponse().getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-                    String errorJson = "{\"error\":\"An unexpected error occurred\"}";
+//                    String errorJson = "{\"error\":\"An unexpected error occurred\"}";
+                    String errorJson = "{\"error\":\"" + e.getMessage() + "\"}";
                     DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(errorJson.getBytes(StandardCharsets.UTF_8));
                     return exchange.getResponse().writeWith(Flux.just(buffer));
                 }
