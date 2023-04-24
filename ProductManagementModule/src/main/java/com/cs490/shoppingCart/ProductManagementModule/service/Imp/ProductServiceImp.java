@@ -42,8 +42,8 @@ public class ProductServiceImp implements ProductService {
     private CategoryRepository categoryRepository;
     @Autowired
     private RestTemplate restTemplate;
-    @Value("${userServiceForLocalHost}")
-//    @Value("${userServiceUrl}")
+//    @Value("${userServiceForLocalHost}")
+    @Value("${userServiceUrl}")
     private String userEndpoint;
 
     /**
