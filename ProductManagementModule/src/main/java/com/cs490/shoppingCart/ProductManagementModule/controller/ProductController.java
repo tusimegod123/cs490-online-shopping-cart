@@ -166,34 +166,6 @@ public class ProductController {
         return productService.verifiedProducts();
     }
 
-
-    /**
-     * This is optional code
-     * Upload image when create a product
-     */
-//    @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-//    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file) {
-//        return new ResponseEntity<>(productService.uploadFile(file), HttpStatus.OK);
-//    }
-//
-//
-//    @GetMapping("/download/{fileName}")
-//    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {
-//        byte[] data = productService.downloadFile(fileName);
-//        ByteArrayResource resource = new ByteArrayResource(data);
-//        return ResponseEntity
-//                .ok()
-//                .contentLength(data.length)
-//                .header("Content-type", "application/octet-stream")
-//                .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
-//                .body(resource);
-//    }
-//
-//    @DeleteMapping("/delete/{fileName}")
-//    public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
-//        return new ResponseEntity<>(productService.deleteFile(fileName), HttpStatus.OK);
-//    }
-
     @GetMapping("/productDetail")
     public ResponseEntity<?> getAllProductWithSpecificIDList(@RequestParam(required = true) Set<Long> productId) throws ItemNotFoundException {
         List<ListProductResponseSpecificID> productResponseSpecificIDS = new ArrayList<>();
