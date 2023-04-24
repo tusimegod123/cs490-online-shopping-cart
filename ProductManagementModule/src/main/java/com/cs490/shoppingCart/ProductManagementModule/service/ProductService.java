@@ -7,9 +7,7 @@ import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchExcept
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
 import com.cs490.shoppingCart.ProductManagementModule.model.Product;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 

@@ -103,31 +103,19 @@ public class ProductServiceImp implements ProductService {
             }
         }
 
-        Boolean isFound = false;
         //Search Product by categoryId
         if(categoryId != null){
-                for(Product p: products){
-                    if(categoryId == p.getCategoryId()){
-                        isFound = true;
-                        products = productRepository.findProductByCategoryId(categoryId);
-                    }
-                }
-                if (!isFound) {
-                    throw new ItemNotFoundException("Not found");
-                }
+            products = productRepository.findProductByCategoryId(categoryId);
+            if (products.isEmpty()) {
+                throw new ItemNotFoundException("Category ID Not found");
+            }
+
         }
 
         //Search Product by userId
-        boolean checkUser = false;
         if(userId!=null){
-            for(Product p: products){
-                if(userId == p.getUserId()){
-                    products = productRepository.findProductByUserId(userId);
-                    checkUser = true;
-                }
-            }
-
-            if(!checkUser){
+            products = productRepository.findProductByUserId(userId);
+            if(products.isEmpty()){
                 throw new ItemNotFoundException("User ID you are searching is not found.");
             }
         }
