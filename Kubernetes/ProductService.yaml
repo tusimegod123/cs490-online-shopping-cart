@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: product
-        image: syilma/productservice:v2
+        image: syilma/productservice:v3
         imagePullPolicy: Always
         ports:
         - containerPort: 8083 # port to access the app in the container
