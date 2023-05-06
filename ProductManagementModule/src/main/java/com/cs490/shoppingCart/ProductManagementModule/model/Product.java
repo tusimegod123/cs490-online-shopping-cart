@@ -1,13 +1,9 @@
 package com.cs490.shoppingCart.ProductManagementModule.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import lombok.experimental.Accessors;
 
 @Data
 @AllArgsConstructor
@@ -36,7 +32,8 @@ public class Product {
 
     @NotBlank(message = "Image URL is required")
 
-    @Column(columnDefinition="TEXT")
+//    @Column(columnDefinition="TEXT")
+    @Column(length = 65500 )
     private String imageUrl;
 
     private Boolean verified;
@@ -46,5 +43,7 @@ public class Product {
 
     @NotNull(message = "Category Id is required")
     private Long categoryId;
+
+
 
 }

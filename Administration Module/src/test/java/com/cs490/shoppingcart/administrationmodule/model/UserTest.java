@@ -16,15 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 
 class UserTest {
-    /**
-     * Methods under test:
-     *
-     * <ul>
-     *   <li>{@link User#User()}
-     *   <li>{@link User#setUsername(String)}
-     *   <li>{@link User#getUsername()}
-     * </ul>
-     */
+
     @Test
     void testConstructor() {
         // Arrange and Act
@@ -35,28 +27,16 @@ class UserTest {
         assertEquals("janedoe", actualUser.getUsername());
     }
 
-    /**
-     * Methods under test:
-     *
-     * <ul>
-     *   <li>{@link User#User(String, String, String, String, String, List)}
-     *   <li>{@link User#setUsername(String)}
-     *   <li>{@link User#getUsername()}
-     * </ul>
-     */
     @Test
     void testConstructor2() {
         // Arrange and Act
-        User actualUser = new User("Name", "jane.doe@example.org", "iloveyou", "4105551212", "janedoe", new ArrayList<>());
+        User actualUser = new User("Name", "jane.doe@example.org", "password", "4105551212", "janedoe", new ArrayList<>());
         actualUser.setUsername("janedoe");
 
         // Assert
         assertEquals("janedoe", actualUser.getUsername());
     }
 
-    /**
-     * Method under test: {@link User#getAuthorities()}
-     */
     @Test
     void testGetAuthorities() {
         // Arrange, Act and Assert
@@ -78,60 +58,6 @@ class UserTest {
         // Assert
         assertEquals(1, actualAuthorities.size());
         assertEquals("Role Name", ((List<? extends GrantedAuthority>) actualAuthorities).get(0).getAuthority());
-    }
-
-    /**
-     * Method under test: {@link User#getAuthorities()}
-     */
-    @Test
-    @Disabled("TODO: Complete this test")
-    void testGetAuthorities3() {
-        // TODO: Complete this test.
-        //   Reason: R013 No inputs found that don't throw a trivial exception.
-        //   Diffblue Cover tried to run the arrange/act section, but the method under
-        //   test threw
-        //   java.lang.IllegalArgumentException: A granted authority textual representation is required
-        //       at org.springframework.util.Assert.hasText(Assert.java:294)
-        //       at org.springframework.security.core.authority.SimpleGrantedAuthority.<init>(SimpleGrantedAuthority.java:39)
-        //       at com.cs490.shoppingcart.administrationmodule.model.User.getAuthorities(User.java:81)
-        //   In order to prevent getAuthorities()
-        //   from throwing IllegalArgumentException, add constructors or factory
-        //   methods that make it easier to construct fully initialized objects used in
-        //   getAuthorities().
-        //   See https://diff.blue/R013 to resolve this issue.
-
-        // Arrange
-        User user = new User();
-        user.addRole(new Role(""));
-
-        // Act
-        user.getAuthorities();
-    }
-
-    /**
-     * Method under test: {@link User#getAuthorities()}
-     */
-    @Test
-    @Disabled("TODO: Complete this test")
-    void testGetAuthorities4() {
-        // TODO: Complete this test.
-        //   Reason: R013 No inputs found that don't throw a trivial exception.
-        //   Diffblue Cover tried to run the arrange/act section, but the method under
-        //   test threw
-        //   java.lang.NullPointerException: Cannot invoke "com.cs490.shoppingcart.administrationmodule.model.Role.getRoleName()" because "role" is null
-        //       at com.cs490.shoppingcart.administrationmodule.model.User.getAuthorities(User.java:81)
-        //   In order to prevent getAuthorities()
-        //   from throwing NullPointerException, add constructors or factory
-        //   methods that make it easier to construct fully initialized objects used in
-        //   getAuthorities().
-        //   See https://diff.blue/R013 to resolve this issue.
-
-        // Arrange
-        User user = new User();
-        user.addRole(null);
-
-        // Act
-        user.getAuthorities();
     }
 
     /**
@@ -158,12 +84,12 @@ class UserTest {
         User user = new User();
 
         // Act
-        NotificationRequest actualNotificationRequest = user.getNotificationRequest("iloveyou");
+        NotificationRequest actualNotificationRequest = user.getNotificationRequest("password");
 
         // Assert
         assertEquals("WelcomeEmail", actualNotificationRequest.getEmailType());
         assertNull(actualNotificationRequest.getUserId());
-        assertEquals("iloveyou", actualNotificationRequest.getPassword());
+        assertEquals("password", actualNotificationRequest.getPassword());
         assertNull(actualNotificationRequest.getMessage());
         assertEquals("WelcomeEmail", user.getEmailType());
     }

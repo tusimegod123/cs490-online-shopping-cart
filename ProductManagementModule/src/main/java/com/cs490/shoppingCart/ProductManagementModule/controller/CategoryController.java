@@ -4,11 +4,9 @@ import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryRequest;
 import com.cs490.shoppingCart.ProductManagementModule.dto.CategoryResponse;
 import com.cs490.shoppingCart.ProductManagementModule.exception.IdNotMatchException;
 import com.cs490.shoppingCart.ProductManagementModule.exception.ItemNotFoundException;
-import com.cs490.shoppingCart.ProductManagementModule.model.Category;
 import com.cs490.shoppingCart.ProductManagementModule.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,12 +43,11 @@ public class CategoryController {
         } catch (ItemNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
-
         return new ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCategoryById(@PathVariable Long id, @RequestBody CategoryRequest category) {
+    public ResponseEntity<Object> updateCategoryById(@PathVariable Long id, @RequestBody @Valid CategoryRequest category) {
 
         CategoryResponse categoryResponse;
         try {
@@ -60,7 +57,6 @@ public class CategoryController {
         } catch (IdNotMatchException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
         return new  ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
 
@@ -75,7 +71,4 @@ public class CategoryController {
             return new ResponseEntity<>("Category with id: " + id + " cannot be deleted", HttpStatus.NOT_FOUND);
         }
     }
-
-
-
 }

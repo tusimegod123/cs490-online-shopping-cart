@@ -13,22 +13,13 @@ import java.util.*;
 
 public interface ProductService {
 
-    public ProductResponse createProduct(@RequestBody ProductRequest productRequest) throws ItemNotFoundException;
-
-    public List<ProductResponse> allProducts(String name, Long categoryId, Long userId) throws ItemNotFoundException;
-
-    public ProductResponse getProductById(Long id) throws ItemNotFoundException;
-
-    public Boolean deleteProductById(Long id);
-
-    public ProductResponse updateProduct(Product product, Long productId) throws ItemNotFoundException, IdNotMatchException;
-
-    public List<Product> verifiedProducts();
-
-    public List<Product> unverifiedProducts() throws ItemNotFoundException;
-
-    public void approveProducts(Long productId) throws ItemNotFoundException;
-
-    public List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam Set<Long> productId)throws ItemNotFoundException;
-
+     ProductResponse createProduct(@RequestBody ProductRequest productRequest) throws ItemNotFoundException;
+     List<ProductResponse> allProducts(String name, Long categoryId, Long userId) throws ItemNotFoundException;
+     ProductResponse getProductById(Long id) throws ItemNotFoundException;
+     Boolean deleteProductById(Long id);
+     ProductResponse updateProduct(Product product, Long productId) throws ItemNotFoundException, IdNotMatchException;
+     List<Product> verifiedProducts();
+     List<Product> unverifiedProducts() throws ItemNotFoundException;
+     void approveProducts(Long productId) throws ItemNotFoundException;
+     List<ListProductResponseSpecificID> getAllProductWithSpecificIDList(@RequestParam Set<Long> productId)throws ItemNotFoundException;
 }
